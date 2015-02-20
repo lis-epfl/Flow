@@ -66,7 +66,7 @@ void mt9v034_context_configuration(void)
 
 	uint16_t new_control;
 
-	if (global_data.param[PARAM_VIDEO_ONLY])
+	if (global_data.param[PARAM_VIDEO_ONLY] == 1)
 		new_control = 0x8188; // Context B
 	else
 		new_control = 0x0188; // Context A
@@ -226,7 +226,7 @@ void mt9v034_context_configuration(void)
 void mt9v034_set_context()
 {
 	uint16_t new_control;
-	if (global_data.param[PARAM_VIDEO_ONLY])
+	if (global_data.param[PARAM_VIDEO_ONLY] == 1)
 		new_control = 0x8188; // Context B
 	else
 		new_control = 0x0188; // Context A

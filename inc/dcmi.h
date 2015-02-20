@@ -54,6 +54,24 @@ void send_calibration_image(uint8_t ** image_buffer_fast_1, uint8_t ** image_buf
  */
 void enable_image_capture(void);
 
+
+/**
+ * @brief Send most recent image down-scaled over USB
+ *
+ * @param width scale: reduction factor for the width of the image ( >= 1)
+ * @param height scale: reduction factor for the height of the image ( >= 1)
+ */
+void send_image_scaled(uint8_t width_scale, uint8_t height_scale);
+void send_image_scaled_bu(uint8_t width_scale, uint8_t height_scale, uint8_t *image_buffer);
+
+/**
+ * @brief Send most recent image over USB
+ *
+ * @param width scale: reduction factor for the width of the image ( >= 1)
+ * @param height scale: reduction factor for the height of the image ( >= 1)
+ */
+void send_image();
+
 /* Init Functions */
 void dcmi_clock_init(void);
 void dcmi_hw_init(void);

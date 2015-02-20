@@ -341,9 +341,9 @@ int main(void)
 		}
 
 		/* calibration routine */
-		if(global_data.param[PARAM_VIDEO_ONLY])
+		if(global_data.param[PARAM_VIDEO_ONLY] == 1)
 		{
-			while(global_data.param[PARAM_VIDEO_ONLY])
+			while(global_data.param[PARAM_VIDEO_ONLY] == 1)
 			{
 				dcmi_restart_calibration_routine();
 
@@ -372,7 +372,18 @@ int main(void)
 
 			dcmi_restart_calibration_routine();
 			LEDOff(LED_COM);
-		}
+		}else if(global_data.param[PARAM_VIDEO_ONLY] == 2)
+		{
+			while(global_data.param[PARAM_VIDEO_ONLY] == 2)
+			{
+                LEDOn(LED_COM);
+                delay(500);
+                dma_copy_image_buffers(&current_image, &previous_image, FULL_IMAGE_SIZE, 1);
+                send_image_scaled_bu(2,2,current_image);
+                
+            }
+        }
+                
 
 		uint16_t image_size = global_data.param[PARAM_IMAGE_WIDTH] * global_data.param[PARAM_IMAGE_HEIGHT];
 
