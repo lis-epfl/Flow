@@ -47,7 +47,6 @@
 #include "stm32f4xx_tim.h"
 #include "misc.h"
 #include "stm32f4xx.h"
-#include "led.h"
 
 /* counters */
 volatile uint8_t image_counter = 0;
@@ -96,7 +95,7 @@ void dma_reconfigure(void)
 {
 	dcmi_dma_disable();
 
-	if(global_data.param[PARAM_VIDEO_ONLY])
+	if(global_data.param[PARAM_VIDEO_ONLY] == 1)
 		dcmi_dma_init(FULL_IMAGE_SIZE);
 	else
 		dcmi_dma_init(global_data.param[PARAM_IMAGE_WIDTH] * global_data.param[PARAM_IMAGE_HEIGHT]);
@@ -354,6 +353,56 @@ void send_calibration_image(uint8_t ** image_buffer_fast_1, uint8_t ** image_buf
 
 
 
+
+
+/**
+ * @brief Send image down-scaled over USB
+ *
+ * @param width scale: reduction factor for the width of the image ( >= 1)
+ * @param height scale: reduction factor for the height of the image ( >= 1)
+ * @param image_buffer: image to be sent
+ */
+void send_image_scaled_buffer(uint8_t width_scale, uint8_t height_scale, uint8_t *image_buffer){
+    uint8_t width = global_data.param[PARAM_IMAGE_WIDTH];
+    uint8_t height = global_data.param[PARAM_IMAGE_HEIGHT];
+    uint8_t width_scaled = width/width_scale;
+    uint8_t height_scaled = height/height_scale;
+    uint16_t image_size_scaled = width_scaled*height_scaled;
+
+    /*  transmit raw 8-bit image */
+	mavlink_msg_data_transmission_handshake_send(
+			MAVLINK_COMM_2,
+			MAVLINK_DATA_STREAM_IMG_RAW8U,
+			image_size_scaled,
+            width_scaled,
+            height_scaled,
+            image_size_scaled/ MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
+			MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
+			100);
+
+    uint8_t i_buffer = 0, i_row, i_col;
+    uint16_t frame = 0;
+    uint8_t frame_buffer[MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN];
+
+    // fill image to frame buffer and send when frame_buffer is full
+    for(i_row = 0; i_row < height; i_row += height_scale){
+        for(i_col = 0; i_col < width; i_col += width_scale){
+            frame_buffer[i_buffer++] = image_buffer[i_row * width + i_col];
+
+            /* if the frame_buffer is full, send it */
+            if(i_buffer == MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN){
+                mavlink_msg_encapsulated_data_send(MAVLINK_COMM_2, frame++, frame_buffer);
+                i_buffer = 0;
+            }
+        }
+    }
+    /* in case we didn't send enough frames, we send the last one multiple times */
+    while(frame < image_size_scaled/ MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1){
+        mavlink_msg_encapsulated_data_send(MAVLINK_COMM_2, frame++, frame_buffer);
+    }
+}
+
+
 /**
  * @brief Send most recent image down-scaled over USB
  *
@@ -361,43 +410,9 @@ void send_calibration_image(uint8_t ** image_buffer_fast_1, uint8_t ** image_buf
  * @param height scale: reduction factor for the height of the image ( >= 1)
  */
 void send_image_scaled(uint8_t width_scale, uint8_t height_scale){
-    uint8_t width = global_data.param[PARAM_IMAGE_WIDTH];
-    uint8_t height = global_data.param[PARAM_IMAGE_HEIGHT];
-    uint8_t width_scaled = width/width_scale;
-    uint8_t height_scaled = height/height_scale;
-    uint16_t image_size_scaled = width_scaled*height_scaled;
-
-
-
-    /* wait for new image if needed */
-	while(image_counter < 1) {}
-	image_counter = 0;
-    
-/* time between images */
-time_between_images = time_between_next_images;    
-LEDOff(LED_COM);
-        
-    /*  transmit raw 8-bit image */
-	mavlink_msg_data_transmission_handshake_send(
-			MAVLINK_COMM_2,
-			MAVLINK_DATA_STREAM_IMG_RAW8U,
-			image_size_scaled,
-            width_scaled,
-            height_scaled,
-            image_size_scaled/ MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
-			MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
-			100);
-            
-    uint8_t i_buffer = 0, i_row, i_col;
-    uint16_t frame = 0;
-    uint8_t frame_buffer[MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN];
-    uint8_t *image_buffer;
-    
-
-    
-
 
     /* find most recent image and point to it with image_buffer */
+    uint8_t *image_buffer;
     if (dcmi_image_buffer_unused == 1)
         image_buffer = dcmi_image_buffer_8bit_1;
 	else if (dcmi_image_buffer_unused == 2)
@@ -405,76 +420,9 @@ LEDOff(LED_COM);
 	else
         image_buffer = dcmi_image_buffer_8bit_3;
 
-    // fill image to frame buffer and send when frame_buffer is full
-    for(i_row = 0; i_row < width; i_row += height_scale){
-        for(i_col = 0; i_col < height; i_col += width_scale){
-            frame_buffer[i_buffer++] = image_buffer[i_row * width + i_col];
-            
-            /* if the frame_buffer is full, send it */
-            if(i_buffer == MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN){
-                mavlink_msg_encapsulated_data_send(MAVLINK_COMM_2, frame++, frame_buffer);
-                i_buffer = 0;
-            }
-        }
-    }
-    /* in case we didn't send enough frames, we send the last one multiple times */
-    while(frame < image_size_scaled/ MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1){
-        mavlink_msg_encapsulated_data_send(MAVLINK_COMM_2, frame++, frame_buffer);
-    }
-    
-    
+    send_image_scaled_buffer(width_scale, height_scale, image_buffer);
 }
 
-/**
- * @brief Send most recent image down-scaled over USB
- *
- * @param width scale: reduction factor for the width of the image ( >= 1)
- * @param height scale: reduction factor for the height of the image ( >= 1)
- */
-void send_image_scaled_bu(uint8_t width_scale, uint8_t height_scale, uint8_t *image_buffer){
-    uint8_t width = global_data.param[PARAM_IMAGE_WIDTH];
-    uint8_t height = global_data.param[PARAM_IMAGE_HEIGHT];
-    uint8_t width_scaled = width/width_scale;
-    uint8_t height_scaled = height/height_scale;
-    uint16_t image_size_scaled = width_scaled*height_scaled;
-
-        
-    /*  transmit raw 8-bit image */
-	mavlink_msg_data_transmission_handshake_send(
-			MAVLINK_COMM_2,
-			MAVLINK_DATA_STREAM_IMG_RAW8U,
-			image_size_scaled,
-            width_scaled,
-            height_scaled,
-            image_size_scaled/ MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
-			MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
-			100);
-            
-    uint8_t i_buffer = 0, i_row, i_col;
-    uint16_t frame = 0;
-    uint8_t frame_buffer[MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN];
-    
-
-    // fill image to frame buffer and send when frame_buffer is full
-    for(i_row = 0; i_row < width; i_row += height_scale){
-        for(i_col = 0; i_col < height; i_col += width_scale){
-            frame_buffer[i_buffer++] = image_buffer[i_row * width + i_col];
-            
-            /* if the frame_buffer is full, send it */
-            if(i_buffer == MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN){
-                mavlink_msg_encapsulated_data_send(MAVLINK_COMM_2, frame++, frame_buffer);
-                i_buffer = 0;
-                delay(5);
-            }
-        }
-    }
-    /* in case we didn't send enough frames, we send the last one multiple times */
-    while(frame < image_size_scaled/ MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1){
-        mavlink_msg_encapsulated_data_send(MAVLINK_COMM_2, frame++, frame_buffer);
-    }
-    
-    
-}
 
 
 /**

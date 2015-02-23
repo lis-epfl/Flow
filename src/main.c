@@ -374,16 +374,16 @@ int main(void)
 			LEDOff(LED_COM);
 		}else if(global_data.param[PARAM_VIDEO_ONLY] == 2)
 		{
+            /*  Live mode: send images as fast as possible; resolution: 94x60 */
+            global_data.param[PARAM_IMAGE_WIDTH] = FULL_IMAGE_ROW_SIZE;
+            global_data.param[PARAM_IMAGE_HEIGHT] = FULL_IMAGE_COLUMN_SIZE;
+            enable_image_capture();     // reset mt9v034
 			while(global_data.param[PARAM_VIDEO_ONLY] == 2)
 			{
-                LEDOn(LED_COM);
-                delay(500);
-                dma_copy_image_buffers(&current_image, &previous_image, FULL_IMAGE_SIZE, 1);
-                send_image_scaled_bu(2,2,current_image);
-                
+                LEDToggle(LED_COM);
+                send_image_scaled(4,4); // down scaled by 2 gives about 30Hz,   down scaled by 4 gives about 60Hz
             }
-        }
-                
+		}
 
 		uint16_t image_size = global_data.param[PARAM_IMAGE_WIDTH] * global_data.param[PARAM_IMAGE_HEIGHT];
 

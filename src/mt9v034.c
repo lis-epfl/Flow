@@ -78,7 +78,8 @@ void mt9v034_context_configuration(void)
 	uint16_t new_height_context_b = FULL_IMAGE_COLUMN_SIZE * 4;
 
 	/* blanking settings */
-	uint16_t new_hor_blanking_context_a = 350 + MINIMUM_HORIZONTAL_BLANKING;// 350 is minimum value without distortions
+	//uint16_t new_hor_blanking_context_a = 350 + MINIMUM_HORIZONTAL_BLANKING;// 350 is minimum value without distortions
+    uint16_t new_hor_blanking_context_a = MAX_IMAGE_WIDTH - new_width_context_a + MINIMUM_HORIZONTAL_BLANKING;
 	uint16_t new_ver_blanking_context_a = 10; // this value is the first without image errors (dark lines)
 	uint16_t new_hor_blanking_context_b = MAX_IMAGE_WIDTH - new_width_context_b + MINIMUM_HORIZONTAL_BLANKING;
 	uint16_t new_ver_blanking_context_b = 10;
@@ -96,7 +97,7 @@ void mt9v034_context_configuration(void)
 	 *
 	 */
 	uint16_t new_readmode_context_a = 0x30A ; // row + col bin 4 enable, (9:8) default
-	uint16_t new_readmode_context_b = 0x305 ; // row bin 2 col bin 4 enable, (9:8) default
+	uint16_t new_readmode_context_b = 0x305 ; // row bin 2 col bin 2 enable, (9:8) default
 
 	/*
 	 * Settings for both context:

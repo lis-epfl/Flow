@@ -56,13 +56,21 @@ void enable_image_capture(void);
 
 
 /**
+ * @brief Send image down-scaled over USB
+ *
+ * @param width scale: reduction factor for the width of the image ( >= 1)
+ * @param height scale: reduction factor for the height of the image ( >= 1)
+ * @param image_buffer: image to be sent
+ */
+void send_image_scaled_buffer(uint8_t width_scale, uint8_t height_scale, uint8_t *image_buffer);
+
+/**
  * @brief Send most recent image down-scaled over USB
  *
  * @param width scale: reduction factor for the width of the image ( >= 1)
  * @param height scale: reduction factor for the height of the image ( >= 1)
  */
 void send_image_scaled(uint8_t width_scale, uint8_t height_scale);
-void send_image_scaled_bu(uint8_t width_scale, uint8_t height_scale, uint8_t *image_buffer);
 
 /**
  * @brief Send most recent image over USB
