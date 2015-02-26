@@ -203,8 +203,6 @@ set(PX4FLOW_HDRS
     inc/usbd_conf.h
     inc/usbd_desc.h
     inc/utils.h
-    inc/flow2.h
-    inc/undistort.h
     )
 
 set(PX4FLOW_SRC
@@ -231,8 +229,6 @@ set(PX4FLOW_SRC
     src/utils.c
     src/system_stm32f4xx.c
     src/stm32f4xx_it.c
-    src/flow2.c
-    src/undistort.c
     )
 
 # building

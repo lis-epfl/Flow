@@ -203,6 +203,10 @@ void global_data_reset_param_defaults(void){
 	strcpy(global_data.param_name[DEBUG_VARIABLE], "DEBUG");
 	global_data.param_access[DEBUG_VARIABLE] = READ_WRITE;
 
+	global_data.param[PARAM_OF_LK] = 0;
+	strcpy(global_data.param_name[PARAM_OF_LK], "LUCAS KANADE");
+	global_data.param_access[PARAM_OF_LK] = READ_WRITE;
+
 }
 
 /**

@@ -143,6 +143,8 @@ enum global_param_id_t
 
 	PARAM_SENSOR_POSITION,
 	DEBUG_VARIABLE,
+	
+	PARAM_OF_LK,
 
 	ONBOARD_PARAM_COUNT
 
