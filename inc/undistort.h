@@ -5,9 +5,7 @@
 
 #include <stdint.h>
 
-//#define LENGTH_IPOLY 11
-//const float IPOLY[]= {10,192.937564,97.98972,1.160704,24.567268,8.627974,-0.85221,-32.956107,-55.815696,-32.128902,-6.209734};
-
+//TODO: make this value configurable
 const float POLY[]={5,-1.321939e+02,0.000000e+00,6.467560e-04,1.404318e-05,5.239326e-09};
 
 #define HEIGHT_C 240
