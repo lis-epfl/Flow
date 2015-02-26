@@ -4,12 +4,21 @@
 #include <stdint.h>
 #include <math.h>
 
-#include "settings.h"
-#include "utils.h"
+//#include "settings.h"
+//#include "utils.h"
 #include "flow2.h"
 
 
-
+/**
+ * @brief Given two images and a point, computes the apparent motion vector at that point using Lucas Kanade
+ *
+ * @param *Im0 pointer to first image
+ * @param *Im1 pointer to second image
+ * @param x Horizontal coordinate of the point
+ * @param y Vertical coordinate of the point
+ * @param *u Pointer to the horizontal component of the vector
+ * @param *v POinter to the vertical component of the vector 
+ */
 uint8_t lk2(float *Im0, float *Im1,uint16_t x, uint16_t y, float *u, float *v){
    uint16_t j=0,k=0;
    uint16_t img_width = global_data.param[PARAM_IMAGE_WIDTH];

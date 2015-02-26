@@ -204,7 +204,31 @@ void global_data_reset_param_defaults(void){
 	global_data.param_access[DEBUG_VARIABLE] = READ_WRITE;
 
 	global_data.param[PARAM_OF_LK] = 0;
-	strcpy(global_data.param_name[PARAM_OF_LK], "LUCAS KANADE");
+	strcpy(global_data.param_name[PARAM_OF_LK], "LUCAS_KANADE");
+	global_data.param_access[PARAM_OF_LK] = READ_WRITE;
+
+	global_data.param[PARAM_CAM_LENGTH_POLY] = 6;
+	strcpy(global_data.param_name[PARAM_OF_LK], "POLYNOMIAL_LENGTH");
+	global_data.param_access[PARAM_OF_LK] = READ_WRITE;
+	
+	global_data.param[PARAM_CAM_CENTER_ROW] = 106.623265f;
+	strcpy(global_data.param_name[PARAM_OF_LK], "REAL_CENTER_ROW");
+	global_data.param_access[PARAM_OF_LK] = READ_WRITE;
+	
+	global_data.param[PARAM_CAM_CENTER_COL] = 176.347583f;
+	strcpy(global_data.param_name[PARAM_OF_LK], "REAL_CENTER_COL");
+	global_data.param_access[PARAM_OF_LK] = READ_WRITE;
+	
+	global_data.param[PARAM_CAM_AFF_C] = 1.000372f;
+	strcpy(global_data.param_name[PARAM_OF_LK], "CAM_PARAM_C");
+	global_data.param_access[PARAM_OF_LK] = READ_WRITE;
+	
+	global_data.param[PARAM_CAM_AFF_D] = -0.000303f;
+	strcpy(global_data.param_name[PARAM_OF_LK], "CAM_PARAM_D");
+	global_data.param_access[PARAM_OF_LK] = READ_WRITE;
+	
+	global_data.param[PARAM_CAM_AFF_E] = -0.000467f;
+	strcpy(global_data.param_name[PARAM_OF_LK], "CAM_PARAM_E");
 	global_data.param_access[PARAM_OF_LK] = READ_WRITE;
 
 }
