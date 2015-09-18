@@ -38,8 +38,19 @@
 #include <stdint.h>
 
 #define ONBOARD_PARAM_NAME_LENGTH 		15
-#define BOTTOM_FLOW_IMAGE_HEIGHT		64
-#define BOTTOM_FLOW_IMAGE_WIDTH			64
+
+// Square image
+// #define BOTTOM_FLOW_IMAGE_HEIGHT		64
+// #define BOTTOM_FLOW_IMAGE_WIDTH			64
+
+// Max size with binning 4
+// #define BOTTOM_FLOW_IMAGE_HEIGHT		120
+// #define BOTTOM_FLOW_IMAGE_WIDTH			188
+
+// Horizontal image with 180deg x 12 deg
+#define BOTTOM_FLOW_IMAGE_HEIGHT		10
+#define BOTTOM_FLOW_IMAGE_WIDTH			150
+
 #define BOTTOM_FLOW_SEARCH_WINDOW_SIZE 	4
 
 /******************************************************************

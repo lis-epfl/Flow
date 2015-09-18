@@ -79,7 +79,8 @@ void mt9v034_context_configuration(void)
 	uint16_t new_height_context_b = FULL_IMAGE_COLUMN_SIZE * 4;
 
 	/* blanking settings */
-	uint16_t new_hor_blanking_context_a = 350 + MINIMUM_HORIZONTAL_BLANKING;// 350 is minimum value without distortions
+	// uint16_t new_hor_blanking_context_a = 350 + MINIMUM_HORIZONTAL_BLANKING;// 350 is minimum value without distortions
+	uint16_t new_hor_blanking_context_a = MAX_IMAGE_WIDTH - new_width_context_a + MINIMUM_HORIZONTAL_BLANKING;	
 	uint16_t new_ver_blanking_context_a = 10; // this value is the first without image errors (dark lines)
 	uint16_t new_hor_blanking_context_b = MAX_IMAGE_WIDTH - new_width_context_b + MINIMUM_HORIZONTAL_BLANKING;
 	uint16_t new_ver_blanking_context_b = 10;
@@ -190,8 +191,13 @@ void mt9v034_context_configuration(void)
 		mt9v034_WriteReg16(MTV_HOR_BLANKING_REG_B, new_hor_blanking_context_b);
 		mt9v034_WriteReg16(MTV_VER_BLANKING_REG_B, new_ver_blanking_context_b);
 		mt9v034_WriteReg16(MTV_READ_MODE_REG_B, new_readmode_context_b);
-		mt9v034_WriteReg16(MTV_COLUMN_START_REG_B, MINIMUM_COLUMN_START); // default
-		mt9v034_WriteReg16(MTV_ROW_START_REG_B, MINIMUM_ROW_START);
+
+		// Changed for mavripuck
+		// mt9v034_WriteReg16(MTV_COLUMN_START_REG_B, MINIMUM_COLUMN_START); // default
+		// mt9v034_WriteReg16(MTV_ROW_START_REG_B, MINIMUM_ROW_START);
+		mt9v034_WriteReg16(MTV_COLUMN_START_REG_B, (MAX_IMAGE_WIDTH - new_width_context_b) / 2 + MINIMUM_COLUMN_START); // Set column/row start point for lower resolutions (center window)
+		mt9v034_WriteReg16(MTV_ROW_START_REG_B, (MAX_IMAGE_HEIGHT - new_height_context_b) / 2 + MINIMUM_ROW_START);
+
 		mt9v034_WriteReg16(MTV_COARSE_SW_1_REG_B, coarse_sw1);
 		mt9v034_WriteReg16(MTV_COARSE_SW_2_REG_B, coarse_sw2);
 		mt9v034_WriteReg16(MTV_COARSE_SW_CTRL_REG_B, shutter_width_ctrl);
