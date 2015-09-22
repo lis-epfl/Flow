@@ -109,7 +109,8 @@ void mt9v034_context_configuration(void)
 	uint16_t min_exposure = 0x0001; // default
 	uint16_t max_exposure = 0x01E0; // default
 	uint16_t new_max_gain = 64; // VALID RANGE: 16-64 (default)
-	uint16_t pixel_count = 4096; //64x64 take all pixels to estimate exposure time // VALID RANGE: 1-65535
+	// uint16_t pixel_count = 4096; //64x64 take all pixels to estimate exposure time // VALID RANGE: 1-65535
+	uint16_t pixel_count = BOTTOM_FLOW_IMAGE_HEIGHT * BOTTOM_FLOW_IMAGE_WIDTH; //64x64 take all pixels to estimate exposure time // VALID RANGE: 1-65535
 
 	uint16_t desired_brightness = 58; // default
 	uint16_t resolution_ctrl = 0x0203; // default
@@ -177,7 +178,8 @@ void mt9v034_context_configuration(void)
 		mt9v034_WriteReg16(MTV_HOR_BLANKING_REG_A, new_hor_blanking_context_a);
 		mt9v034_WriteReg16(MTV_VER_BLANKING_REG_A, new_ver_blanking_context_a);
 		mt9v034_WriteReg16(MTV_READ_MODE_REG_A, new_readmode_context_a);
-		mt9v034_WriteReg16(MTV_COLUMN_START_REG_A, (MAX_IMAGE_WIDTH - new_width_context_a) / 2 + MINIMUM_COLUMN_START); // Set column/row start point for lower resolutions (center window)
+		// mt9v034_WriteReg16(MTV_COLUMN_START_REG_A, (MAX_IMAGE_WIDTH - new_width_context_a) / 2 + MINIMUM_COLUMN_START); // Set column/row start point for lower resolutions (center window)
+		mt9v034_WriteReg16(MTV_COLUMN_START_REG_A, 9*4 + MINIMUM_COLUMN_START); // Set column/row start point for lower resolutions (center window)
 		mt9v034_WriteReg16(MTV_ROW_START_REG_A, (MAX_IMAGE_HEIGHT - new_height_context_a) / 2 + MINIMUM_ROW_START);
 		mt9v034_WriteReg16(MTV_COARSE_SW_1_REG_A, coarse_sw1);
 		mt9v034_WriteReg16(MTV_COARSE_SW_2_REG_A, coarse_sw2);
