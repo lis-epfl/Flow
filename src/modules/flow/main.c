@@ -645,7 +645,7 @@ int main(void)
 						100);
 				for (int frame = 0; frame < 500 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1; ++frame)
 				{
-					mavlink_msg_encapsulated_data_send(MAVLINK_COMM_0, frame, &((uint8_t *) flow_lk.data)[frame * MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN]);
+					mavlink_msg_encapsulated_data_send(MAVLINK_COMM_0, frame, &(flow_lk.data[frame * MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN]));
 				}
 
 				// mavlink_msg_optical_flow_rad_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
