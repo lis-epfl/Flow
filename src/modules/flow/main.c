@@ -365,6 +365,7 @@ int main(void)
 	// static uint16_t accumulated_quality = 0;
 	// static uint32_t integration_timespan = 0;
 	static uint32_t lasttime = 0;
+
 	// uint32_t time_since_last_sonar_update= 0;
 
 	uavcan_start();
@@ -449,6 +450,7 @@ int main(void)
 		}
 
 		static float DT;
+		static uint32_t N_points = 73;
 
 		/* compute optical flow */
 		if (FLOAT_EQ_INT(global_data.param[PARAM_SENSOR_POSITION], BOTTOM))
@@ -467,7 +469,7 @@ int main(void)
 			int32_t roi_sx = 10;
 			int32_t roi_sy = 10;
 
-			for (int i = 0; i < 125; ++i)
+			for (int i = 0; i < N_points; ++i)
 			{
 				/* code */
 				lucas_kanade( 	current_image, //dat_t * data, 
@@ -476,7 +478,7 @@ int main(void)
 						image_height, //int dsy, 
 						roi_sx, //int roi_sx, 
 						roi_sy, //int roi_sy, 
-						13 + i, //int const roi_x,
+						7 + 2*i, //int const roi_x,
 						(image_height - roi_sy) / 2, // int const roi_y, 
 						&num_x, //dat_t & num_x, 
 						&num_y, //dat_t & num_y, 
@@ -637,13 +639,13 @@ int main(void)
 				mavlink_msg_data_transmission_handshake_send(
 						MAVLINK_COMM_0,
 						MAVLINK_TYPE_INT16_T,
-						500,
-						125, 
+						4*N_points,
+						N_points, 
 						2,
-						500 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
+						4*N_points / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
 						MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
 						100);
-				for (int frame = 0; frame < 500 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1; ++frame)
+				for (int frame = 0; frame < 4*N_points / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1; ++frame)
 				{
 					mavlink_msg_encapsulated_data_send(MAVLINK_COMM_0, frame, &(flow_lk.data[frame * MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN]));
 				}
