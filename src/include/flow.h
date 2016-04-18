@@ -35,6 +35,7 @@
 #define FLOW_H_
 
 #include <stdint.h>
+#include <math.h>
 
 /**
  * @brief Computes pixel flow from image1 to image2

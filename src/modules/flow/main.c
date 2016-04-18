@@ -73,6 +73,7 @@
 #include <bsp/probes.h>
 
 #include "lucaskanade.h"
+#include "cam.h"
 
 /* coprocessor control register (fpu) */
 #ifndef SCB_CPACR
@@ -322,6 +323,34 @@ int main(void)
 	uint32_t counter = 0;
 	uint8_t qual = 0;
 
+	/* Camera model */
+	// cam_model px4_model;
+	// px4_model.length_pol = 5; 			// polynomial order+1
+	// px4_model.pol[0] = -6.660506e+01f; 	// a0
+	// px4_model.pol[1] = 0.0f; 			// a1
+	// px4_model.pol[2] = 6.426152e-03f; 	// a2
+	// px4_model.pol[3] = -2.306550e-05f; 	// a3
+	// px4_model.pol[4] = 2.726345e-07f; 	// a4
+	
+	// px4_model.length_invpol = 7; 		// polynomial order+1
+	// px4_model.invpol[0] = 98.889649f; 	// a0
+	// px4_model.invpol[1] = 60.099030f; 	// a1
+	// px4_model.invpol[2] = 3.523247f; 	// a2
+	// px4_model.invpol[3] = 11.584154f; 	// a3
+	// px4_model.invpol[4] = 10.704617f; 	// a4
+	// px4_model.invpol[5] = 4.911849f;	// a5
+	// px4_model.invpol[6] = 0.899849f;	// a6
+
+	// px4_model.xc = 56.232012f; 			// coordinate of the center along X (or U)
+	// px4_model.yc = 77.63939272f;		// coordinate of the center along Y (or V)
+
+	// px4_model.c = 1.001183f;
+	// px4_model.d = 0.001337f; 
+	// px4_model.e = 0.002268f;
+
+	// px4_model.height = 120;				// height of the image (in pixels)
+	// px4_model.width = 160;				// width of the image (in pixels)
+
 	/* Lucas Kanade flow */
 	// float flow_lk.x[100];
 	// float flow_lk.y[100];
@@ -337,6 +366,19 @@ int main(void)
 		// };
 		uint8_t data[500];
 	} flow_lk;
+
+	struct bp_flow_lk {
+		float x[125];
+		float y[125];
+		float z[125];
+	}bp_flow_lk;
+	
+	/* directions on unit sphere */
+	struct v_dir {
+		float x[125];
+		float y[125];
+		float z[125];
+	} v_dir;
 
 
 	// int16_t flow_lk.x[100];
@@ -484,6 +526,16 @@ int main(void)
 			
 				flow_lk.x[i] = 1000 * num_x / den;
 				flow_lk.y[i] = 1000 * num_y / den;
+				
+				/* backproject point on 3D scene */
+				cam2world(&v_dir.x[i], &v_dir.y[i], &v_dir.z[i], (float)(13 + i), (float)((image_height - roi_sy) / 2));
+				
+				/* reproject optical flow on unit sphere */
+				flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], v_dir.x[i], v_dir.y[i], v_dir.z[i], (float)(flow_lk.x[i]), (float)(flow_lk.y[i]));
+				
+				/* normalize viewing direction vectors */
+				normalize_dir(&v_dir.x[i], &v_dir.y[i], &v_dir.z[i]);
+				
 			}
 
 			// pixel_flow_x = num_x / den; 
