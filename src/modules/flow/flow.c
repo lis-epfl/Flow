@@ -44,6 +44,7 @@
 #include <mavlink.h>
 #include "dcmi.h"
 #include "debug.h"
+#include "flow.h"
 
 #define __INLINE inline
 #define __ASM asm

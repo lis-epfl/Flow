@@ -40,7 +40,9 @@ SRCS += 		main.c \
           i2c.c \
           reset.c \
           sonar_mode_filter.c \
-          lucaskanade.c
+          lucaskanade.c \
+	  quick_trig.c \
+	  cam.c
 
 
 SRCS += 	$(ST_LIB)STM32F4xx_StdPeriph_Driver/src/misc.c \
