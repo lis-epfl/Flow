@@ -14,8 +14,10 @@
 #include "maths.h"
 #include "quick_trig.h"
 
-#define COARSE_BINS	42 // number of coarse bins
-#define REFINED_BINS	37 // number of refined bins
+#define COARSE_BINS	42 		// number of coarse bins
+#define REFINED_BINS	37 		// number of refined bins
+#define COARSE_PREC	0.17364f 	// coarse precision (sin(20 degrees/2))
+#define REFINED_PREC	0.03489f	// refined precision (sin(4 degrees/2))
 
 /**
  * @brief Directions of coarse bins
@@ -55,5 +57,47 @@ extern const refined_bins RB;
 * @return substitutes the initial flow with derotated one
 */
 void derotate_flow(float *flow_x, float *flow_y, float *flow_z, float d_x, float d_y, float d_z, const float x_rate, const float y_rate, const float z_rate);
+
+/**
+* @brief Proceeds to coarse voting on the unit sphere
+*
+*   @param *acc     			pointer to the voting accumulator
+*   @param [flow_x, flow_y, flow_z]     cartesian coordinates of the optic flow vector
+*   @param [d_x, d_y, d_z]     		cartesian coordinates of viewing direction corresponding to the optic flow vector
+*
+* @return incremented accumulator for coarse voting
+*/
+void coarse_voting(uint8_t *acc, float flow_x, float flow_y, float flow_z, float d_x, float d_y, float d_z);
+
+/**
+* @brief Proceeds to refined voting on the unit sphere
+*
+*   @param *acc     			pointer to the voting accumulator
+*   @param [flow_x, flow_y, flow_z]     cartesian coordinates of the optic flow vector
+*   @param [d_x, d_y, d_z]     		cartesian coordinates of viewing direction corresponding to the optic flow vector
+*
+* @return incremented accumulator for refined voting
+*/
+void refined_voting(uint8_t *acc, float flow_x, float flow_y, float flow_z, float d_x, float d_y, float d_z);
+
+/**
+* @brief Finds a coarse estimate of the direction of motion
+*
+*   @param *acc     			pointer to the voting accumulator
+*   @param [best_x, best_y, best_z]     cartesian coordinates of the optic flow vector
+*
+* @return cartesian coordinates of coarse estimate
+*/
+void find_coarse_best(uint8_t *acc, float *best_x, float *best_y, float *best_z);
+
+/**
+* @brief Finds a refined estimate of the direction of motion [UNFINISHED: ADD ROTATION OF VOTING BINS]
+*
+*   @param *acc     			pointer to the voting accumulator
+*   @param [best_x, best_y, best_z]    	cartesian coordinates of the optic flow vector
+*
+* @return cartesian coordinates of refined estimate
+*/
+void find_refined_best(uint8_t *acc, float *best_x, float *best_y, float *best_z);
 
 #endif /* _FLOW2_H_ */

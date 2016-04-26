@@ -73,8 +73,10 @@
 #include <bsp/probes.h>
 
 #include "lucaskanade.h"
-#include "cam.h"
 #include "maths.h"
+#include "cam.h"
+#include "flow2.h"
+
 
 /* coprocessor control register (fpu) */
 #ifndef SCB_CPACR

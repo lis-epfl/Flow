@@ -37,4 +37,83 @@ void derotate_flow(float *flow_x, float *flow_y, float *flow_z, float d_x, float
 	*flow_z += (x_rate*d_y)-(y_rate*d_x);
 }
 
+void coarse_voting(uint8_t *acc, float flow_x, float flow_y, float flow_z, float d_x, float d_y, float d_z){
+	float n_x = d_y * flow_z - d_z * flow_y;
+	float n_y = d_z * flow_x - d_x * flow_z;
+	float n_z = d_x * flow_y - d_y * flow_x;
+
+	// normalize n
+	float invnorm = maths_fast_inv_sqrt(SQR(n_x) + SQR(n_y) + SQR(n_z));
+	n_x *= invnorm;
+	n_y *= invnorm;
+	n_z *= invnorm;
+
+	for(uint8_t i = 0; i < COARSE_BINS; i++){
+		// vote along great circle in the correct hemisphere (disambiguate possible positions using angle between flow and bin)
+    	if((maths_f_abs(n_x*CB.x[i] + n_y*CB.y[i] + n_z*CB.z[i]) < COARSE_PRECISION) && (flow_x*CB.x[i] + flow_y*CB.y[i] + flow_z*CB.z[i] < 0.0f)){
+    		*acc[i] += 1;
+    	}
+	}
+}
+
+void refined_voting(uint8_t *acc, float flow_x, float flow_y, float flow_z, float d_x, float d_y, float d_z){
+	float n_x = d_y * flow_z - d_z * flow_y;
+	float n_y = d_z * flow_x - d_x * flow_z;
+	float n_z = d_x * flow_y - d_y * flow_x;
+
+	// normalize n
+	float invnorm = maths_fast_inv_sqrt(SQR(n_x) + SQR(n_y) + SQR(n_z));
+	n_x *= invnorm;
+	n_y *= invnorm;
+	n_z *= invnorm;
+
+	for(uint8_t i = 0; i < REFINED_BINS; i++){
+		// vote along great circle in the correct hemisphere (disambiguate possible positions using angle between flow and bin)
+    		if(maths_f_abs(n_x*RB.x[i] + n_y*RB.y[i] + n_z*RB.z[i]) < REFINED_PRECISION){
+    			*acc[i]++;
+    		}
+	}
+}
+
+void find_coarse_best(uint8_t *acc, float *best_x, float *best_y, float *best_z){
+	uint8_t best = 0;	// highest accumulated value
+	uint8_t best_n = 0;	// number of indices with same accumulated value
+	for(uint8_t i = 0; i < COARSE_BINS; i++){
+		if(*acc[i] > best){
+			best = *acc[i];
+			*best_x = CB.x[i];
+			*best_y = CB.y[i];
+			*best_z = CB.z[i];
+			best_n = 1;
+		}
+		// if identical accumulated values, choose the mean as the best direction 
+		else if(*acc[i] == best){
+			*best_x = ((*best_x)*best_n + CB.x[i])/(best_n + 1);
+			*best_y = ((*best_y)*best_n + CB.y[i])/(best_n + 1);
+			*best_z = ((*best_z)*best_n + CB.z[i])/(best_n + 1);
+			best_n++;
+		}
+	}
+}
+
+void find_refined_best(uint8_t *acc, float *best_x, float *best_y, float *best_z){
+	uint8_t best = 0;	// highest accumulated value
+	uint8_t best_n = 0;	// number of indices with same accumulated value
+	for(uint8_t i = 0; i < REFINED_BINS; i++){
+		if(*acc[i] > best){
+			best = *acc[i];
+			*best_x = RB.x[i];
+			*best_y = RB.y[i];
+			*best_z = RB.z[i];
+			best_n = 1;
+		}
+		// if identical accumulated values, average over best directions 
+		else if(*acc[i] == best){
+			*best_x = ((*best_x)*best_n + RB.x[i])/(best_n + 1);
+			*best_y = ((*best_y)*best_n + RB.y[i])/(best_n + 1);
+			*best_z = ((*best_z)*best_n + RB.z[i])/(best_n + 1);
+			best_n++;
+		}
+	}
+}
 
