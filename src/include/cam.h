@@ -50,6 +50,7 @@
 
 #define MAX_POL_LENGTH 8
 #define MAX_INVPOL_LENGTH 8
+#define SCALING_FLOW_FACTOR 100
 
 /**
  * @brief Parameters of the unified model of the omnidirectional camera
@@ -58,7 +59,7 @@ typedef struct
 {
   float pol[MAX_POL_LENGTH];    	    ///< the polynomial coefficients: pol[0] + x*pol[1] + x^2*pol[2] + ... + x^(N-1)*pol[N-1]
   int length_pol;                	    ///< length of polynomial
-  float invpol[MAX_INVPOL_LENGTH]; 	///< the coefficients of the inverse polynomial
+  float invpol[MAX_INVPOL_LENGTH]; 	  ///< the coefficients of the inverse polynomial
   int length_invpol;             	    ///< length of inverse polynomial
   float xc;         				          ///< row coordinate of the center
   float yc;         				          ///< column coordinate of the center
@@ -78,7 +79,7 @@ extern const cam_model px4_model;
  * @brief Back-projects a 2D point, in pixel coordinates, onto the unit sphere
  *
  *	@param [xp, yp, zp]				coordinates of the backprojected point (not normalized)
- *  @param [u, v]					the pixel coordinates of the point
+ *  @param [u, v]					    the pixel coordinates of the point
  *  @param *mycam_model 			the model of the calibrated camera
  *
  * @return	cartesian coordinates of the backprojected point (not normalized)
@@ -88,23 +89,13 @@ void cam2world(float *xp, float *yp, float *zp, const float u, const float v);
 /**
  * @brief Back-projects a 2D optic-flow vector, in pixel coordinates, onto the unit sphere
  *
- *	@param [flow_x, flow_y, flow_z] spherical coordinates of optic-flow vector
- *	@param [xp, yp, zp]				coordinates of the backprojected point (not normalized)
- *  @param [u, v]					the pixel coordinates of the point
- * 	@param [flow_u, flow_v]			the pixel coordinates of the optic-flow vectors
- *	@param *mycam_model 			the model of the calibrated camera
+ *	@param [flow_x, flow_y, flow_z]     spherical coordinates of optic-flow vector
+ *	@param [xp, yp, zp]				          coordinates of the backprojected point (not normalized)
+ *  @param [u, v]					              the pixel coordinates of the point
+ * 	@param [flow_u, flow_v]			        the pixel coordinates of the optic-flow vectors
+ *	@param *mycam_model 			          the model of the calibrated camera
  *
  * @return	cartesian coordinates of the optic-flow vector projected on the unit sphere
  */
 void flow2world(float *flow_x, float *flow_y, float *flow_z, const float xp, const float yp, const float zp, const float flow_u, const float flow_v);
-
-/**
- * @brief Normalize the viewing direction vector, in pixel coordinates
- *
- *	@param [xp, yp, zp]				coordinates of the backprojected point (not normalized)
- *
- * @return	normalized coordinates
- */
-void normalize_dir(float *xp, float *yp, float *zp);
-
 #endif /* _CAM_H_ */
