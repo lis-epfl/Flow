@@ -122,11 +122,3 @@ void flow2world(float *flow_x, float *flow_y, float *flow_z, const float xp, con
 	 *flow_y = quick_trig_cos(theta)*quick_trig_sin(phi)*flow_theta + quick_trig_sin(theta)*quick_trig_cos(phi)*flow_phi;
 	 *flow_z = -quick_trig_sin(phi)*flow_phi;
 }
-
-void normalize_dir(float *xp, float *yp, float *zp) // use vectors_normalize(const float v[3], float u[3])
-{
-	float invnorm = maths_fast_inv_sqrt(SQR((*xp)) + SQR((*yp)) + SQR((*zp)));
-	*xp *= invnorm;
-	*yp *= invnorm;
-	*zp *= invnorm;
-}
