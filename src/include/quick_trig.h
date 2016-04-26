@@ -54,6 +54,15 @@ extern "C"
 
 #define INTERP_POINTS 50
 
+/**
+ * \brief             Implementation of the fmod function
+ *
+ * \param x           Input value
+ * \param y           Modulo value
+ *
+ * \return            Estimated return value of the function
+ */
+float quick_trig_fmod(float x, float y);
 
 /**
  * \brief             Quick implementation of the sinus function

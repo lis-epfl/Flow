@@ -114,12 +114,30 @@ const float atan_y[INTERP_POINTS] = {   0.0f        ,  0.20131711f,  0.38752381f
                                     };
 
 
+float quick_trig_fmod(float x, float y)
+{
+    float i, f;
+    if (y==0.0f)
+    {
+        return 0.0f; // errno not used on purpose
+    }
+
+    i = floor(x/y);
+    f = x - i*y;
+
+    if ((x < 0.0f) != (y < 0.0f))
+    {
+        f = f-y;
+    }
+
+    return f;
+}
 
 float quick_trig_sin(float x)
 {
     float y;
 
-    float xx = fmod(x, 2.0f * PI);
+    float xx = quick_trig_fmod(x, 2.0f * PI);
 
     if (xx < 0)
     {
@@ -170,7 +188,7 @@ float quick_trig_asin(float x)
 float quick_trig_tan(float x)
 {
     float y;
-    float xx = fmod(x, PI / 2);
+    float xx = quick_trig_fmod(x, PI / 2);
 
     if (xx < 0)
     {
