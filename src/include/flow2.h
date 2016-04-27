@@ -61,7 +61,7 @@ void derotate_flow(float *flow_x, float *flow_y, float *flow_z, float d_x, float
 /**
 * @brief Proceeds to coarse voting on the unit sphere
 *
-*   @param *acc     			pointer to the voting accumulator
+*   @param *acc     			pointer to the voting accumulator (MUST be zeros)
 *   @param [flow_x, flow_y, flow_z]     cartesian coordinates of the optic flow vector
 *   @param [d_x, d_y, d_z]     		cartesian coordinates of viewing direction corresponding to the optic flow vector
 *
@@ -72,13 +72,14 @@ void coarse_voting(uint8_t *acc, float flow_x, float flow_y, float flow_z, float
 /**
 * @brief Proceeds to refined voting on the unit sphere
 *
-*   @param *acc     			pointer to the voting accumulator
+*   @param *acc     			pointer to the voting accumulator (MUST be zeros)
 *   @param [flow_x, flow_y, flow_z]     cartesian coordinates of the optic flow vector
 *   @param [d_x, d_y, d_z]     		cartesian coordinates of viewing direction corresponding to the optic flow vector
+*   @param [best_x, best_y, best_z]	cartesian coordinates of coarse estimate of direction of motion
 *
 * @return incremented accumulator for refined voting
 */
-void refined_voting(uint8_t *acc, float flow_x, float flow_y, float flow_z, float d_x, float d_y, float d_z);
+void refined_voting(uint8_t *acc, float flow_x, float flow_y, float flow_z, float d_x, float d_y, float d_z, float best_x, float best_y, float best_z);
 
 /**
 * @brief Finds a coarse estimate of the direction of motion

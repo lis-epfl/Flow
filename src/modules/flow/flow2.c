@@ -56,7 +56,7 @@ void coarse_voting(uint8_t *acc, float flow_x, float flow_y, float flow_z, float
 	}
 }
 
-void refined_voting(uint8_t *acc, float flow_x, float flow_y, float flow_z, float d_x, float d_y, float d_z){
+void refined_voting(uint8_t *acc, float flow_x, float flow_y, float flow_z, float d_x, float d_y, float d_z, float best_x, float best_y, float best_z){
 	float n_x = d_y * flow_z - d_z * flow_y;
 	float n_y = d_z * flow_x - d_x * flow_z;
 	float n_z = d_x * flow_y - d_y * flow_x;
@@ -67,11 +67,14 @@ void refined_voting(uint8_t *acc, float flow_x, float flow_y, float flow_z, floa
 	n_y *= invnorm;
 	n_z *= invnorm;
 
-	for(uint8_t i = 0; i < REFINED_BINS; i++){
-		// vote along great circle in the correct hemisphere (disambiguate possible positions using angle between flow and bin)
-    		if(maths_f_abs(n_x*RB.x[i] + n_y*RB.y[i] + n_z*RB.z[i]) < REFINED_PRECISION){
-    			*acc[i]++;
-    		}
+	// first test if the great circle would vote in the coarse region
+	if(n_x*best_x + n_y*best_y + n_z*best_z) < COARSE_PRECISION){
+		for(uint8_t i = 0; i < REFINED_BINS; i++){
+			// vote along great circle in the coarse region
+    			if(maths_f_abs(n_x*RB.x[i] + n_y*RB.y[i] + n_z*RB.z[i]) < REFINED_PRECISION){
+    				*acc[i]++;
+    			}
+		}
 	}
 }
 
@@ -94,6 +97,11 @@ void find_coarse_best(uint8_t *acc, float *best_x, float *best_y, float *best_z)
 			best_n++;
 		}
 	}
+	// normalize best for refined voting
+	float invnorm = maths_fast_inv_sqrt(SQR((*best_x)) + SQR((*best_y)) + SQR((*best_z)));
+	*best_x *= invnorm;
+	*best_y *= invnorm;
+	*best_z *= invnorm;
 }
 
 void find_refined_best(uint8_t *acc, float *best_x, float *best_y, float *best_z){
