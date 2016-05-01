@@ -41,7 +41,7 @@
 
 #include "cam.h"
 
-const cam_model px4_model= {{-6.660506e+01f, 0.0f, 6.426152e-03f, -2.306550e-05f, 2.726345e-07f},
+const cam_model px4_model= {{6.660506e+01f, 0.0f, -6.426152e-03f, 2.306550e-05f, -2.726345e-07f}, // signs were changed
 			5, 
 			{98.889649f, 60.099030f, 3.523247f, 11.584154f, 10.704617f, 4.911849f, 0.899849f},
 			7,
@@ -56,7 +56,7 @@ const cam_model px4_model= {{-6.660506e+01f, 0.0f, 6.426152e-03f, -2.306550e-05f
 
 void cam2world(float *xp, float *yp, float *zp, const float u, const float v)
 {
-	 float *pol    = (px4_model.pol);
+	 float *pol    = &(px4_model.pol);
 	 float xc      = (px4_model.xc);
 	 float yc      = (px4_model.yc); 
 	 float c       = (px4_model.c);
@@ -84,7 +84,7 @@ void cam2world(float *xp, float *yp, float *zp, const float u, const float v)
 
 void flow2world(float *flow_x, float *flow_y, float *flow_z, const float xp, const float yp, const float zp, const float flow_u, const float flow_v)
 {
-	 float *pol    = (px4_model.pol);
+	 float *pol    = &(px4_model.pol);
 	 float c       = (px4_model.c);
 	 float d       = (px4_model.d);
 	 float e       = (px4_model.e);
