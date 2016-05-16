@@ -36,7 +36,7 @@
  * \author  Brice Platerrier
  *
  * \brief   Implements functions used for projection of points and optic-flow
- *			field from sphere to plane and conversely.
+ *      field from sphere to plane and conversely.
  *
  * \detail  Detailed description and important information to use this module
  ******************************************************************************/
@@ -48,54 +48,49 @@
 #include "maths.h"
 #include "quick_trig.h"
 
-#define MAX_POL_LENGTH 8
-#define MAX_INVPOL_LENGTH 8
-#define SCALING_FLOW_FACTOR 100
+#define MAX_POL_LENGTH 5
+#define MAX_INVPOL_LENGTH 7
+#define SCALING_FLOW_FACTOR 0.01f
 
 /**
  * @brief Parameters of the unified model of the omnidirectional camera
  */
-typedef struct
+typedef struct cam_model
 {
-  float pol[MAX_POL_LENGTH];    	    ///< the polynomial coefficients: pol[0] + x*pol[1] + x^2*pol[2] + ... + x^(N-1)*pol[N-1]
-  int length_pol;                	    ///< length of polynomial
-  float invpol[MAX_INVPOL_LENGTH]; 	  ///< the coefficients of the inverse polynomial
-  int length_invpol;             	    ///< length of inverse polynomial
-  float xc;         				          ///< row coordinate of the center
-  float yc;         				          ///< column coordinate of the center
-  float c;          				          ///< affine parameter
-  float d;          				          ///< affine parameter
-  float e;          				          ///< affine parameter
-  int width;         				          ///< image width
-  int height;        				          ///< image height
+  float pol[MAX_POL_LENGTH];          ///< the polynomial coefficients: pol[0] + x*pol[1] + x^2*pol[2] + ... + x^(N-1)*pol[N-1]
+  int length_pol;                     ///< length of polynomial
+  float invpol[MAX_INVPOL_LENGTH];    ///< the coefficients of the inverse polynomial
+  int length_invpol;                  ///< length of inverse polynomial
+  float xc;                           ///< row coordinate of the center
+  float yc;                           ///< column coordinate of the center
+  float c;                            ///< affine parameter
+  float d;                            ///< affine parameter
+  float e;                            ///< affine parameter
+  int width;                          ///< image width
+  int height;                         ///< image height
 }cam_model;
-
-/**
- * @brief Model of the camera
- */
-extern const cam_model px4_model;
 
 /**
  * @brief Back-projects a 2D point, in pixel coordinates, onto the unit sphere
  *
- *	@param [xp, yp, zp]				coordinates of the backprojected point (not normalized)
- *  @param [u, v]					    the pixel coordinates of the point
- *  @param *mycam_model 			the model of the calibrated camera
+ *  @param [xp, yp, zp]       coordinates of the backprojected point (not normalized)
+ *  @param [u, v]             the pixel coordinates of the point
+ *  @param *mycam_model       the model of the calibrated camera
  *
- * @return	cartesian coordinates of the backprojected point (not normalized)
+ * @return  cartesian coordinates of the backprojected point (not normalized)
  */
-void cam2world(float *xp, float *yp, float *zp, const float u, const float v);
+void cam2world(float *xp, float *yp, float *zp, float u, float v, cam_model *cam);
 
 /**
  * @brief Back-projects a 2D optic-flow vector, in pixel coordinates, onto the unit sphere
  *
- *	@param [flow_x, flow_y, flow_z]     spherical coordinates of optic-flow vector
- *	@param [xp, yp, zp]				          coordinates of the backprojected point (not normalized)
- *  @param [u, v]					              the pixel coordinates of the point
- * 	@param [flow_u, flow_v]			        the pixel coordinates of the optic-flow vectors
- *	@param *mycam_model 			          the model of the calibrated camera
+ *  @param [flow_x, flow_y, flow_z]     spherical coordinates of optic-flow vector
+ *  @param [xp, yp, zp]                 coordinates of the backprojected point (not normalized)
+ *  @param [u, v]                       the pixel coordinates of the point
+ *  @param [flow_u, flow_v]             the pixel coordinates of the optic-flow vectors
+ *  @param *mycam_model                 the model of the calibrated camera
  *
- * @return	cartesian coordinates of the optic-flow vector projected on the unit sphere
+ * @return  cartesian coordinates of the optic-flow vector projected on the unit sphere
  */
-void flow2world(float *flow_x, float *flow_y, float *flow_z, const float xp, const float yp, const float zp, const float flow_u, const float flow_v);
+void flow2world(float *flow_x, float *flow_y, float *flow_z, float xp, float yp, float zp, float flow_u, float flow_v, cam_model *cam);
 #endif /* _CAM_H_ */
