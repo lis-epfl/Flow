@@ -4,6 +4,7 @@
 \usepackage{geometry}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{gensymb}
 \usepackage{listings}
 \renewcommand{\lstlistingname}{Code}
 \usepackage[labelfont=bf]{caption}
@@ -16,10 +17,15 @@
 \usepackage{rotfloat}
 \usepackage[most]{tcolorbox}
 \usepackage{inconsolata}
-\newtcblisting[auto counter]{codeframe}[2][]{
+\newtcblisting[auto counter]{code}[2][]{
     fonttitle=\bfseries, colframe=gray, listing only, 
     listing options={basicstyle=\ttfamily,language=C}, 
     title=Code \thetcbcounter: #2, #1}
+\newtcblisting[auto counter]{algorithm}[2][]{
+    fonttitle=\bfseries, colframe=gray, listing only, 
+    listing options={basicstyle=\small, mathescape, }, 
+    title=Algorithm \thetcbcounter: #2, #1}
+\lstset{numbers=left, numberstyle=\tiny, stepnumber=1, numbersep=5pt, tabsize=3}
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows,positioning,calc}
 % \makeatletter

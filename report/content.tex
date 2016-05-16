@@ -131,7 +131,7 @@ As we can see from the coefficients of the matrix in (\ref{equ:cameraModel2}), t
     \label{fig:cameraImages}
 \end{figure}
 
-\begin{codeframe}[colback=white, label=code:cameraModel]{From pixels to 3D directions}
+\begin{code}[colback=white, label=code:cameraModel]{From pixels to 3D directions}
 void cam2world(float *xp, float *yp, float *zp, float u, 
 		float v, cam_model *cam)
 {
@@ -161,7 +161,7 @@ void cam2world(float *xp, float *yp, float *zp, float u,
 	   *zp += r_i*pol[i];
 	 }
 }
-\end{codeframe}
+\end{code}
 
 \subsection{Mapping Optical Flow to Unit Sphere}
 Now that the model of the omnidirectional camera is known - and the pixels can be mapped onto a plane or a sphere -, we can deduce the viewing direction corresponding to a given pixel. However, the particular geometry of the omnidirectional camera induces high distortions in the image. Hence, the optical flow, which is computed using Lucas-Kanade method, has to be projected onto the unit sphere using the method presented in \cite{backproj}. Mapping the optical flow directly on the unit sphere allows us to simplify further processing required for the estimation of the location of the focus of expansion, through the straightforward use of spherical coordinates. However, though more natural, the sphere still induces radial distortions and may not be appropriate for all types of motions, as exposed by Shakernia et al.
@@ -211,7 +211,7 @@ s &= b/\|b\| & \dot{s} &= SJ \begin{bmatrix} \dot{x} \\ \dot{y} \end{bmatrix}
 \end{align}
 A possible C implementation is detailed in Code~\ref{code:flowProjection}
 
-\begin{codeframe}[colback=white, label=code:flowProjection]{Backprojection of optical flow}
+\begin{code}[colback=white, label=code:flowProjection]{Backprojection of optical flow}
 void flow2world(float *flow_x, float *flow_y, float *flow_z, 
 		float xp, float yp, float zp, float flow_u, 
 		float flow_v, cam_model *cam)
@@ -253,12 +253,12 @@ void flow2world(float *flow_x, float *flow_y, float *flow_z,
 	 	   + sin(theta)*cos(phi)*flow_phi;
 	 *flow_z = -sin(phi)*flow_phi;
 }
-\end{codeframe}
+\end{code}
 
 \subsection{Derotation of Optical Flow}
 Under the assumption of differential motion, that is small translation and rotation of the camera between each frame, we can approximate the geometrical effects of egomotion on the perceived image motion to a first-order Taylor polynomial. Hence, as the scene is projected on the unit sphere centered on the vantage point, each optical flow measurement can be expressed as a 3D vector tangent to the unit sphere and perpendicular to the viewing direction:
 \begin{equation}
-\label{opticflow}
+\label{equ:opticflow}
 p = -w \times d - \dfrac{v - (v \cdot d)d}{D}
 \end{equation}
 where $d$ is a unit vector describing the viewing direction, $w$ the angular speed vector, $v$ the translational velocity vector and $D$ the distance to the viewed object. The measured optical flow $p$ can be decoupled and expressed in two parts, namely the rotation-induced and the translation-induced optical flows, respectively $p_r$ and $p_t$.
@@ -295,15 +295,14 @@ The results show a high standard deviation due to high noise in the optic-flow m
 \subsection{Finding the Focus of Expansion}
 In order to find the direction of translation, we use the derotated optical flow to constrain the translation direction to lie on a great circle. This great circle is the intersection of a plane - defined by the vector describing a viewing direction $d$, its corresponding optical flow vector $p_t$ and the center of the sphere $O$ - with the unit sphere \footnote{Indeed, the plane contains the viewing direction vector and the optic-flow sensor}. Hence, each optic-flow vector gives us a constrain on the position of the focus of expansion (FOE), which can be located anywhere on the great circle. Although only two great circles are required to constrain the location of the FOE to a single point, several measurements are used so as to recover from possible outliers and noise.
 
-For a robust estimatation of the translation direction, two different approachess are possible. The first one relies on RANSAC (RANdom SAmple Consensus) and its variants. However, this method implies several estimations of the location of the FOE based on randomly sampled measurements and may not be suitable for implementation on a microcontroller and fast refresh rate. Another approach is to find the best intersection of all the great circle arising from the optical flow measurements such as the Hough-reminiscent voting method proposed in \cite{lim}. Voting has the advantage of performing in constant time under increasing outlier proportions without any loss of accuracy. Its higher robustness and the fact that it does not require an optimization process make this method the most suitable for embedded robotics. 
-
-From equation (\ref{opticflow}), it can be infered that the deroted flow $p_t = \dfrac{v - (v \cdot d)d}{D}$ is tangent to the unit sphere, perpendicular the viewing direction $d$ and in the plane of the circle. Let $\hat{p}_t = \dfrac{p_t}{\|p_t\|}$ be the normalized optical flow vector corresponding to the viewing direction $d$. A parametric equation of the great circle defined by these two normalized vectors is:
-\begin{equation}
-v(t)= cos(t)\cdot\hat{p}_t + sin(t)\cdot d
-\end{equation}
-From this equation, we can proceed to voting along the great circle corresponding to each optical flow measurement. For the procedure not to be too computationally heavy, we can perform a coarse voting to determine a first approximation for the location of the FOE. Then, we refine our estimate by projecting the great circle on a plane tangent to the unit sphere in the vicinity of the estimated location. Hence, the voting procedure is simplified by voting along lines in the plane and there are efficient algorithms to perform this task, such as the Bresenham line algorithm.
-
-Another possibility is to rely on normal vectors to define the great circles. Indeed, since a great circle is the intersection of the sphere with a plane passing though its origin, it can be defined using one of the unit normal vectors.
+For a robust estimation of the translation direction, two different approaches are possible. The first one relies on RANSAC (RANdom SAmple Consensus) and its variants. However, this method implies several estimations of the location of the FOE based on randomly sampled measurements and may not be suitable for implementation on a microcontroller and fast refresh rate. Another approach is to find the best intersection of all the great circle arising from the optical flow measurements such as the Hough-reminiscent voting method proposed in \cite{lim}. Voting has the advantage of performing in constant time under increasing outlier proportions without any loss of accuracy. Its higher robustness and the fact that it does not require an optimization process make this method the most suitable for embedded robotics. 
+ 
+% Let $\hat{p}_t = \dfrac{p_t}{\|p_t\|}$ be the normalized optical flow vector corresponding to the viewing direction $d$. A parametric equation of the great circle defined by these two normalized vectors is:
+% \begin{equation}
+% v(t)= cos(t)\cdot\hat{p}_t + sin(t)\cdot d
+% \end{equation}
+% From this equation, we can proceed to voting along the great circle corresponding to each optical flow measurement. For the procedure not to be too computationally heavy, we can perform a coarse voting to determine a first approximation for the location of the FOE. Then, we refine our estimate by projecting the great circle on a plane tangent to the unit sphere in the vicinity of the estimated location. Hence, the voting procedure is simplified by voting along lines in the plane and there are efficient algorithms to perform this task, such as the Bresenham line algorithm.
+In order to simplify the mathematical representation of the great circles, we rely on their normal vectors. Indeed, since a great circle is the intersection of the sphere with a plane passing though its origin, it can be defined using one of the unit normal vectors.
 Formally, for a unit vector $n = (n_x, n_y, n_z)^T$, a great circle on the unit sphere $S^2$ is defined as
 \begin{equation}
 C = S^2\bigcup \{ x|x^Tn = 0, x \in \mathbb{R}^3 \}
@@ -312,14 +311,98 @@ This normal vector $n$ is readily computed using the cross-product,
 \begin{equation}
 n = \dfrac{d \times p_t}{\|d \times p_t\|}
 \end{equation}
-Considering two great circles and their corresponding normal vectors, namely $n_i$ and $n_j$, we can compute their intersections $a_{ij}$ and $a_{ji}$,
-\begin{equation}
-\begin{cases}
-a_{ij} = n_i \times n_j\\
-a_{ji} = n_j \times n_i\\
-\end{cases}
-\end{equation}
-Hence, we can vote to the accumulator for either $a_{ij}$ and $a_{ji}$ for each pair of points. Of course, the intersection of the two great circles actually yields two points. To disambiguate between the two, one may pick one of the two points and calculate the angle between it and the vector $p_t$. If the angle is larger than $\pi/2$ radians, then that point is the focus of expansion. Obviously, this method is sensible to noise which could affect the voting procedure if the accumulator has a finite resolution.
+% Considering two great circles and their corresponding normal vectors, namely $n_i$ and $n_j$, we can compute their intersections $a_{ij}$ and $a_{ji}$,
+% \begin{equation}
+% \begin{cases}
+% a_{ij} = n_i \times n_j\\
+% a_{ji} = n_j \times n_i\\
+% \end{cases}
+% \end{equation}
+% Hence, we can vote to the accumulator for either $a_{ij}$ and $a_{ji}$ for each pair of points. Of course, the intersection of the two great circles actually yields two points.
+Thus, we can vote along a great circle, given its normal vector, by computing simple dot products (i.e. 3 multiplications and 2 additions).
+
+In practice, the intersection of two great circles define 2 possible direction of translations. To disambiguate between the two, one may pick one of the two points and calculate the angle between it and the vector $p_t$. If the angle is larger than $\pi/2$ radians, then that point is the focus of expansion. Another possibility is to use an additional sensor (such as a sonar) to choose the correct direction. In order to improve the processing speed on the camera chip (and to avoid ambiguity), we only consider one hemisphere, that is half the number of possible directions of translation. In other words, we only determine the axis of translation rather than its direction and we work on the hemisphere defined by $z<0$.
+
+The voting procedure requires the storage of evenly distributed vectors on the unit sphere. The minimal angle between these vectors define the resolution of the voting procedure. For tractability reasons, we cannot afford to vote on the complete unit sphere in one batch. Hence, we are considering an iterative method which can be divided in two phases. The first one is a coarse voting procedure where we compute a rough estimate of the direction of translation using a few directions sampled from one hemisphere. This estimate is then used in the next phase where we perform voting on a refined spherical grid of higher resolution but reduced spread. The complete voting procedure is detailed in Algorithm~\ref{algo:houghVoting}.
+
+\begin{algorithm}[colback=white, label=algo:houghVoting]{Hough-reminiscent voting}
+Select optic flow measurement $p_t$ and viewing direction $d$
+Compute normal vector $n = \dfrac{d \times p_t}{\|d \times p_t\|}$
+for i = 1 to $N_{coarse}$ do
+   if $x_i^Tn = 0$ then
+      Vote for direction $x_i$
+   end if
+end for
+Find the bins with maximum votes. This gives the coarse estimate.
+Rotate the refined bins to center them on coarse estimate
+for j = 1 to $N_{refined}$ do
+   if $x_j^Tn = 0$ then
+      Vote for direction $x_j$
+   end if
+end for
+Find the bins with maximum votes. This gives the fine estimate
+\end{algorithm}
+
+The refined voting requires rotating the refined bins, which we computed for the a predefined direction (in our case $z = (0,~ 0,-1)$). There are three ways to achieve this transformation, namely the rotation matrix, axis-angle and quaternion methods. From a computational point of view, the rotation matrix method is the cheapest one (6 additions and 9 multiplications) whereas the quaternion method is the most expensive (18 additions and 21 multiplications). However, it is easier for us to use the axis-angle representation and than convert it to a rotation matrix so as to perform the transformation on every bins. The latter convertion accounts for 13 additions and 15 multiplications but the subsequent processing will only require 6 additions and 9 multiplications, provided that we can store the entire rotation matrix. A C implementation is given in Code~\ref{algo:rotation}.
+
+Obviously, this whole method is sensible to noise which could affect the voting procedure if the accumulator has a finite resolution. In our case, the coarse resolution was set to $31^\circ$ and the fine resolution was chosen as approximately $4^\circ$. The latter value is justified considering the resolution of the camera (which is around 1.5°/pixel) and the additional noise induced by derotation. The former value was chosen so as to limit the number of coarse bins. The voting bins were evenly distributed on the unit and generated using the icosahedron method. Table~\ref{tab:votingBins} summarizes the voting bins parameters.
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|p{2cm}||p{3cm}|p{3cm}|p{3cm}|}
+	   \hline
+	   \multicolumn{4}{|c|}{Voting bins parameter} \\
+	   \hline
+	   Voting set & Region & Number of bins & Resolution ($^\circ$) \\
+	   \hline
+	   Coarse & Hemisphere & 25 & 31\\
+	   \hline
+	   Refined & Coarse estimate & 42 & 4\\
+	   \hline
+	\end{tabular}
+	\caption{\textbf{Voting bins parameters}-The voting bins are evely distributed on the unit sphere and were generated using icosahedron method.}
+	\label{tab:votingBins}
+\end{table}
+
+\begin{code}[colback=white, label=algo:rotation]{Hough-reminiscent voting}
+void rotate_bins(voting_bins *bins, float best_x, 
+						float best_y, float best_z, 
+						float *r_dir_x, float *r_dir_y, 
+						float *r_dir_z)
+{
+	if(best_x==0.0f, best_y==0.0f, best_z==-1.0f){
+		for(uint8_t i=0; i<bins->size; i++){
+			bins->x[i] = r_dir_x[i];
+			bins->y[i] = r_dir_y[i];
+			bins->z[i] = r_dir_z[i];
+		} 
+	}
+	else{
+		// store cosine and sine
+		float c = -best_z;
+		float s = maths_fast_sqrt(1 - SQR(c)); 
+
+		//store axis
+		float u_x = 1.0f*best_y;					
+		float u_y = -1.0f * best_x;					
+		float u_z = 0.0f;
+
+		// compute rotation matrix
+		float R[9];
+		aa2mat(R, u_x, u_y, u_z, c, s);
+
+		// compute rotated refined bins
+		for(uint8_t i=0; i<bins->size; i++){
+			bins->x[i] = r_dir_x[i]*R[0]+r_dir_y[i]*R[1]
+							+r_dir_z[i]*R[2];
+			bins->y[i] = r_dir_x[i]*R[3]+r_dir_y[i]*R[4]
+							+r_dir_z[i]*R[5];
+			bins->z[i] = r_dir_x[i]*R[6]+r_dir_y[i]*R[7]
+							+r_dir_z[i]*R[8];
+		} 
+	}
+}
+\end{code}
 
 \subsection{Egomotion from Optical Flow Measurements}
 Another solution to our problem is to estimate the direction and the speed (scale) of translation. This can be achieved using EKF-based methods such as the one proposed in \cite{ekf}, which allows for more parameters to be estimated through the fusion of sensor measurements from the Inertial Measurement Unit (IMU) and the optic-flow sensor. 

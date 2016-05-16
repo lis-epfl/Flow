@@ -1,41 +1,37 @@
-void flow2world(float *flow_x, float *flow_y, float *flow_z,
-		float xp, float yp, float zp, float flow_u,
-		float flow_v, cam_model *cam)
+void rotate_bins(voting_bins *bins, float best_x,
+						float best_y, float best_z,
+						float *r_dir_x, float *r_dir_y,
+						float *r_dir_z)
 {
-	 float *pol    = cam->pol;
-	 float c       = cam->c;
-	 float d       = cam->d;
-	 float e       = cam->e;
-	 uint8_t length_pol = cam->length_pol;
-	 float invdet  = 1/(c-d*e);
+	if(best_x==0.0f, best_y==0.0f, best_z==-1.0f){
+		for(uint8_t i=0; i<bins->size; i++){
+			bins->x[i] = r_dir_x[i];
+			bins->y[i] = r_dir_y[i];
+			bins->z[i] = r_dir_z[i];
+		}
+	}
+	else{
+		// store cosine and sine
+		float c = -best_z;
+		float s = maths_fast_sqrt(1 - SQR(c));
 
-	 // from cartesian to spherical coordinates
-	 float r   = sqrt(SQR(xp) + SQR(yp));
-	 float theta = atan2(yp,xp);
-	 float phi = atan2(r, zp);
+		//store axis
+		float u_x = 1.0f*best_y;
+		float u_y = -1.0f * best_x;
+		float u_z = 0.0f;
 
-	 // compute polynomial model derivative
-	 float r_i = 1;
-	 float dzp = pol[1];
-	 for (uint8_t i=2; i < length_pol; i++)
-	 {
-	   r_i *=r;
-	   dzp += i*pol[i]*r_i;
-	 }
-	 // project optic-flow on unit sphere
-	 float d_thetau = invdet*(-yp/SQR(r) - e*xp/SQR(r));
-	 float d_thetav = invdet*(d*yp/SQR(r) + c*xp/SQR(r));
-	 float d_phir = (zp - r*dzp)/(SQR(zp) + SQR(r));
-	 float d_phiu = d_phir*invdet*(xp/r - e*yp/r);
-	 float d_phiv = d_phir*invdet*(-d*xp/r + c*yp/r);
-	 float flow_theta = d_thetau*flow_u
-	 		   + d_thetav*flow_v;
-	 float flow_phi = d_phiu*flow_u + d_phiv*flow_v;
+		// compute rotation matrix
+		float R[9];
+		aa2mat(R, u_x, u_y, u_z, c, s);
 
-	 // from spherical to cartesian coordinates
-	 *flow_x = -sin(theta)*qsin(phi)*flow_theta
-	 	   + cos(theta)*cos(phi)*flow_phi;
-	 *flow_y = cos(theta)*sin(phi)*flow_theta
-	 	   + sin(theta)*cos(phi)*flow_phi;
-	 *flow_z = -sin(phi)*flow_phi;
+		// compute rotated refined bins
+		for(uint8_t i=0; i<bins->size; i++){
+			bins->x[i] = r_dir_x[i]*R[0]+r_dir_y[i]*R[1]
+							+r_dir_z[i]*R[2];
+			bins->y[i] = r_dir_x[i]*R[3]+r_dir_y[i]*R[4]
+							+r_dir_z[i]*R[5];
+			bins->z[i] = r_dir_x[i]*R[6]+r_dir_y[i]*R[7]
+							+r_dir_z[i]*R[8];
+		}
+	}
 }
