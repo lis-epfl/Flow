@@ -1,0 +1,4 @@
+$pdf_mode = "1";
+$pdflatex = "pdflatex";
+$makeindex = "makeindex %S;splitindex %S;";
+@default_files = ('report.tex');

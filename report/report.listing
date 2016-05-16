@@ -1,0 +1,41 @@
+void flow2world(float *flow_x, float *flow_y, float *flow_z,
+		float xp, float yp, float zp, float flow_u,
+		float flow_v, cam_model *cam)
+{
+	 float *pol    = cam->pol;
+	 float c       = cam->c;
+	 float d       = cam->d;
+	 float e       = cam->e;
+	 uint8_t length_pol = cam->length_pol;
+	 float invdet  = 1/(c-d*e);
+
+	 // from cartesian to spherical coordinates
+	 float r   = sqrt(SQR(xp) + SQR(yp));
+	 float theta = atan2(yp,xp);
+	 float phi = atan2(r, zp);
+
+	 // compute polynomial model derivative
+	 float r_i = 1;
+	 float dzp = pol[1];
+	 for (uint8_t i=2; i < length_pol; i++)
+	 {
+	   r_i *=r;
+	   dzp += i*pol[i]*r_i;
+	 }
+	 // project optic-flow on unit sphere
+	 float d_thetau = invdet*(-yp/SQR(r) - e*xp/SQR(r));
+	 float d_thetav = invdet*(d*yp/SQR(r) + c*xp/SQR(r));
+	 float d_phir = (zp - r*dzp)/(SQR(zp) + SQR(r));
+	 float d_phiu = d_phir*invdet*(xp/r - e*yp/r);
+	 float d_phiv = d_phir*invdet*(-d*xp/r + c*yp/r);
+	 float flow_theta = d_thetau*flow_u
+	 		   + d_thetav*flow_v;
+	 float flow_phi = d_phiu*flow_u + d_phiv*flow_v;
+
+	 // from spherical to cartesian coordinates
+	 *flow_x = -sin(theta)*qsin(phi)*flow_theta
+	 	   + cos(theta)*cos(phi)*flow_phi;
+	 *flow_y = cos(theta)*sin(phi)*flow_theta
+	 	   + sin(theta)*cos(phi)*flow_phi;
+	 *flow_z = -sin(phi)*flow_phi;
+}

@@ -1,0 +1,51 @@
+This is BibTeX, Version 0.99d (TeX Live 2014)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: report.aux
+The style file: ieeetr.bst
+Database file #1: report.bib
+Too many commas in name 1 of "Scaramuzza, D., Martinelli, A. and Siegwart, R." for entry scara
+while executing---line 969 of file ieeetr.bst
+Warning--empty publisher in derotation
+Warning--empty school in lim
+You've used 6 entries,
+            1876 wiz_defined-function locations,
+            508 strings with 4458 characters,
+and the built_in function-call counts, 1531 in all, are:
+= -- 142
+> -- 56
+< -- 0
++ -- 21
+- -- 15
+* -- 102
+:= -- 217
+add.period$ -- 7
+call.type$ -- 6
+change.case$ -- 5
+chr.to.int$ -- 0
+cite$ -- 8
+duplicate$ -- 89
+empty$ -- 162
+format.name$ -- 15
+if$ -- 369
+int.to.chr$ -- 0
+int.to.str$ -- 6
+missing$ -- 5
+newline$ -- 22
+num.names$ -- 6
+pop$ -- 34
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 48
+stack$ -- 0
+substring$ -- 88
+swap$ -- 28
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 2
+while$ -- 15
+width$ -- 7
+write$ -- 55
+(There was 1 error message)
