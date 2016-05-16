@@ -14,91 +14,154 @@
 #include "maths.h"
 #include "quick_trig.h"
 
-#define COARSE_BINS	42 		// number of coarse bins
-#define REFINED_BINS	37 		// number of refined bins
-#define COARSE_PREC	0.17364f 	// coarse precision (sin(20 degrees/2))
-#define REFINED_PREC	0.03489f	// refined precision (sin(4 degrees/2))
+#define COARSE_BINS	25 		// number of coarse bins
+#define REFINED_BINS	42 		// number of refined bins
+#define COARSE_PREC	0.26724f 	// coarse precision (sin(31 degrees/2))
+#define REFINED_PREC	0.03839f	// refined precision (sin(4.4 degrees/2))
 
 /**
- * @brief Directions of coarse bins
+ * @brief Voting bins structure
  */
-typedef struct {
-	float x[COARSE_BINS];
-	float y[COARSE_BINS];
-	float z[COARSE_BINS];
-} coarse_bins;
+typedef struct voting_bins{
+	float *x;
+	float *y;
+	float *z;
+	float prec;
+	uint8_t size;
+	uint8_t *acc;
+}voting_bins;
 
 /**
- * @brief Directions of refined bins around [0 0 1]
- */
-typedef struct {
-	float x[REFINED_BINS];
-	float y[REFINED_BINS];
-	float z[REFINED_BINS];
-} refined_bins;
+* @brief Normalizes vector
+*
+*   @param [*x, *y, *z]    	cartesian coordinates of the optic flow vector
+*
+* @return Normalized vector
+*/
+static inline void normalize(float *x, float *y, float *z)
+{
+	float invnorm = maths_fast_inv_sqrt(SQR((*x)) + SQR((*y)) + SQR((*z)));
+	*x *= invnorm;
+	*y *= invnorm;
+	*z *= invnorm;
+}
 
 /**
- * @brief Coarse bins structure
- */
-extern const coarse_bins CB;
-
-/**
- * @brief Refined bins structure
- */
-extern const refined_bins RB;
+* @brief Converts axis-angle representation to rotation matrix
+*
+*   @param [u_x, u_y, u_z]    	cartesian coordinates of the axis
+*	@param c 					cosinus of the angle
+*	@param s 					sinus of the angle
+*
+* @return Rotation matrix coefficients
+*/
+static inline void aa2mat(float R[9], float u_x, float u_y, float u_z, float c, float s)
+{
+	R[0] = SQR(u_x)*(1-c) + c;
+	R[1] = u_x*u_y*(1-c) - u_z*s;
+	R[2] = u_x*u_z*(1-c) + u_y*s;
+	R[3] = u_x*u_y*(1-c) + u_z*s;
+	R[4] = SQR(u_y)*(1-c) + c;
+	R[5] = u_y*u_z*(1-c) - u_x*s;
+	R[6] = u_x*u_z*(1-c) - u_y*s;
+	R[7] = u_y*u_z*(1-c) + u_x*s;
+	R[8] = SQR(u_z)*(1-c) + c;
+}
 
 /**
 * @brief Proceeds to derotation of the optic-flow vector
 *
-*   @param [flow_x, flow_y, flow_z]     spherical coordinates of the optic-flow vector
+*   @param [flow_x, flow_y, flow_z]     cartesian coordinates of the optic-flow vector
 *   @param [x, y, z]                    cartesian coordinates of the viewing direction
 *   @param [x_rate, y_rate, z_rate]     gyroscope rate angles
 *
 * @return substitutes the initial flow with derotated one
 */
-void derotate_flow(float *flow_x, float *flow_y, float *flow_z, float d_x, float d_y, float d_z, const float x_rate, const float y_rate, const float z_rate);
+static inline void derotate_flow(float *flow_x, float *flow_y, float *flow_z, float d_x, float d_y, float d_z, float x_rate, float y_rate, float z_rate)
+{	
+	// normalize direction
+	normalize(&d_x, &d_y, &d_z);
+
+	// remove rotational component from optical flow
+	*flow_x += (y_rate*d_z)-(z_rate*d_y);
+	*flow_y += (z_rate*d_x)-(x_rate*d_z);
+	*flow_z += (x_rate*d_y)-(y_rate*d_x);
+}
+
+/**
+* @brief Computes great circle normal vector
+*
+*   @param [flow_x, flow_y, flow_z]     spherical coordinates of the optic-flow vector
+*   @param [d_x, d_y, d_z]              cartesian coordinates of the viewing direction
+*   @param [n_x, n_y, n_z]     			cartesian coordinates of the normal vector
+*
+* @return normalized normal vector
+*/
+static inline void great_circle_vector(float *n_x, float *n_y, float *n_z, float flow_x, float flow_y, float flow_z, float d_x, float d_y, float d_z)
+{
+	*n_x = d_y * flow_z - d_z * flow_y;
+	*n_y = d_z * flow_x - d_x * flow_z;
+	*n_z = d_x * flow_y - d_y * flow_x;
+
+	normalize(n_x, n_y, n_z);
+}
 
 /**
 * @brief Proceeds to coarse voting on the unit sphere
 *
-*   @param *acc     			pointer to the voting accumulator (MUST be zeros)
-*   @param [flow_x, flow_y, flow_z]     cartesian coordinates of the optic flow vector
-*   @param [d_x, d_y, d_z]     		cartesian coordinates of viewing direction corresponding to the optic flow vector
+*   @param *bins     					pointer to the voting bins structure 
+*   @param [n_x, n_y, n_z]     			cartesian coordinates of great circle normal vector
 *
-* @return incremented accumulator for coarse voting
+* @return incremented accumulator for voting
 */
-void coarse_voting(uint8_t *acc, float flow_x, float flow_y, float flow_z, float d_x, float d_y, float d_z);
+static inline void voting(voting_bins *bins, float n_x, float n_y, float n_z)
+{
+	for(uint8_t i = 0; i < bins->size; i++){
+		// vote along great circle
+    		if(maths_f_abs(n_x*bins->x[i] + n_y*bins->y[i] + n_z*bins->z[i]) < bins->prec){
+    			bins->acc[i]++;
+    		}
+	}
+}
 
 /**
 * @brief Proceeds to refined voting on the unit sphere
 *
-*   @param *acc     			pointer to the voting accumulator (MUST be zeros)
-*   @param [flow_x, flow_y, flow_z]     cartesian coordinates of the optic flow vector
-*   @param [d_x, d_y, d_z]     		cartesian coordinates of viewing direction corresponding to the optic flow vector
-*   @param [best_x, best_y, best_z]	cartesian coordinates of coarse estimate of direction of motion
+*   @param *bins     					pointer to the voting bins structure
+*   @param coarse_prec     				coarse precision
+*   @param [n_x, n_y, n_z]     			cartesian coordinates of great circle normal vector
+*   @param [best_x, best_y, best_z]		cartesian coordinates of coarse estimate of direction of motion
 *
 * @return incremented accumulator for refined voting
 */
-void refined_voting(uint8_t *acc, float flow_x, float flow_y, float flow_z, float d_x, float d_y, float d_z, float best_x, float best_y, float best_z);
+static inline void refined_voting(voting_bins *bins, float coarse_prec, float n_x, float n_y, float n_z, float best_x, float best_y, float best_z)
+{
+	// only consider samples that would vote for coarse estimate
+	if(maths_f_abs(n_x*best_x + n_y*best_y + n_z*best_z) < coarse_prec){
+		voting(bins, n_x, n_y, n_z);
+	}
+}
 
 /**
 * @brief Finds a coarse estimate of the direction of motion
 *
-*   @param *acc     			pointer to the voting accumulator
-*   @param [best_x, best_y, best_z]     cartesian coordinates of the optic flow vector
+*   @param *bins     					pointer to the voting bins structure
+*   @param [best_x, best_y, best_z]     cartesian coordinates of the direction of motion estimate
 *
-* @return cartesian coordinates of coarse estimate
+* @return cartesian coordinates of coarse estimate (unnormalized)
 */
-void find_coarse_best(uint8_t *acc, float *best_x, float *best_y, float *best_z);
+void find_best(voting_bins *bins, float *best_x, float *best_y, float *best_z);
 
 /**
-* @brief Finds a refined estimate of the direction of motion [UNFINISHED: ADD ROTATION OF VOTING BINS]
+* @brief Rotates (refined) voting bins
 *
-*   @param *acc     			pointer to the voting accumulator
-*   @param [best_x, best_y, best_z]    	cartesian coordinates of the optic flow vector
+*	@param *bins 						pointer to the voting bins structure
+*   @param [best_x, best_y, best_z]    	cartesian coordinates of the coarse estimate
+*	@param [r_dir_x, r_dir_y, r_dir_z]	pointers to coordinate arrays
 *
-* @return cartesian coordinates of refined estimate
+* @return Rotated voting bins
 */
-void find_refined_best(uint8_t *acc, float *best_x, float *best_y, float *best_z);
+void rotate_bins(voting_bins *bins, float best_x, float best_y, float best_z, float *r_dir_x, float *r_dir_y, float *r_dir_z);
+
 
 #endif /* _FLOW2_H_ */

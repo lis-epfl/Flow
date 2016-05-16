@@ -326,6 +326,47 @@ int main(void)
 	uint32_t counter = 0;
 	uint8_t qual = 0;
 
+	/* camera model */
+	cam_model px4_model= 
+	{	{6.660506e+01f, 0.0f, -6.426152e-03f, 2.306550e-05f, -2.726345e-07f}, //the signs were changed
+		5, 
+		{98.889649f, 60.099030f, 3.523247f, 11.584154f, 10.704617f, 4.911849f, 0.899849f},
+		7,
+		56.232012f,
+		77.63939272f,
+		1.001183f,
+		0.001337f,
+		0.002268f,
+		160,
+		120
+	};
+
+	/* coarse voting bins */
+	uint8_t c_acc[COARSE_BINS];
+	for(uint8_t i=0; i<COARSE_BINS; i++) c_acc[i]=0;
+	float cx[COARSE_BINS] = {0.850651f, 0.850651f, 0.525731f, 0.0f, 0.0f, -0.525731f, -0.850651f, -0.850651f, 1.0f, 0.809017f, 0.5f, 0.809017f, 0.5f, 0.309017f, 0.309017f, 0.0f, 0.0f, -0.309017f, -0.5f, 0.0f, -0.309017f, -0.5f, -0.809017f, -0.809017f, -1.0f};
+	float cy[COARSE_BINS] = { 0.525731f, -0.525731f, 0.0f, 0.850651f, -0.850651f, 0.0f, 0.525731f, -0.525731f, 0.0f, 0.309017f, 0.809017f, -0.309017f, -0.809017f, 0.5f, -0.5f, 0.0f, 1.0f, 0.5f, 0.809017f, -1.0f, -0.5f, -0.809017f, 0.309017f, -0.309017f, 0.0f};
+	float cz[COARSE_BINS] = {0.0f, 0.0f, -0.850651f, -0.525731f, -0.525731f, -0.850651f, 0.0f, 0.0f, 0.0f, -0.5f, -0.309017f, -0.5f, -0.309017f, -0.809017f, -0.809017f, -1.0f, 0.0f, -0.809017f, -0.309017f, 0.0f, -0.809017f, -0.309017f, -0.5f, -0.5f, 0.0f};
+	voting_bins c_bins = {cx,cy,cz,COARSE_PREC,COARSE_BINS, c_acc};
+
+	/* refined voting directions (stored before rotation)*/
+	struct r_dir_3d {
+		float x[REFINED_BINS];
+		float y[REFINED_BINS];
+		float z[REFINED_BINS];
+	} r_dir_3d ={{0.201774f, 0.122673f, 0.0411673f, -0.0411673f, -0.122673f, -0.201774f, 0.245346f, 0.16637f, 0.084062f, 0.0f, -0.084062f, -0.16637f, -0.245346f, 0.210155f, 0.127914f, 0.0429514f, -0.0429514f, -0.127914f, -0.210155f, 0.171806f, 0.0868697f, 0.0f, -0.0868697f, -0.171806f, 0.245346f, 0.210155f, 0.171806f, 0.16637f, 0.127914f, 0.0868697f, 0.084062f, 0.0429514f, 0.0f, 0.0f, -0.0429514f, -0.0868697f, -0.084062f, -0.127914f, -0.171806f, -0.16637f, -0.210155f, -0.245346f},
+				 {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -0.0661631f, -0.067298f, -0.0680076f, -0.0682491f, -0.0680076f, -0.067298f, -0.0661631f, -0.136015f, -0.137979f, -0.138994f, -0.138994f, -0.137979f, -0.136015f, -0.20849f, -0.210837f, -0.211637f, -0.210837f, -0.20849f, 0.0661631f, 0.136015f, 0.20849f, 0.067298f, 0.137979f, 0.210837f, 0.0680076f, 0.138994f, 0.211637f, 0.0682491f, 0.138994f, 0.210837f, 0.0680076f, 0.137979f, 0.20849f, 0.067298f, 0.136015f, 0.0661631f},
+				 {-0.979432f, -0.992447f, -0.999152f, -0.999152f, -0.992447f, -0.979432f, -0.967175f, -0.983764f, -0.994137f, -0.997668f, -0.994137f, -0.983764f, -0.967175f, -0.968161f, -0.98214f, -0.989361f, -0.989361f, -0.98214f, -0.968161f, -0.962816f, -0.973654f, -0.977348f, -0.973654f, -0.962816f, -0.967175f, -0.968161f, -0.962816f, -0.983764f, -0.98214f, -0.973654f, -0.994137f, -0.989361f, -0.977348f, -0.997668f, -0.989361f, -0.973654f, -0.994137f, -0.98214f, -0.962816f, -0.983764f, -0.968161f, -0.967175f}
+				};
+
+	/* refined voting bins (used after rotation)*/
+	uint8_t r_acc[REFINED_BINS];
+	for(uint8_t i=0; i<REFINED_BINS; i++) r_acc[i]=0;
+	float rx[REFINED_BINS]; 
+	float ry[REFINED_BINS];
+	float rz[REFINED_BINS];
+	voting_bins r_bins = {rx,ry,rz, REFINED_PREC, REFINED_BINS, r_acc};
+
 	/* Lucas Kanade flow */
 	// float flow_lk.x[100];
 	// float flow_lk.y[100];
@@ -351,21 +392,34 @@ int main(void)
 	} bp_flow_lk;
 
 	/* sampling pixels on camera image */
-	struct v_dir_2d {
+	struct s_dir_2d {
 		int16_t x[125];
 		int16_t y[125];
-	} v_dir_2d;
+	} s_dir_2d = {	{ 56, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117},
+			{ 78, 6, 6, 6, 6, 6, 6, 6, 6, 6, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 117, 117, 117, 117, 117, 117, 117, 117, 117, 117, 130, 130, 130, 130, 130, 130, 130, 130, 130, 130, 142, 142, 142, 142, 142, 142, 142, 142, 142, 142, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154}
+			};
 
 	/* sampling directions on unit sphere */
-	struct v_dir_3d {
+	struct s_dir_3d {
 		float x[125];
 		float y[125];
 		float z[125];
-	} v_dir_3d;
+	} s_dir_3d;
+
+	/* great circle normal vectors */
+	struct n_dir_3d {
+		float x[125]; 
+		float y[125];
+		float z[125];
+	} n_dir_3d;
+
+	/* define best estimate */
+	float best_x, best_y, best_z;
+	
 
 	/* backproject pixels on 3D scene */
 	for (int i = 0; i < 125; ++i){
-		cam2world(&v_dir_3d.x[i], &v_dir_3d.y[i], &v_dir_3d.z[i], (float)v_dir_2d.x[i], (float)v_dir_2d.y[i]);
+		cam2world(&s_dir_3d.x[i], &s_dir_3d.y[i], &s_dir_3d.z[i], (float)s_dir_2d.x[i], (float)s_dir_2d.y[i], &px4_model);
 	}
 
 	// int16_t flow_lk.x[100];
@@ -464,8 +518,14 @@ int main(void)
 		float y_rate = - x_rate_sensor;
 		float z_rate = z_rate_sensor; // z is correct
 
-		//float norm_w = maths_fast_sqrt(x_rate*x_rate + y_rate*y_rate + z_rate*z_rate);
+		/* used to scale angular rates */
+		//float norm_w = maths_fast_sqrt(x_rate*x_rate + y_rate*y_rate + z_rate*z_rate)*SCALING_FLOW_FACTOR;
 		//float norm_flow = 0;
+
+		/* scaled angular rates */
+		float x_rate_scaled = x_rate*SCALING_FLOW_FACTOR;
+		float y_rate_scaled = y_rate*SCALING_FLOW_FACTOR;
+		float z_rate_scaled = z_rate*SCALING_FLOW_FACTOR;
 
 		/* calculate focal_length in pixel */
 		// const float focal_length_px = (global_data.param[PARAM_FOCAL_LENGTH_MM]) / (4.0f * 6.0f) * 1000.0f; //original focal lenght: 12mm pixelsize: 6um, binning 4 enabled
@@ -481,6 +541,10 @@ int main(void)
 		}
 
 		static float DT;
+
+		/* DEBUG */
+		uint8_t best_acc = 0;
+		uint8_t best_acc_index = 0;
 
 		/* compute optical flow */
 		if (FLOAT_EQ_INT(global_data.param[PARAM_SENSOR_POSITION], BOTTOM))
@@ -508,31 +572,60 @@ int main(void)
 						image_height, //int dsx, 
 						roi_sy, //int roi_sy, 
 						roi_sx, //int roi_sx, 
-						v_dir_2d.y[i], //int const roi_y,
-						v_dir_2d.x[i], // int const roi_x, 
+						s_dir_2d.y[i], //int const roi_y,
+						s_dir_2d.x[i], // int const roi_x, 
 						&num_y, //dat_t & num_y, 
 						&num_x, //dat_t & num_x, 
 						&den); //dat_t & den );
 				
 				/* reproject optical flow on unit sphere */
-				flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], v_dir_3d.x[i], v_dir_3d.y[i], v_dir_3d.z[i], num_x/den, num_y/den);
+				flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], num_x/den, num_y/den, &px4_model);
 
 				/* derotate optical flow */
-				//derotate_flow(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], v_dir.x[i], v_dir.y[i], v_dir.x[i], x_rate, y_rate, z_rate);
+				derotate_flow(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], x_rate_scaled, y_rate_scaled, z_rate_scaled);
 
 				/* DEBUG */
 				flow_lk.x[i] = 1000*bp_flow_lk.x[i];
 				flow_lk.y[i] = 1000*bp_flow_lk.y[i];
 
-				/* Vote on the sphere */
-				// voting(acc_coarse*, v_dir.x[i], v_dir.y[i], v_dir.z[i], bp_flow_x[i], bp_flow_y[i], bp_flow_z[i]);
+				/* Compute normal vector */
+				great_circle_vector(&n_dir_3d.x[i], &n_dir_3d.y[i], &n_dir_3d.z[i], bp_flow_lk.x[i], bp_flow_lk.y[i], bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i]);
 				
+				/* Vote on the sphere */
+				voting(&c_bins, n_dir_3d.x[i], n_dir_3d.y[i], n_dir_3d.z[i]);
 			}
+			
+			/* get coarse estimate */
+			find_best(&c_bins, &best_x, &best_y, &best_z);
+			for(uint8_t i=0; i<COARSE_BINS; i++){c_bins.acc[i]=0;} // reset coarse accumulator
+
+			/* rotate refined bins */
+			rotate_bins(&r_bins, best_x, best_y, best_z, r_dir_3d.x, r_dir_3d.y, r_dir_3d.z);
+
+			for (int i = 0; i < 125; ++i)
+			{
+				refined_voting(&r_bins, c_bins.prec, n_dir_3d.x[i], n_dir_3d.y[i], n_dir_3d.z[i], best_x, best_y, best_z);
+			}
+
+			/* DEBUG */
+			for(uint8_t i = 0; i < r_bins.size; i++){
+				if(r_bins.acc[i] > best_acc){
+					best_acc = r_bins.acc[i];
+					best_acc_index = i;
+				}
+			}
+
+			// /* get refined estimate */
+			find_best(&r_bins, &best_x, &best_y, &best_z);
+			for(uint8_t i=0; i<REFINED_BINS; i++) r_acc[i]=0; // reset refined accumulator
+
 			//acc_flow_x /= 125.0f;
 			//acc_flow_y /= 125.0f;
 			//acc_flow_z /= 125.0f;
-			//norm_flow = maths_fast_sqrt(bp_flow_lk.x[43]*bp_flow_lk.x[43] + bp_flow_lk.y[43]*bp_flow_lk.y[43] + bp_flow_lk.z[43]*bp_flow_lk.z[43])*SCALING_FLOW_FACTOR;
-			//norm_flow = maths_fast_sqrt(acc_flow_x*acc_flow_x + acc_flow_y*acc_flow_y + acc_flow_z*acc_flow_z)*SCALING_FLOW_FACTOR;
+
+			/* used to scale angular rates */
+			//norm_flow = maths_fast_sqrt(bp_flow_lk.x[0]*bp_flow_lk.x[0] + bp_flow_lk.y[0]*bp_flow_lk.y[0] + bp_flow_lk.z[0]*bp_flow_lk.z[0]);
+
 			//flow_lk.x[30] = 1000*v_dir.x[43];
 			//flow_lk.y[30] = 1000*v_dir.z[43];
 			
@@ -603,7 +696,6 @@ int main(void)
 
 
 		}
-
 		counter++;
 
 		if (FLOAT_EQ_INT(global_data.param[PARAM_SENSOR_POSITION], BOTTOM))
@@ -731,8 +823,8 @@ int main(void)
 					// float dt = get_time_between_images();
 
 					mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-							flow_lk.x[30], flow_lk.x[30],
-							bp_flow_lk.x[30], bp_flow_lk.x[30], qual,
+							best_acc_index, best_acc,
+							best_x, best_z, qual,
 							DT);
 
 					// mavlink_msg_data_transmission_handshake_send(
