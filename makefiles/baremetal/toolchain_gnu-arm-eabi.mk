@@ -177,7 +177,11 @@ CFLAGS			 = $(ARCHCFLAGS) \
 			   $(EXTRADEFINES) \
 			   $(EXTRACFLAGS) \
 			   -fno-common \
-			   $(addprefix -I,$(INCLUDE_DIRS))
+			   $(addprefix -I,$(INCLUDE_DIRS)) \
+			   -nostartfiles \
+			   -mfloat-abi=hard \
+			   --specs=nosys.specs \
+			   --specs=rdimon.specs \
 
 # Flags we pass to the C++ compiler
 #
