@@ -90,3 +90,7 @@ printf('RSS: %d\n', rss);
 %printf('RANSAC:\n');
 %printf('Bias: %d \n', w0);
 %printf('Slope: %d \n', w1);
+
+plot(x);
+hold on;
+plot(y, 'color', 'r');

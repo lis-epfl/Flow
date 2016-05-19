@@ -8,7 +8,7 @@ graphics_toolkit('gnuplot') % COMMENT THIS LINE IN MATLAB
 
 % computing coarse bins
 N_coarse = 25;
-F_coarse = 2;
+F_coarse = 3;
 
 % initialize coordinates
 x = [];
@@ -63,8 +63,8 @@ dlmwrite('coarse_bins.csv', coarse_bins, 'delimiter', ',', 'precision', 6);
 % Computing refined bins
 
 % parameters 
-N_refined = 42;
-F_refined = 15;
+N_refined = 55;
+F_refined = 30;
 
 % compute refined bins
 points = sphere_icos1_points(F_refined, N_refined);
@@ -115,3 +115,55 @@ dlmwrite('refined_bins.csv', refined_bins,'delimiter', ',', 'precision', 6);
 % Refined precision of ~3.5 degrees for F=18 (N_ref=57 for 31 degrees in coarse)
 % Refined precision of ~3.4 degrees for F=19 (N_ref=64 for 31 degrees in coarse)
 % Refined precision of ~3.2 degrees for F=20 (N_ref=72 for 31 degrees in coarse)
+% Refined precision of ~2.5 degrees for F=26 (N_ref=55 for 20 degrees in coarse)
+% Refined precision of ~2.2 degrees for F=30 (N_ref=61 for 20 degrees in coarse) -> high_res
+
+%-------------------------------------------------------------------------------
+
+%% Computing refined bins
+%
+%% parameters 
+%N_last = 55;
+%F_last = 36;
+%
+%% compute refined bins
+%points = sphere_icos1_points(F_last, N_last);
+%x = [];
+%y = [];
+%z = [];
+%
+%for i=1:length(points(1,:)),
+%   theta_t = acos(dot([0, 0, -1],[points(1,i), points(2,i), points(3,i)]));
+%   if(theta_t<=refined_prec*pi/360),
+%    x = [x; points(1,i)'];
+%    y = [y; points(2,i)'];
+%    z = [z; points(3,i)'];
+%   end  
+%end
+%
+%% compute refined precision
+%theta_min = Inf;
+%for i=1:length(x),
+%  for j = i+1:length(y),
+%    theta_t = acos(dot([x(i), y(i), z(i)],[x(j), y(j), z(j)]));
+%    if(theta_t<theta_min),
+%      theta_min = theta_t;
+%    end  
+%  end
+%end
+%last_prec = theta_min*180/pi;
+%printf('Last precision in theta: %d \n', last_prec);
+%
+%% plot refined bins
+%figure(5)
+%hold on;
+%axis('square');
+%plot3(x, y, z, 'b.');
+%[x_, y_, z_] = sphere;
+%mesh(x_, y_, z_, 'Facecolor', 'b', 'Facealpha', 0.1, 'Edgecolor', 'none');
+%title('Last bins');
+%hold off;
+%
+%% Save in csv file
+%last_bins = [x, y, z];
+%dlmwrite('last_bins.csv', last_bins,'delimiter', ',', 'precision', 6);
