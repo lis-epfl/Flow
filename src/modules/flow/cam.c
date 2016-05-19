@@ -110,3 +110,22 @@ void flow2world(float *flow_x, float *flow_y, float *flow_z, float xp, float yp,
 	 *flow_y = quick_trig_cos(theta)*quick_trig_sin(phi)*flow_theta + quick_trig_sin(theta)*quick_trig_cos(phi)*flow_phi;
 	 *flow_z = -quick_trig_sin(phi)*flow_phi;
 }
+
+void fast_flow2world(float *flow_x, float *flow_y, float *flow_z, float xp1, float yp1, float zp1, float u1, float v1, float flow_u, float flow_v, cam_model *cam)
+{
+	 // add optic-flow to pixel coordinates (u1, v1)
+	 float u2 = u1 + flow_u;
+	 float v2 = v1 + flow_v;
+
+	 // define new coordinates
+	 float xp2;
+	 float yp2;
+	 float zp2;
+
+	 cam2world(&xp2,  &yp2,  &zp2,  u2,  v2, cam);
+
+	 // compute optic-flow considering small angles
+	 *flow_x = xp2 - xp1;
+	 *flow_y = yp2 - yp1;
+	 *flow_z = zp2 - zp1;
+}
