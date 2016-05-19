@@ -86,11 +86,25 @@ void cam2world(float *xp, float *yp, float *zp, float u, float v, cam_model *cam
  *
  *  @param [flow_x, flow_y, flow_z]     spherical coordinates of optic-flow vector
  *  @param [xp, yp, zp]                 coordinates of the backprojected point (not normalized)
- *  @param [u, v]                       the pixel coordinates of the point
  *  @param [flow_u, flow_v]             the pixel coordinates of the optic-flow vectors
  *  @param *mycam_model                 the model of the calibrated camera
  *
  * @return  cartesian coordinates of the optic-flow vector projected on the unit sphere
  */
 void flow2world(float *flow_x, float *flow_y, float *flow_z, float xp, float yp, float zp, float flow_u, float flow_v, cam_model *cam);
+
+/**
+ * @brief Back-projects a 2D optic-flow vector, in pixel coordinates, onto the unit sphere
+ *
+ *  @param [flow_x, flow_y, flow_z]     spherical coordinates of optic-flow vector
+ *  @param [xp, yp, zp]                 coordinates of the backprojected point (not normalized)
+ *  @param [u, v]                       the pixel coordinates of the point
+ *  @param [flow_u, flow_v]             the pixel coordinates of the optic-flow vectors
+ *  @param *mycam_model                 the model of the calibrated camera
+ *
+ * @return  cartesian coordinates of the optic-flow vector projected on the unit sphere
+ */
+void fast_flow2world(float *flow_x, float *flow_y, float *flow_z, float xp, float yp, float zp, float u, float v, float flow_u, float flow_v, cam_model *cam);
+
 #endif /* _CAM_H_ */
+
