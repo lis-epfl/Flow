@@ -4,32 +4,32 @@ graphics_toolkit('gnuplot') % COMMENT THIS LINE IN MATLAB
 
 %% Evenly distributed points on camera image
 
-%width = 160;
-%height = 120;
-%nPoints = 125;
-%
-%totalArea = width*height;
-%pointArea = totalArea/nPoints;
-%w = width/sqrt(nPoints);
-%h = height/sqrt(nPoints);
-%
-%figure;
-%hold on;
-%
-%x = [];
-%y = [];
-%
-%for(i = w/2:w:width),
-%  for(j = h/2:h:height),
-%    y = [y; floor(i)];
-%    x = [x; floor(j)];
-%    plot(x, y, 'bo');
-%  end
-%end
-%hold off;
-%
-%rectangle_sampling = [x, y];
-%dlmwrite('rectangle_sampling.csv', rectangle_sampling, 'delimiter', ',', 'precision', 3);
+width = 160;
+height = 120;
+nPoints = 125;
+
+totalArea = width*height;
+pointArea = totalArea/nPoints;
+w = width/sqrt(nPoints);
+h = height/sqrt(nPoints);
+
+figure;
+hold on;
+
+x = [];
+y = [];
+
+for(i = w/2:w:width),
+  for(j = h/2:h:height),
+    y = [y; floor(i)];
+    x = [x; floor(j)];
+    plot(x, y, 'bo');
+  end
+end
+hold off;
+
+rectangle_sampling = [x, y];
+dlmwrite('rectangle_sampling.csv', rectangle_sampling, 'delimiter', ',', 'precision', 3);
 
 %% Evenly distributed points on spherical projection
 
@@ -87,8 +87,9 @@ length_invpol  = 7;
 
 for i=1:length(x),
   norm_(i)           = sqrt(x(i)*x(i) + y(i)*y(i));
-  theta(i)          = atan2(z(i),norm_(i));
-  if (norm(i) != 0)
+
+  if (norm_(i) != 0)
+      theta(i)          = atan2(z(i),norm_(i));
       invnorm_(i) = 1/norm_(i);
       t  = theta(i);
       rho(i) = invpol(1);
@@ -116,4 +117,6 @@ figure(5)
 axis('square');
 plot(u, v, 'b.');
 title('Sampling pixels');
-  
+ 
+spherical_sampling = [floor(u), floor(v)];
+dlmwrite('spherical_sampling.csv', spherical_sampling, 'delimiter', ',', 'precision', 3);
