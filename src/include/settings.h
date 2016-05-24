@@ -44,8 +44,14 @@
 // #define BOTTOM_FLOW_IMAGE_WIDTH			64
 
 // Max size with binning 4
-#define BOTTOM_FLOW_IMAGE_HEIGHT		120
-#define BOTTOM_FLOW_IMAGE_WIDTH			160
+// #define BOTTOM_FLOW_IMAGE_HEIGHT		120
+// #define BOTTOM_FLOW_IMAGE_WIDTH			160
+
+#define BOTTOM_FLOW_IMAGE_HEIGHT		30
+#define BOTTOM_FLOW_IMAGE_WIDTH			4*160
+
+// #define BOTTOM_FLOW_IMAGE_HEIGHT		30
+// #define BOTTOM_FLOW_IMAGE_WIDTH			4*160
 
 // Horizontal image with 180deg x 12 deg
 // #define BOTTOM_FLOW_IMAGE_HEIGHT		10

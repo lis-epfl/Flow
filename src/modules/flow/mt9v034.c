@@ -73,14 +73,15 @@ void mt9v034_context_configuration(void)
 		new_control = 0x0188; // Context A
 
 	/* image dimentions */
-	uint16_t new_width_context_a  = global_data.param[PARAM_IMAGE_WIDTH] * 4; // windowing off, row + col bin reduce size
+	// uint16_t new_width_context_a  = global_data.param[PARAM_IMAGE_WIDTH] * 4; // windowing off, row + col bin reduce size
+	uint16_t new_width_context_a  = global_data.param[PARAM_IMAGE_WIDTH] * 1; // windowing off, row + col bin reduce size
 	uint16_t new_height_context_a = global_data.param[PARAM_IMAGE_HEIGHT] * 4;
 	uint16_t new_width_context_b  = FULL_IMAGE_ROW_SIZE * 4; // windowing off, row + col bin reduce size
 	uint16_t new_height_context_b = FULL_IMAGE_COLUMN_SIZE * 4;
 
 	/* blanking settings */
 	// uint16_t new_hor_blanking_context_a = 350 + MINIMUM_HORIZONTAL_BLANKING;// 350 is minimum value without distortions
-	uint16_t new_hor_blanking_context_a = MAX_IMAGE_WIDTH - new_width_context_a + MINIMUM_HORIZONTAL_BLANKING;	
+	uint16_t new_hor_blanking_context_a = MAX_IMAGE_WIDTH - new_width_context_a + MINIMUM_HORIZONTAL_BLANKING;
 	uint16_t new_ver_blanking_context_a = 10; // this value is the first without image errors (dark lines)
 	uint16_t new_hor_blanking_context_b = MAX_IMAGE_WIDTH - new_width_context_b + MINIMUM_HORIZONTAL_BLANKING;
 	if (new_hor_blanking_context_b < 800) {
@@ -100,8 +101,10 @@ void mt9v034_context_configuration(void)
 	 * (9:8) Reserved
 	 *
 	 */
-	uint16_t new_readmode_context_a = 0x30A ; // row + col bin 4 enable, (9:8) default
-	uint16_t new_readmode_context_b = 0x305 ; // row bin 2 col bin 4 enable, (9:8) default
+	// uint16_t new_readmode_context_a = 0x30A ; // row + col bin 4 enable, (9:8) default
+	uint16_t new_readmode_context_a = 0x302 ; // row + col bin 4 enable, (9:8) default
+	// uint16_t new_readmode_context_a = 0x306 ; // row bin 2 col bin 2 enable, (9:8) default
+	uint16_t new_readmode_context_b = 0x305 ; // row bin 2 col bin 2 enable, (9:8) default
 
 	/*
 	 * Settings for both context:
