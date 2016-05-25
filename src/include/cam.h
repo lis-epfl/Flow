@@ -48,9 +48,10 @@
 #include "maths.h"
 #include "quick_trig.h"
 
-#define MAX_POL_LENGTH 5
-#define MAX_INVPOL_LENGTH 7
-#define SCALING_FLOW_FACTOR 0.01f
+#define MAX_POL_LENGTH        5
+#define MAX_INVPOL_LENGTH     7
+#define SCALING_FLOW_FACTOR   0.005f
+#define NB_SAMPLES            117
 
 /**
  * @brief Parameters of the unified model of the omnidirectional camera

@@ -53,9 +53,9 @@ void cam2world(float *xp, float *yp, float *zp, float u, float v, cam_model *cam
 
 	 float invdet  = 1/(c-d*e); // 1/det(A), where A = [c,d;e,1] as in the Matlab file
 
-	 // back-projection of u and v
-	 *xp = invdet*(    (u - xc) - d*(v - yc) );
-	 *yp = invdet*( -e*(u - xc) + c*(v - yc) );
+	 // back-projection of u and v 
+	 *yp = invdet*(    (u - xc) - d*(v - yc) ); // x and y were swapped
+	 *xp = invdet*( -e*(u - xc) + c*(v - yc) ); // x and y were swapped
 	  
 	 float r   = maths_fast_sqrt(SQR((*xp)) + SQR((*yp))); //distance [pixels] of  the point from the image center
 	 *zp  = pol[0];
@@ -82,7 +82,7 @@ void flow2world(float *flow_x, float *flow_y, float *flow_z, float xp, float yp,
 	 
 	 // transformation from rectangular to spherical coordinates
 	 float r   = maths_fast_sqrt(SQR(xp) + SQR(yp));
-	 float theta = quick_trig_atan2(yp,xp); // could be replaced by helper function
+	 float theta = quick_trig_atan2(yp,xp);
 	 float phi = quick_trig_atan2(r, zp); 
 	 
 	 float r_i = 1;
@@ -106,8 +106,8 @@ void flow2world(float *flow_x, float *flow_y, float *flow_z, float xp, float yp,
 	 float flow_phi = d_phiu*flow_u + d_phiv*flow_v;
 	 
 	 // transformation from spherical to cartesian coordinates (for derotation)
-	 *flow_x = -quick_trig_sin(theta)*quick_trig_sin(phi)*flow_theta + quick_trig_cos(theta)*quick_trig_cos(phi)*flow_phi;
-	 *flow_y = quick_trig_cos(theta)*quick_trig_sin(phi)*flow_theta + quick_trig_sin(theta)*quick_trig_cos(phi)*flow_phi;
+	 *flow_y = -quick_trig_sin(theta)*quick_trig_sin(phi)*flow_theta + quick_trig_cos(theta)*quick_trig_cos(phi)*flow_phi; // x and y were swapped
+	 *flow_x = quick_trig_cos(theta)*quick_trig_sin(phi)*flow_theta + quick_trig_sin(theta)*quick_trig_cos(phi)*flow_phi; // x and y were swapped
 	 *flow_z = -quick_trig_sin(phi)*flow_phi;
 }
 
