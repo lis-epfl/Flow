@@ -17,8 +17,7 @@ void find_best(voting_bins *bins, float *best_x, float *best_y, float *best_z)
 		if(bins->acc[i] > best){
 			best = bins->acc[i];
 			best_n = 1;
-		}
-		// if identical accumulated values, choose the mean as the best direction 
+		} 
 		else if(bins->acc[i] == best){
 			best_n++;
 		}
@@ -32,9 +31,9 @@ void find_best(voting_bins *bins, float *best_x, float *best_y, float *best_z)
 			// *best_x += bins->x[j]/best_n;
 			// *best_y += bins->y[j]/best_n;
 			// *best_z += bins->z[j]/best_n;
-			*best_x += bins->x[j];
-			*best_y += bins->y[j];
-			*best_z += bins->z[j];
+			*best_x = bins->x[j];
+			*best_y = bins->y[j];
+			*best_z = bins->z[j];
 			cnt++;
 		}
 		if(cnt == best_n){

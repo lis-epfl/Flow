@@ -40,6 +40,7 @@
  ******************************************************************************/
 
 #include "cam.h"
+#include "flow2.h"
 
 void cam2world(float *xp, float *yp, float *zp, float u, float v, cam_model *cam)
 {
@@ -122,7 +123,11 @@ void fast_flow2world(float *flow_x, float *flow_y, float *flow_z, float xp1, flo
 	 float yp2;
 	 float zp2;
 
+	 // map to 3d world
 	 cam2world(&xp2,  &yp2,  &zp2,  u2,  v2, cam);
+
+	 // project on unit sphere
+	 normalize(&xp2, &yp2, &zp2);
 
 	 // compute optic-flow considering small angles
 	 *flow_x = xp2 - xp1;
