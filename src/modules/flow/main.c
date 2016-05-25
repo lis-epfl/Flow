@@ -328,7 +328,7 @@ int main(void)
 
 	/* camera model */
 	cam_model px4_model= 
-	{	{6.660506e+01f, 0.0f, -6.426152e-03f, 2.306550e-05f, -2.726345e-07f}, //the signs were changed
+	{	{6.660506e+01f, 0.0f, -6.426152e-03f, 2.306550e-05f, -2.726345e-07f}, 
 		5, 
 		{98.889649f, 60.099030f, 3.523247f, 11.584154f, 10.704617f, 4.911849f, 0.899849f},
 		7,
@@ -374,43 +374,43 @@ int main(void)
 	/* 2d flow on camera image */
 	union flow_lk {
 		struct {
-			int16_t x[125];
-			int16_t y[125];
+			int16_t x[NB_SAMPLES];
+			int16_t y[NB_SAMPLES];
 		};
 		// struct {
 		// 	uint8_t data_x[250];
 		// 	uint8_t data_y[250];
 		// };
-		uint8_t data[500];
+		uint8_t data[NB_SAMPLES*2];
 	} flow_lk;
 
 	/* backprojected flow */
 	struct bp_flow_lk {
-		float x[125];
-		float y[125];
-		float z[125];
+		float x[NB_SAMPLES];
+		float y[NB_SAMPLES];
+		float z[NB_SAMPLES];
 	} bp_flow_lk;
 
 	/* sampling pixels on camera image */
 	struct s_dir_2d {
-		int16_t x[125];
-		int16_t y[125];
-	} s_dir_2d = {	{ 56, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117, 6, 18, 30, 43, 55, 68, 80, 92, 105, 117},
-			{ 78, 6, 6, 6, 6, 6, 6, 6, 6, 6, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 117, 117, 117, 117, 117, 117, 117, 117, 117, 117, 130, 130, 130, 130, 130, 130, 130, 130, 130, 130, 142, 142, 142, 142, 142, 142, 142, 142, 142, 142, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154}
+		int16_t x[NB_SAMPLES];
+		int16_t y[NB_SAMPLES];
+	} s_dir_2d ={ 	{51, 56, 56, 62, 24, 38, 19, 34, 47, 24, 38, 19, 35, 47, 53, 52, 50, 49, 52, 53, 52, 50, 49, 52, 66, 83, 56, 30, 47, 56, 61, 63, 63, 60, 59, 66, 78, 93, 110, 56, 61, 63, 63, 60, 59, 66, 78, 93, 110, 74, 89, 104, 74, 89, 104, 24, 14, 29, 42, 10, 26, 40, 25, 39, 40, 44, 10, 25, 40, 14, 26, 39, 29, 40, 42, 67, 70, 42, 45, 60, 56, 53, 55, 58, 56, 67, 60, 55, 56, 70, 56, 58, 42, 53, 45, 70, 83, 99, 73, 86, 102, 73, 88, 73, 69, 70, 73, 73, 73, 83, 86, 88, 99, 102, 88, 104, 104},
+			{78, 30, 126, 78, 69, 75, 18, 21, 25, 87, 80, 137, 134, 130, 77, 75, 67, 55, 42, 79, 81, 88, 100, 114, 78, 78, 78, 78, 78, 15, 42, 55, 67, 75, 77, 25, 21, 18, 18, 141, 114, 100, 88, 81, 79, 130, 134, 137, 138, 75, 69, 60, 80, 87, 96, 78, 32, 34, 38, 47, 48, 51, 59, 62, 70, 147, 109, 96, 85, 123, 108, 93, 121, 104, 118, 72, 55, 55, 72, 72, 66, 72, 84, 84, 99, 83, 83, 71, 56, 100, 89, 71, 100, 83, 83, 38, 34, 32, 51, 48, 47, 62, 59, 70, 147, 118, 104, 93, 85, 121, 108, 96, 123, 109, 78, 72, 84}
 			};
 
 	/* sampling directions on unit sphere */
 	struct s_dir_3d {
-		float x[125];
-		float y[125];
-		float z[125];
+		float x[NB_SAMPLES];
+		float y[NB_SAMPLES];
+		float z[NB_SAMPLES];
 	} s_dir_3d;
 
 	/* great circle normal vectors */
 	struct n_dir_3d {
-		float x[125]; 
-		float y[125];
-		float z[125];
+		float x[NB_SAMPLES]; 
+		float y[NB_SAMPLES];
+		float z[NB_SAMPLES];
 	} n_dir_3d;
 
 	/* define best estimate */
@@ -418,8 +418,9 @@ int main(void)
 	
 
 	/* backproject pixels on 3D scene */
-	for (int i = 0; i < 125; ++i){
+	for (int i = 0; i < NB_SAMPLES; ++i){
 		cam2world(&s_dir_3d.x[i], &s_dir_3d.y[i], &s_dir_3d.z[i], (float)s_dir_2d.x[i], (float)s_dir_2d.y[i], &px4_model);
+		normalize(&s_dir_3d.x[i], &s_dir_3d.y[i], &s_dir_3d.z[i]); // used for fast_flow2world
 	}
 
 	// int16_t flow_lk.x[100];
@@ -514,18 +515,13 @@ int main(void)
 		gyro_read(&x_rate_sensor, &y_rate_sensor, &z_rate_sensor,&gyro_temp);
 
 		/* gyroscope coordinate transformation */
-		float x_rate = y_rate_sensor; // change x and y rates
-		float y_rate = - x_rate_sensor;
-		float z_rate = z_rate_sensor; // z is correct
+		float x_rate = y_rate_sensor*SCALING_FLOW_FACTOR; // change x and y rates
+		float y_rate = - x_rate_sensor*SCALING_FLOW_FACTOR;
+		float z_rate = z_rate_sensor*SCALING_FLOW_FACTOR; // z is correct
 
-		/* used to scale angular rates */
+		/* used to scale angular rates and scaling */
 		//float norm_w = maths_fast_sqrt(x_rate*x_rate + y_rate*y_rate + z_rate*z_rate)*SCALING_FLOW_FACTOR;
 		//float norm_flow = 0;
-
-		/* scaled angular rates */
-		float x_rate_scaled = x_rate*SCALING_FLOW_FACTOR;
-		float y_rate_scaled = y_rate*SCALING_FLOW_FACTOR;
-		float z_rate_scaled = z_rate*SCALING_FLOW_FACTOR;
 
 		/* calculate focal_length in pixel */
 		// const float focal_length_px = (global_data.param[PARAM_FOCAL_LENGTH_MM]) / (4.0f * 6.0f) * 1000.0f; //original focal lenght: 12mm pixelsize: 6um, binning 4 enabled
@@ -563,7 +559,9 @@ int main(void)
 			int32_t roi_sx = 10;
 			int32_t roi_sy = 10;
 
-			for (int i = 0; i < 125; ++i)
+			//float tmp;
+
+			for (int i = 0; i < NB_SAMPLES; ++i)
 			{
 				/* code */
 				lucas_kanade( 	current_image, //dat_t * data, 
@@ -579,10 +577,11 @@ int main(void)
 						&den); //dat_t & den );
 				
 				/* reproject optical flow on unit sphere */
-				flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], num_x/den, num_y/den, &px4_model);
+				//flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.y[i], s_dir_3d.x[i], s_dir_3d.z[i], num_x/den, num_y/den, &px4_model);
+				fast_flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], s_dir_2d.x[i], s_dir_2d.y[i], num_x/den, num_y/den, &px4_model);
 
 				/* derotate optical flow */
-				derotate_flow(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], x_rate_scaled, y_rate_scaled, z_rate_scaled);
+				derotate_flow(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], x_rate, y_rate, z_rate);
 
 				/* DEBUG */
 				flow_lk.x[i] = 1000*bp_flow_lk.x[i];
@@ -602,7 +601,7 @@ int main(void)
 			/* rotate refined bins */
 			rotate_bins(&r_bins, best_x, best_y, best_z, r_dir_3d.x, r_dir_3d.y, r_dir_3d.z);
 
-			for (int i = 0; i < 125; ++i)
+			for (int i = 0; i < NB_SAMPLES; ++i)
 			{
 				refined_voting(&r_bins, c_bins.prec, n_dir_3d.x[i], n_dir_3d.y[i], n_dir_3d.z[i], best_x, best_y, best_z);
 			}
@@ -779,13 +778,13 @@ int main(void)
 				mavlink_msg_data_transmission_handshake_send(
 						MAVLINK_COMM_0,
 						MAVLINK_TYPE_INT16_T,
-						500,
-						125, 
+						NB_SAMPLES*2,
+						NB_SAMPLES, 
 						2,
-						500 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
+						NB_SAMPLES*2 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
 						MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
 						100);
-				for (int frame = 0; frame < 500 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1; ++frame)
+				for (int frame = 0; frame < NB_SAMPLES*2 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1; ++frame)
 				{
 					mavlink_msg_encapsulated_data_send(MAVLINK_COMM_0, frame, &(flow_lk.data[frame * MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN]));
 				}
@@ -824,7 +823,7 @@ int main(void)
 
 					mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
 							best_acc_index, best_acc,
-							best_x, best_z, qual,
+							bp_flow_lk.x[27], bp_flow_lk.y[27], qual,
 							DT);
 
 					// mavlink_msg_data_transmission_handshake_send(

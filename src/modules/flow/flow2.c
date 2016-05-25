@@ -29,12 +29,12 @@ void find_best(voting_bins *bins, float *best_x, float *best_y, float *best_z)
 	uint8_t cnt = 0;
 	for(uint8_t j = 0; j < bins->size; j++){
 		if(bins->acc[j]==best){
-			*best_x = ((*best_x)*cnt + bins->x[j])/(cnt + 1);
-			*best_y = ((*best_y)*cnt + bins->y[j])/(cnt + 1);
-			*best_z = ((*best_z)*cnt + bins->z[j])/(cnt + 1);
-			// *best_x = bins->x[j];
-			// *best_y = bins->y[j];
-			// *best_z = bins->z[j];
+			// *best_x += bins->x[j]/best_n;
+			// *best_y += bins->y[j]/best_n;
+			// *best_z += bins->z[j]/best_n;
+			*best_x += bins->x[j];
+			*best_y += bins->y[j];
+			*best_z += bins->z[j];
 			cnt++;
 		}
 		if(cnt == best_n){
