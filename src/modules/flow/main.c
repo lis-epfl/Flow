@@ -450,8 +450,8 @@ int main(void)
 		}
 
 		static float DT;
-		static uint32_t N_points = 73;
-
+		static uint32_t N_points = 75;
+		// static float denominateur[73];
 		/* compute optical flow */
 		if (FLOAT_EQ_INT(global_data.param[PARAM_SENSOR_POSITION], BOTTOM))
 		{
@@ -478,14 +478,24 @@ int main(void)
 						image_height, //int dsy, 
 						roi_sx, //int roi_sx, 
 						roi_sy, //int roi_sy, 
-						7 + 2*i, //int const roi_x,
+						1 + 2*i, //int const roi_x,
 						(image_height - roi_sy) / 2, // int const roi_y, 
 						&num_x, //dat_t & num_x, 
 						&num_y, //dat_t & num_y, 
 						&den); //dat_t & den );
-			
+				// denominateur[i] = den;
+
+				if(den > 10000000)
+				{
 				flow_lk.x[i] = 1000 * num_x / den;
 				flow_lk.y[i] = 1000 * num_y / den;
+				}
+				else
+				{
+				flow_lk.x[i] = 0;
+				flow_lk.y[i] = 0;
+				}
+
 			}
 
 			// pixel_flow_x = num_x / den; 
@@ -632,8 +642,8 @@ int main(void)
 				// 		DT);
 
 				mavlink_msg_optical_flow_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-						flow_lk.x[30], flow_lk.x[50],
-						flow_lk.x[70], flow_lk.x[90], qual,
+						flow_lk.x[50], flow_lk.y[50],
+						flow_lk.x[50], flow_lk.y[50], qual,
 						DT);
 
 				mavlink_msg_data_transmission_handshake_send(
@@ -683,8 +693,8 @@ int main(void)
 					// float dt = get_time_between_images();
 
 					mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-							flow_lk.x[30], flow_lk.x[50],
-							flow_lk.x[70], flow_lk.x[90], qual,
+							flow_lk.x[50], flow_lk.y[50],
+							flow_lk.x[50], flow_lk.y[50], qual,
 							DT);
 
 					// mavlink_msg_data_transmission_handshake_send(
