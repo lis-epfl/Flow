@@ -5,68 +5,68 @@ graphics_toolkit('gnuplot') % COMMENT THIS LINE IN MATLAB
 %%%------------------------------------------------------------------------------
 %%   Icosahedron method
 %%-------------------------------------------------------------------------------
-%
-%% computing coarse bins
-%N_coarse = 25;
-%F_coarse = 3;
-%
-%% initialize coordinates
-%x = [];
-%y = [];
-%z = [];
-%
-%% compute coarse bins
-%points = sphere_icos1_points(F_coarse, N_coarse);
-%for(i=1:length(points(1,:))),
-%  if(points(3,i)<=0),
-%    x = [x; points(1,i)'];
-%    y = [y; points(2,i)'];
-%    z = [z; points(3,i)'];
-%  end
-%end
-%
-%% compute precision
-%theta_min = Inf;
-%for i=1:length(x),
-%  for j = i+1:length(y),
-%    theta_t = acos(dot([x(i), y(i), z(i)],[x(j), y(j), z(j)]));
-%    if(theta_t<theta_min),
-%      theta_min = theta_t;
-%    end  
-%  end
-%end
-%
-%coarse_prec = theta_min*180/pi;
-%printf('Coarse precision in theta: %d \n', coarse_prec);
-%
-%% plot coarse bins
-%figure(3)
-%hold on;
-%axis('square');
-%plot3(x,y,z,'b.');
-%[x_, y_, z_] = sphere;
-%mesh(x_, y_, z_, 'Facecolor', 'b', 'Facealpha', 0.1, 'Edgecolor', 'none');
-%title('Coarse bins');
-%hold off;
-%
-%% save in text file
-%coarse_bins = [x, y, z];
-%dlmwrite('coarse_bins.csv', coarse_bins, 'delimiter', ',', 'precision', 6);
-%
-%% results
-%% Precision of 15 degrees for F=4 (N=162 or N_hemi=89) 
-%% Precision of 20 degrees for F=3 (N=92 or N_hemi=52)
-%% Precision of 31 degrees for F=2 (N=42 or N_hemi=25)
+
+% computing coarse bins
+N_coarse = 25;
+F_coarse = 1;
+
+% initialize coordinates
+x = [];
+y = [];
+z = [];
+
+% compute coarse bins
+points = sphere_icos1_points(F_coarse, N_coarse);
+for(i=1:length(points(1,:))),
+  if(points(3,i)<=0),
+    x = [x; points(1,i)'];
+    y = [y; points(2,i)'];
+    z = [z; points(3,i)'];
+  end
+end
+
+% compute precision
+theta_min = Inf;
+for i=1:length(x),
+  for j = i+1:length(y),
+    theta_t = acos(dot([x(i), y(i), z(i)],[x(j), y(j), z(j)]));
+    if(theta_t<theta_min),
+      theta_min = theta_t;
+    end  
+  end
+end
+
+coarse_prec = theta_min*180/pi;
+printf('Coarse precision in theta: %d \n', coarse_prec);
+
+% plot coarse bins
+figure(3)
+hold on;
+axis('square');
+plot3(x,y,z,'b.');
+[x_, y_, z_] = sphere;
+mesh(x_, y_, z_, 'Facecolor', 'b', 'Facealpha', 0.1, 'Edgecolor', 'none');
+title('Coarse bins');
+hold off;
+
+% save in text file
+coarse_bins = [x, y, z];
+dlmwrite('coarse_bins.csv', coarse_bins, 'delimiter', ',', 'precision', 6);
+
+% results
+% Precision of 15 degrees for F=4 (N=162 or N_hemi=89) 
+% Precision of 20 degrees for F=3 (N=92 or N_hemi=52)
+% Precision of 31 degrees for F=2 (N=42 or N_hemi=25)
 
 %-------------------------------------------------------------------------------
 
-% Computing refined bins
+% Computing refined bins 1
 
 coarse_prec = 100;
 
 % parameters 
 N_refined = 55;
-F_refined = 9;
+F_refined = 2;
 
 % compute refined bins
 points = sphere_icos1_points(F_refined, N_refined);
@@ -93,8 +93,8 @@ for i=1:length(x),
     end  
   end
 end
-refined_prec = theta_min*180/pi;
-printf('Refined precision in theta: %d \n', refined_prec);
+refined_prec1 = theta_min*180/pi;
+printf('Refined precision in theta: %d \n', refined_prec1);
 
 % plot refined bins
 figure(4)
@@ -107,8 +107,8 @@ title('Refined bins');
 hold off;
 
 % Save in csv file
-refined_bins = [x, y, z];
-dlmwrite('refined_bins.csv', refined_bins,'delimiter', ',', 'precision', 6);
+refined_bins1 = [x, y, z];
+dlmwrite('refined_bins1.csv', refined_bins1,'delimiter', ',', 'precision', 6);
 
 % Refined precision of ~4.6 degrees for F=14 (N_ref=37 for 31 degrees in coarse)
 % Refined precision of ~4.4 degrees for F=15 (N_ref=42 for 31 degrees in coarse)
@@ -122,50 +122,151 @@ dlmwrite('refined_bins.csv', refined_bins,'delimiter', ',', 'precision', 6);
 
 %-------------------------------------------------------------------------------
 
-%% Computing refined bins
-%
-%% parameters 
-%N_last = 55;
-%F_last = 36;
-%
-%% compute refined bins
-%points = sphere_icos1_points(F_last, N_last);
-%x = [];
-%y = [];
-%z = [];
-%
-%for i=1:length(points(1,:)),
-%   theta_t = acos(dot([0, 0, -1],[points(1,i), points(2,i), points(3,i)]));
-%   if(theta_t<=refined_prec*pi/360),
-%    x = [x; points(1,i)'];
-%    y = [y; points(2,i)'];
-%    z = [z; points(3,i)'];
-%   end  
-%end
-%
-%% compute refined precision
-%theta_min = Inf;
-%for i=1:length(x),
-%  for j = i+1:length(y),
-%    theta_t = acos(dot([x(i), y(i), z(i)],[x(j), y(j), z(j)]));
-%    if(theta_t<theta_min),
-%      theta_min = theta_t;
-%    end  
-%  end
-%end
-%last_prec = theta_min*180/pi;
-%printf('Last precision in theta: %d \n', last_prec);
-%
-%% plot refined bins
-%figure(5)
-%hold on;
-%axis('square');
-%plot3(x, y, z, 'b.');
-%[x_, y_, z_] = sphere;
-%mesh(x_, y_, z_, 'Facecolor', 'b', 'Facealpha', 0.1, 'Edgecolor', 'none');
-%title('Last bins');
-%hold off;
-%
-%% Save in csv file
-%last_bins = [x, y, z];
-%dlmwrite('last_bins.csv', last_bins,'delimiter', ',', 'precision', 6);
+
+%% Computing refined bins 2
+
+% parameters 
+N_last = 55;
+F_last = 6;
+
+% compute refined bins
+points = sphere_icos1_points(F_last, N_last);
+x = [];
+y = [];
+z = [];
+
+for i=1:length(points(1,:)),
+   theta_t = acos(dot([0, 0, -1],[points(1,i), points(2,i), points(3,i)]));
+   if(theta_t<=refined_prec1*pi/360),
+    x = [x; points(1,i)'];
+    y = [y; points(2,i)'];
+    z = [z; points(3,i)'];
+   end  
+end
+
+% compute refined precision
+theta_min = Inf;
+for i=1:length(x),
+  for j = i+1:length(y),
+    theta_t = acos(dot([x(i), y(i), z(i)],[x(j), y(j), z(j)]));
+    if(theta_t<theta_min),
+      theta_min = theta_t;
+    end  
+  end
+end
+refined_prec2 = theta_min*180/pi;
+printf('Last precision in theta: %d \n', refined_prec2);
+
+% plot last bins
+figure(5)
+hold on;
+axis('square');
+plot3(x, y, z, 'b.');
+[x_, y_, z_] = sphere;
+mesh(x_, y_, z_, 'Facecolor', 'b', 'Facealpha', 0.1, 'Edgecolor', 'none');
+title('Last bins');
+hold off;
+
+% Save in csv file
+refined_bins2 = [x, y, z];
+dlmwrite('refined_bins2.csv', refined_bins2,'delimiter', ',', 'precision', 6);
+
+%-------------------------------------------------------------------------------
+
+%% Computing refined bins 3
+
+% parameters 
+N_last = 55;
+F_last = 20;
+
+% compute refined bins
+points = sphere_icos1_points(F_last, N_last);
+x = [];
+y = [];
+z = [];
+
+for i=1:length(points(1,:)),
+   theta_t = acos(dot([0, 0, -1],[points(1,i), points(2,i), points(3,i)]));
+   if(theta_t<=refined_prec2*pi/360),
+    x = [x; points(1,i)'];
+    y = [y; points(2,i)'];
+    z = [z; points(3,i)'];
+   end  
+end
+
+% compute refined precision
+theta_min = Inf;
+for i=1:length(x),
+  for j = i+1:length(y),
+    theta_t = acos(dot([x(i), y(i), z(i)],[x(j), y(j), z(j)]));
+    if(theta_t<theta_min),
+      theta_min = theta_t;
+    end  
+  end
+end
+refined_prec3 = theta_min*180/pi;
+printf('Last precision in theta: %d \n', refined_prec3);
+
+% plot last bins
+figure(6)
+hold on;
+axis('square');
+plot3(x, y, z, 'b.');
+[x_, y_, z_] = sphere;
+mesh(x_, y_, z_, 'Facecolor', 'b', 'Facealpha', 0.1, 'Edgecolor', 'none');
+title('Last bins');
+hold off;
+
+% Save in csv file
+refined_bins3 = [x, y, z];
+dlmwrite('refined_bins3.csv', refined_bins3,'delimiter', ',', 'precision', 6);
+
+%-------------------------------------------------------------------------------
+
+%% Computing refined bins 3
+
+% parameters 
+N_last = 55;
+F_last = 42;
+
+% compute refined bins
+points = sphere_icos1_points(F_last, N_last);
+x = [];
+y = [];
+z = [];
+
+for i=1:length(points(1,:)),
+   theta_t = acos(dot([0, 0, -1],[points(1,i), points(2,i), points(3,i)]));
+   if(theta_t<=refined_prec3*pi/360),
+    x = [x; points(1,i)'];
+    y = [y; points(2,i)'];
+    z = [z; points(3,i)'];
+   end  
+end
+
+% compute refined precision
+theta_min = Inf;
+for i=1:length(x),
+  for j = i+1:length(y),
+    theta_t = acos(dot([x(i), y(i), z(i)],[x(j), y(j), z(j)]));
+    if(theta_t<theta_min),
+      theta_min = theta_t;
+    end  
+  end
+end
+refined_prec4 = theta_min*180/pi;
+printf('Last precision in theta: %d \n', refined_prec4);
+
+% plot last bins
+figure(7)
+hold on;
+axis('square');
+plot3(x, y, z, 'b.');
+[x_, y_, z_] = sphere;
+mesh(x_, y_, z_, 'Facecolor', 'b', 'Facealpha', 0.1, 'Edgecolor', 'none');
+title('Last bins');
+hold off;
+
+% Save in csv file
+refined_bins4 = [x, y, z];
+dlmwrite('refined_bins4.csv', refined_bins4,'delimiter', ',', 'precision', 6);
