@@ -14,11 +14,14 @@
 #include "maths.h"
 #include "quick_trig.h"
 
-#define COARSE_BINS	25 		// number of coarse bins
-#define REFINED_BINS	42 		// number of refined bins
-#define COARSE_PREC	0.26724f 	// coarse precision (sin(31 degrees/2))
-#define REFINED_PREC	0.03839f	// refined precision (sin(4.4 degrees/2))
-
+#define COARSE_BINS	8 		// number of coarse bins
+#define COARSE_PREC	0.76605f 	// coarse precision (sin(31 degrees/2))
+#define REFINED_BINS	7 		// number of refined bins
+#define NB_ITERATIONS 	4		// number of iterations in refining the vote
+#define REFINED_PREC_1	0.27312f	// refined precision (sin(4.4 degrees/2))
+#define REFINED_PREC_2	0.09901f	// refined precision (sin(4.4 degrees/2))
+#define REFINED_PREC_3	0.02967f	// refined precision (sin(4.4 degrees/2))
+#define REFINED_PREC_4	0.01396f	// refined precision (sin(4.4 degrees/2))
 /**
  * @brief Voting bins structure
  */
@@ -30,6 +33,15 @@ typedef struct voting_bins{
 	uint8_t size;
 	uint8_t *acc;
 }voting_bins;
+
+/**
+ * @brief Refined voting directions structure
+ */
+typedef struct r_dir_3d{
+	float x[REFINED_BINS];
+	float y[REFINED_BINS];
+	float z[REFINED_BINS];
+}r_dir_3d;
 
 /**
 * @brief Normalizes vector
@@ -128,16 +140,16 @@ static inline void voting(voting_bins *bins, float n_x, float n_y, float n_z)
 * @brief Proceeds to refined voting on the unit sphere
 *
 *   @param *bins     					pointer to the voting bins structure
-*   @param coarse_prec     				coarse precision
+*   @param prev_prec     				coarse precision
 *   @param [n_x, n_y, n_z]     			cartesian coordinates of great circle normal vector
 *   @param [best_x, best_y, best_z]		cartesian coordinates of coarse estimate of direction of motion
 *
 * @return incremented accumulator for refined voting
 */
-static inline void refined_voting(voting_bins *bins, float coarse_prec, float n_x, float n_y, float n_z, float best_x, float best_y, float best_z)
+static inline void refined_voting(voting_bins *bins, float prev_prec, float n_x, float n_y, float n_z, float best_x, float best_y, float best_z)
 {
 	// only consider samples that would vote for coarse estimate
-	if(maths_f_abs(n_x*best_x + n_y*best_y + n_z*best_z) < coarse_prec){
+	if(maths_f_abs(n_x*best_x + n_y*best_y + n_z*best_z) < prev_prec){
 		voting(bins, n_x, n_y, n_z);
 	}
 }
