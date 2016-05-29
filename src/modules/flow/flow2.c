@@ -55,16 +55,21 @@ void rotate_bins(voting_bins *bins, float best_x, float best_y, float best_z, fl
 		} 
 	}
 	else{
-		// compute rotation matrix (saves time)
-		float c = -best_z;
-		float s = maths_fast_sqrt(1 - SQR(c));
-		float u_x = 1.0f * best_y; //0f * best_z - (-1f) * best_y
-		float u_y = -1.0f * best_x; //-1f * best_x - 0f * best_z
-		float u_z = 0.0f; //0f * best_y - 0f * best_x
+		/* angle */
+		float c = -best_z; 			// cosine
+		float s = maths_fast_sqrt(1 - SQR(c)); 	// absolute value of sine
+
+		/* axis (gives the actual rotation direction) */
+		float u_x = 1.0f * best_y; 	// 0.0f * best_z - (-1.0f) * best_y
+		float u_y = -1.0f * best_x; 	// -1.0f * best_x - 0.0f * best_z
+		float u_z = 0.0f; 		// 0.0f * best_y - 0.0f * best_x
+		normalize(&u_x, &u_y, &u_z);
+
+		/* compute rotation matrix (saves time) */
 		float R[9];
 		aa2mat(R, u_x, u_y, u_z, c, s);
 
-		// compute rotated refined bins
+		/* compute rotated refined bins */
 		for(uint8_t i=0; i<bins->size; i++){
 			bins->x[i] = r_dir_x[i]*R[0] + r_dir_y[i]*R[1] + r_dir_z[i]*R[2];
 			bins->y[i] = r_dir_x[i]*R[3] + r_dir_y[i]*R[4] + r_dir_z[i]*R[5];

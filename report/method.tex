@@ -441,10 +441,11 @@ void rotate_bins(voting_bins *bins, float best_x,
 		float c = -best_z;
 		float s = maths_fast_sqrt(1 - SQR(c)); 
 
-		//store axis
+		// store axis
 		float u_x = 1.0f*best_y;					
 		float u_y = -1.0f * best_x;					
 		float u_z = 0.0f;
+		normalize(&u_x, &u_y, &u_z);
 
 		// compute rotation matrix
 		float R[9];
