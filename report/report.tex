@@ -32,9 +32,28 @@
 % \renewcommand\thesection{}
 % \renewcommand\thesubsection{\@arabic\c@section.\@arabic\c@subsection}
 % \makeatother
+
+
 \begin{document}
+
 \input{titlepage}
+\clearpage
+\mbox{}
+\thispagestyle{empty}
+\clearpage
+
+\pagenumbering{roman}
+\input{abstract}
+\clearpage
+
+\tableofcontents
+\clearpage
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
 \input{content}
+
 \bibliographystyle{ieeetr}
 \bibliography{report}
+
 \end{document}
