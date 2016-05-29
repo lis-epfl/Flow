@@ -842,7 +842,7 @@ int main(void)
 
 					mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
 							best_acc_index, best_acc,
-							bp_flow_lk.x[3], bp_flow_lk.y[3], qual,
+							bp_flow_lk.x[4], bp_flow_lk.y[4], qual,
 							DT);
 
 					// mavlink_msg_data_transmission_handshake_send(
