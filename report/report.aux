@@ -7,31 +7,34 @@
 \citation{derotation}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}}
 \citation{scara}
-\@writefile{toc}{\contentsline {section}{\numberline {2}Theoretical background}{2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Omnidirectional Camera Model}{2}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Method for Direction of Motion Estimation}{3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Omnidirectional Camera Model}{3}}
 \newlabel{equ:cameraModel1}{{1}{3}}
 \newlabel{equ:cameraModel2}{{2}{3}}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces \textbf  {Training images used for camera model calibration} - The orientation and position of the chessboard were changed from one image to another to most of the field of view. The images are given in grayscale by the camera and exhibit a resolution of $160 \times 120$ pixels.\relax }}{4}}
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
 \newlabel{fig:cameraImages}{{1}{4}}
-\newlabel{code:cameraModel}{{1}{4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces \textbf  {Reprojection on the camera image after calibration}\relax }}{5}}
+\newlabel{fig:cameraReproj}{{2}{5}}
 \citation{backproj}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Mapping Optical Flow to Unit Sphere}{5}}
-\newlabel{code:flowProjection}{{2}{7}}
+\newlabel{code:cameraModel}{{1}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Mapping Optical Flow to Unit Sphere}{6}}
+\newlabel{code:flowProjection}{{2}{8}}
 \citation{derotation}
 \citation{autocalib}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Derotation of Optical Flow}{8}}
-\newlabel{equ:opticflow}{{7}{8}}
+\newlabel{code:fastFlowProjection}{{3}{10}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Derotation of Optical Flow}{10}}
+\newlabel{equ:opticflow}{{8}{10}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces \textbf  {Results from calibration of the angular rate scaling factor}-Based on 220 samples taken at the center of the camera image\relax }}{11}}
+\newlabel{tab:gyroScaling}{{1}{11}}
 \citation{lim}
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces \textbf  {Results from calibration of the angular rate scaling factor}-Based on 220 samples taken at the center of the camera image\relax }}{9}}
-\newlabel{tab:gyroScaling}{{1}{9}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Finding the Focus of Expansion}{9}}
-\newlabel{algo:houghVoting}{{1}{10}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces \textbf  {Voting bins parameters}-The voting bins are evely distributed on the unit sphere and were generated using icosahedron method.\relax }}{11}}
-\newlabel{tab:votingBins}{{2}{11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Finding the Focus of Expansion}{12}}
+\newlabel{algo:houghVoting}{{1}{13}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces \textbf  {Voting bins parameters}-The voting bins are evely distributed on the unit sphere and were generated using icosahedron method.\relax }}{14}}
+\newlabel{tab:votingBins}{{2}{14}}
 \citation{ekf}
-\newlabel{algo:rotation}{{3}{12}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Egomotion from Optical Flow Measurements}{13}}
+\newlabel{algo:rotation}{{4}{15}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Egomotion from Optical Flow Measurements}{16}}
 \bibstyle{ieeetr}
 \bibdata{report}
 \bibcite{ekf}{1}

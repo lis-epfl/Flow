@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/W32TeX) (preloaded format=pdflatex 2015.8.15)  29 MAY 2016 16:27
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/W32TeX) (preloaded format=pdflatex 2015.8.15)  29 MAY 2016 19:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1087,65 +1087,207 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
  [2
 
-] (./content.tex
-[1
-
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 25--26
+(./introduction.tex [1
+
+]) [2] (./method.tex
+Underfull \hbox (badness 10000) in paragraph at lines 8--9
 
  []
 
-[2]
-Underfull \hbox (badness 10000) in paragraph at lines 76--77
+[3
 
- []
-
-<images/camera/0.png, id=32, 120.45pt x 90.3375pt>
+] <images/camera/0.png, id=41, 120.45pt x 90.3375pt>
 File: images/camera/0.png Graphic file (type png)
- <use images/camera/0.png>
-Package pdftex.def Info: images/camera/0.png used on input line 112.
-(pdftex.def)             Requested size: 83.64944pt x 62.73819pt.
 
-<images/camera/1.png, id=33, 120.45pt x 90.3375pt>
+<use images/camera/0.png>
+Package pdftex.def Info: images/camera/0.png used on input line 65.
+(pdftex.def)             Requested size: 83.64944pt x 62.73819pt.
+ <images/camera/1.png, id=42, 120.45pt x 90.3375pt>
 File: images/camera/1.png Graphic file (type png)
- <use images/camera/1.png>
-Package pdftex.def Info: images/camera/1.png used on input line 116.
-(pdftex.def)             Requested size: 83.64944pt x 62.73819pt.
 
-<images/camera/2.png, id=34, 120.45pt x 90.3375pt>
+<use images/camera/1.png>
+Package pdftex.def Info: images/camera/1.png used on input line 69.
+(pdftex.def)             Requested size: 83.64944pt x 62.73819pt.
+ <images/camera/2.png, id=43, 120.45pt x 90.3375pt>
 File: images/camera/2.png Graphic file (type png)
- <use images/camera/2.png>
-Package pdftex.def Info: images/camera/2.png used on input line 120.
-(pdftex.def)             Requested size: 83.64944pt x 62.73819pt.
 
-<images/camera/3.png, id=35, 120.45pt x 90.3375pt>
+<use images/camera/2.png>
+Package pdftex.def Info: images/camera/2.png used on input line 73.
+(pdftex.def)             Requested size: 83.64944pt x 62.73819pt.
+ <images/camera/3.png, id=44, 120.45pt x 90.3375pt>
 File: images/camera/3.png Graphic file (type png)
- <use images/camera/3.png>
-Package pdftex.def Info: images/camera/3.png used on input line 124.
-(pdftex.def)             Requested size: 83.64944pt x 62.73819pt.
 
-<images/camera/4.png, id=36, 120.45pt x 90.3375pt>
+<use images/camera/3.png>
+Package pdftex.def Info: images/camera/3.png used on input line 77.
+(pdftex.def)             Requested size: 83.64944pt x 62.73819pt.
+ <images/camera/4.png, id=45, 120.45pt x 90.3375pt>
 File: images/camera/4.png Graphic file (type png)
- <use images/camera/4.png>
-Package pdftex.def Info: images/camera/4.png used on input line 128.
-(pdftex.def)             Requested size: 83.64944pt x 62.73819pt.
 
-<images/camera/5.png, id=37, 120.45pt x 90.3375pt>
+<use images/camera/4.png>
+Package pdftex.def Info: images/camera/4.png used on input line 81.
+(pdftex.def)             Requested size: 83.64944pt x 62.73819pt.
+ <images/camera/5.png, id=46, 120.45pt x 90.3375pt>
 File: images/camera/5.png Graphic file (type png)
- <use images/camera/5.png>
-Package pdftex.def Info: images/camera/5.png used on input line 132.
-(pdftex.def)             Requested size: 83.64944pt x 62.73819pt.
 
-<images/camera/6.png, id=38, 120.45pt x 90.3375pt>
+<use images/camera/5.png>
+Package pdftex.def Info: images/camera/5.png used on input line 85.
+(pdftex.def)             Requested size: 83.64944pt x 62.73819pt.
+ <images/camera/6.png, id=47, 120.45pt x 90.3375pt>
 File: images/camera/6.png Graphic file (type png)
- <use images/camera/6.png>
-Package pdftex.def Info: images/camera/6.png used on input line 136.
+
+<use images/camera/6.png>
+Package pdftex.def Info: images/camera/6.png used on input line 89.
 (pdftex.def)             Requested size: 83.64944pt x 62.73819pt.
 
+Underfull \hbox (badness 10000) in paragraph at lines 95--96
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
+ []
 
+[4 <./images/camera/0.png (PNG copy)> <./images/camera/1.png (PNG copy)> <./ima
+ges/camera/2.png (PNG copy)> <./images/camera/3.png (PNG copy)> <./images/camer
+a/4.png (PNG copy)> <./images/camera/5.png (PNG copy)> <./images/camera/6.png (
+PNG copy)>]
+Package epstopdf Info: Source file: <images/camera/Reproj7.eps>
+(epstopdf)                    date: 2016-05-29 17:14:33
+(epstopdf)                    size: 78119 bytes
+(epstopdf)             Output file: <images/camera/Reproj7-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2016-05-29 17:14:37
+(epstopdf)                    size: 18043 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/camera/Reproj7-eps-
+converted-to.pdf images/camera/Reproj7.eps>
+(epstopdf)             \includegraphics on input line 134.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/camera/Reproj7-eps-converted-to.pdf, id=51, 603.25375pt x 339.2675pt>
+File: images/camera/Reproj7-eps-converted-to.pdf Graphic file (type pdf)
+
+<use images/camera/Reproj7-eps-converted-to.pdf>
+Package pdftex.def Info: images/camera/Reproj7-eps-converted-to.pdf used on inp
+ut line 134.
+(pdftex.def)             Requested size: 167.2989pt x 94.0883pt.
+Package epstopdf Info: Source file: <images/camera/Reproj6.eps>
+(epstopdf)                    date: 2016-05-29 17:14:34
+(epstopdf)                    size: 76477 bytes
+(epstopdf)             Output file: <images/camera/Reproj6-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2016-05-29 17:14:39
+(epstopdf)                    size: 18316 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/camera/Reproj6-eps-
+converted-to.pdf images/camera/Reproj6.eps>
+(epstopdf)             \includegraphics on input line 138.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/camera/Reproj6-eps-converted-to.pdf, id=52, 603.25375pt x 339.2675pt>
+File: images/camera/Reproj6-eps-converted-to.pdf Graphic file (type pdf)
+
+<use images/camera/Reproj6-eps-converted-to.pdf>
+Package pdftex.def Info: images/camera/Reproj6-eps-converted-to.pdf used on inp
+ut line 138.
+(pdftex.def)             Requested size: 167.2989pt x 94.0883pt.
+Package epstopdf Info: Source file: <images/camera/Reproj5.eps>
+(epstopdf)                    date: 2016-05-29 17:14:37
+(epstopdf)                    size: 78857 bytes
+(epstopdf)             Output file: <images/camera/Reproj5-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2016-05-29 17:14:41
+(epstopdf)                    size: 18487 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/camera/Reproj5-eps-
+converted-to.pdf images/camera/Reproj5.eps>
+(epstopdf)             \includegraphics on input line 142.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/camera/Reproj5-eps-converted-to.pdf, id=53, 603.25375pt x 339.2675pt>
+File: images/camera/Reproj5-eps-converted-to.pdf Graphic file (type pdf)
+
+<use images/camera/Reproj5-eps-converted-to.pdf>
+Package pdftex.def Info: images/camera/Reproj5-eps-converted-to.pdf used on inp
+ut line 142.
+(pdftex.def)             Requested size: 167.2989pt x 94.0883pt.
+Package epstopdf Info: Source file: <images/camera/Reproj4.eps>
+(epstopdf)                    date: 2016-05-29 17:14:38
+(epstopdf)                    size: 76603 bytes
+(epstopdf)             Output file: <images/camera/Reproj4-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2016-05-29 17:14:44
+(epstopdf)                    size: 17904 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/camera/Reproj4-eps-
+converted-to.pdf images/camera/Reproj4.eps>
+(epstopdf)             \includegraphics on input line 146.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/camera/Reproj4-eps-converted-to.pdf, id=54, 603.25375pt x 339.2675pt>
+File: images/camera/Reproj4-eps-converted-to.pdf Graphic file (type pdf)
+
+<use images/camera/Reproj4-eps-converted-to.pdf>
+Package pdftex.def Info: images/camera/Reproj4-eps-converted-to.pdf used on inp
+ut line 146.
+(pdftex.def)             Requested size: 167.2989pt x 94.0883pt.
+Package epstopdf Info: Source file: <images/camera/Reproj3.eps>
+(epstopdf)                    date: 2016-05-29 17:14:40
+(epstopdf)                    size: 77099 bytes
+(epstopdf)             Output file: <images/camera/Reproj3-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2016-05-29 17:14:45
+(epstopdf)                    size: 18226 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/camera/Reproj3-eps-
+converted-to.pdf images/camera/Reproj3.eps>
+(epstopdf)             \includegraphics on input line 150.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/camera/Reproj3-eps-converted-to.pdf, id=55, 603.25375pt x 339.2675pt>
+File: images/camera/Reproj3-eps-converted-to.pdf Graphic file (type pdf)
+
+<use images/camera/Reproj3-eps-converted-to.pdf>
+Package pdftex.def Info: images/camera/Reproj3-eps-converted-to.pdf used on inp
+ut line 150.
+(pdftex.def)             Requested size: 167.2989pt x 94.0883pt.
+Package epstopdf Info: Source file: <images/camera/Reproj2.eps>
+(epstopdf)                    date: 2016-05-29 17:14:41
+(epstopdf)                    size: 75956 bytes
+(epstopdf)             Output file: <images/camera/Reproj2-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2016-05-29 17:14:47
+(epstopdf)                    size: 17499 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/camera/Reproj2-eps-
+converted-to.pdf images/camera/Reproj2.eps>
+(epstopdf)             \includegraphics on input line 154.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/camera/Reproj2-eps-converted-to.pdf, id=56, 603.25375pt x 339.2675pt>
+File: images/camera/Reproj2-eps-converted-to.pdf Graphic file (type pdf)
+
+<use images/camera/Reproj2-eps-converted-to.pdf>
+Package pdftex.def Info: images/camera/Reproj2-eps-converted-to.pdf used on inp
+ut line 154.
+(pdftex.def)             Requested size: 167.2989pt x 94.0883pt.
+Package epstopdf Info: Source file: <images/camera/Reproj1.eps>
+(epstopdf)                    date: 2016-05-29 17:14:43
+(epstopdf)                    size: 76525 bytes
+(epstopdf)             Output file: <images/camera/Reproj1-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2016-05-29 17:14:49
+(epstopdf)                    size: 17659 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/camera/Reproj1-eps-
+converted-to.pdf images/camera/Reproj1.eps>
+(epstopdf)             \includegraphics on input line 158.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/camera/Reproj1-eps-converted-to.pdf, id=57, 603.25375pt x 339.2675pt>
+File: images/camera/Reproj1-eps-converted-to.pdf Graphic file (type pdf)
+
+<use images/camera/Reproj1-eps-converted-to.pdf>
+Package pdftex.def Info: images/camera/Reproj1-eps-converted-to.pdf used on inp
+ut line 158.
+(pdftex.def)             Requested size: 167.2989pt x 94.0883pt.
+ [5 <./images/camera/Reproj7-eps-converted-to.pdf> <./images/camera/Reproj6-eps
+-converted-to.pdf> <./images/camera/Reproj5-eps-converted-to.pdf> <./images/cam
+era/Reproj4-eps-converted-to.pdf> <./images/camera/Reproj3-eps-converted-to.pdf
+> <./images/camera/Reproj2-eps-converted-to.pdf> <./images/camera/Reproj1-eps-c
+onverted-to.pdf>]
 \openout5 = `report.listing'.
+
 
 (c:/texlive/2015/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2015/06/04 1.6 listings language file
@@ -1153,7 +1295,7 @@ File: lstlang1.sty 2015/06/04 1.6 listings language file
 (c:/texlive/2015/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2015/06/04 1.6 (Carsten Heinz)
 )
-LaTeX Font Info:    Try loading font information for OT1+zi4 on input line 172.
+LaTeX Font Info:    Try loading font information for OT1+zi4 on input line 196.
 
 
 (c:/texlive/2015/texmf-dist/tex/latex/inconsolata/ot1zi4.fd
@@ -1166,14 +1308,7 @@ LaTeX Font Info:    Font shape `OT1/zi4/bx/n' in size <10.95> not available
 LaTeX Font Warning: Font shape `OT1/zi4/m/it' undefined
 (Font)              using `OT1/zi4/m/n' instead on input line 14.
 
-) [3]
-Overfull \vbox (58.50966pt too high) has occurred while \output is active []
-
-
-[4 <./images/camera/0.png (PNG copy)> <./images/camera/1.png (PNG copy)> <./ima
-ges/camera/2.png (PNG copy)> <./images/camera/3.png (PNG copy)> <./images/camer
-a/4.png (PNG copy)> <./images/camera/5.png (PNG copy)> <./images/camera/6.png (
-PNG copy)>]
+) [6]
 \openout5 = `report.listing'.
 
  (./report.listing
@@ -1181,15 +1316,14 @@ Overfull \hbox (7.24745pt too wide) in paragraph at lines 1--2
 [][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-) [5] [6]
+) [7]
 Overfull \vbox (14.83334pt too high) has occurred while \output is active []
 
 
-[7]
+[8]
+\openout5 = `report.listing'.
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[8] [9]
+ (./report.listing) [9] [10] [11] [12]
 \openout5 = `report.listing'.
 
  (./report.listing
@@ -1197,27 +1331,30 @@ Overfull \hbox (3.04823pt too wide) in paragraph at lines 8--9
 [][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-) [10]
+)
 Missing character: There is no Â in font cmr10!
 Missing character: There is no ° in font cmr10!
+ [13]
 \openout5 = `report.listing'.
 
- (./report.listing) [11] [12] [13]) (./report.bbl) [14] (./report.aux)
+ (./report.listing) [14] [15] [16]) (./setup.tex) (./results.tex)
+(./conclusion.tex) (./report.bbl) [17
+
+
+
+] (./report.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
  ) 
 Here is how much of TeX's memory you used:
- 29590 strings out of 493091
- 620337 string characters out of 6138531
- 724582 words of memory out of 5000000
- 32545 multiletter control sequences out of 15000+600000
+ 29667 strings out of 493091
+ 622221 string characters out of 6138531
+ 721239 words of memory out of 5000000
+ 32602 multiletter control sequences out of 15000+600000
  23216 words of font info for 84 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 63i,15n,101p,10491b,1292s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 63i,15n,101p,10491b,1349s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/texlive/2015/texmf-dist/fonts/enc/dvips/inconsolata/i4-ot1-0.enc}<c:/texl
 ive/2015/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4b.pfb><c:/tex
 live/2015/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4r.pfb><c:/te
@@ -1235,10 +1372,10 @@ type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2015/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmsy8.pfb><c:/texlive/2015/texmf-dist/fonts/type1/public/amsfon
 ts/cm/cmti10.pfb><c:/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/symbol
 s/msbm10.pfb>
-Output written on report.pdf (18 pages, 330464 bytes).
+Output written on report.pdf (21 pages, 439617 bytes).
 PDF statistics:
- 144 PDF objects out of 1000 (max. 8388607)
- 98 compressed objects within 1 object stream
+ 225 PDF objects out of 1000 (max. 8388607)
+ 147 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
- 53 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 88 words of extra memory for PDF output out of 10000 (max. 10000000)
 

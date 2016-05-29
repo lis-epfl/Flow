@@ -1,7 +1,7 @@
 \contentsline {section}{\numberline {1}Introduction}{1}
-\contentsline {section}{\numberline {2}Theoretical background}{2}
-\contentsline {subsection}{\numberline {2.1}Omnidirectional Camera Model}{2}
-\contentsline {subsection}{\numberline {2.2}Mapping Optical Flow to Unit Sphere}{5}
-\contentsline {subsection}{\numberline {2.3}Derotation of Optical Flow}{8}
-\contentsline {subsection}{\numberline {2.4}Finding the Focus of Expansion}{9}
-\contentsline {subsection}{\numberline {2.5}Egomotion from Optical Flow Measurements}{13}
+\contentsline {section}{\numberline {2}Method for Direction of Motion Estimation}{3}
+\contentsline {subsection}{\numberline {2.1}Omnidirectional Camera Model}{3}
+\contentsline {subsection}{\numberline {2.2}Mapping Optical Flow to Unit Sphere}{6}
+\contentsline {subsection}{\numberline {2.3}Derotation of Optical Flow}{10}
+\contentsline {subsection}{\numberline {2.4}Finding the Focus of Expansion}{12}
+\contentsline {subsection}{\numberline {2.5}Egomotion from Optical Flow Measurements}{16}
