@@ -30,4 +30,7 @@ O.~Shakernia, R.~Vidal, and S.~Sastry, ``Omnidirectional egomotion estimation
   from back-projection flow,'' in {\em Computer {Vision} and {Pattern}
   {Recognition} {Workshop}}, pp.~82--82, IEEE, 2003.
 
+\bibitem{rotation}
+D.~Eberly, ``Rotation representations and performance issues,'' 2002.
+
 \end{thebibliography}

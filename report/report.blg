@@ -7,36 +7,37 @@ Warning--empty school in lim
 Warning--empty publisher in derotation
 Too many commas in name 1 of "Scaramuzza, D., Martinelli, A. and Siegwart, R." for entry scara
 while executing---line 969 of file ieeetr.bst
-You've used 6 entries,
+Warning--empty journal in rotation
+You've used 7 entries,
             1876 wiz_defined-function locations,
-            508 strings with 4458 characters,
-and the built_in function-call counts, 1531 in all, are:
-= -- 142
-> -- 56
+            512 strings with 4530 characters,
+and the built_in function-call counts, 1661 in all, are:
+= -- 152
+> -- 60
 < -- 0
-+ -- 21
-- -- 15
-* -- 102
-:= -- 217
-add.period$ -- 7
-call.type$ -- 6
-change.case$ -- 5
++ -- 23
+- -- 16
+* -- 109
+:= -- 238
+add.period$ -- 8
+call.type$ -- 7
+change.case$ -- 6
 chr.to.int$ -- 0
-cite$ -- 8
-duplicate$ -- 89
-empty$ -- 162
-format.name$ -- 15
-if$ -- 369
+cite$ -- 10
+duplicate$ -- 98
+empty$ -- 179
+format.name$ -- 16
+if$ -- 399
 int.to.chr$ -- 0
-int.to.str$ -- 6
-missing$ -- 5
-newline$ -- 22
-num.names$ -- 6
-pop$ -- 34
+int.to.str$ -- 7
+missing$ -- 6
+newline$ -- 25
+num.names$ -- 7
+pop$ -- 40
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 48
+skip$ -- 49
 stack$ -- 0
 substring$ -- 88
 swap$ -- 28
@@ -44,8 +45,8 @@ text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
-warning$ -- 2
-while$ -- 15
-width$ -- 7
-write$ -- 55
+warning$ -- 3
+while$ -- 16
+width$ -- 8
+write$ -- 62
 (There was 1 error message)

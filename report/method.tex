@@ -339,57 +339,36 @@ void fast_flow2world(float *flow_x, float *flow_y,
 Under the assumption of differential motion, that is small translation and rotation of the camera between each frame, we can approximate the geometrical effects of egomotion on the perceived image motion to a first-order Taylor polynomial. Hence, as the scene is projected on the unit sphere centered on the vantage point, each optical flow measurement can be expressed as a 3D vector tangent to the unit sphere and perpendicular to the viewing direction:
 \begin{equation}
 \label{equ:opticflow}
-p = -w \times d - \dfrac{v - (v \cdot d)d}{D}
+f = -w \times d - \dfrac{v - (v \cdot d)d}{D}
 \end{equation}
-where $d$ is a unit vector describing the viewing direction, $w$ the angular speed vector, $v$ the translational velocity vector and $D$ the distance to the viewed object. The measured optical flow $p$ can be decoupled and expressed in two parts, namely the rotation-induced and the translation-induced optical flows, respectively $p_r$ and $p_t$.
+where $d$ is a unit vector describing the viewing direction, $w$ the angular speed vector, $v$ the translational velocity vector and $D$ the distance to the viewed object. The measured optical flow $f$ can be decoupled and expressed in two parts, namely the rotation-induced and the translation-induced optical flows, respectively $f_r$ and $f_t$.
 
-As we are only interested in the estimation of the angle of attack, i.e. the direction of translation, only the translational part $p_t$ of the optical flow is required. Hence, we proceed to the removal of the rotational part $p_r$ of the optical flow through the process of derotation \cite{derotation}. If necessary, the main axis $Z$ of the camera can be automatically calibrated using the method proposed in \cite{autocalib}. Even after calibration, the derotation procedure may introduce additional noise to the optical flow measurement, all the more so that the rotational component is larger than the translational part of the optical flow. This may be exacerbated by the sensor bias compensation and noise reduction only achieved using averaging and low-pass filtering.
+As we are only interested in the estimation of the angle of attack (i.e. the direction of translation), only the translational part $f_t$ of the optical flow is required. Hence, we proceed to the removal of the rotational part $f_r$ of the optical flow through the process of derotation \cite{derotation}. If necessary, the main axis $Z$ of the camera can be automatically calibrated using the method proposed in \cite{autocalib}, so as to estimate the transformation from the gyroscope frame to the camera frame. Even after calibration, the derotation procedure may introduce additional noise to the optical flow measurement, all the more so that the rotational component is larger than the translational part of the optical flow. This may be exacerbated by the sensor bias compensation and noise reduction only achieved using averaging and low-pass filtering.
 
-However, before proceeding to the derotation of the optical flow, we must first consider scaling the angular rate values. Indeed the optical flow is given in pixels/frame or counts/frame whereas the gyroscopes measurements are rad/s. Hence, we need to estimate the scaling factor between both measurements. This can be achieved through regression from measurements obtained for pure rotations of the drone. To simplify both the procedure and the processing of the measurements, we only sampled the optical flow measurements at the center of the camera image. This allowed us to directly use the raw measurements from the optic-flow sensor and the gyroscopes. The measurements were first verified so as to remove obvious outliers and the regression is perfomed by computing the mean, standard deviation (SD) and standard error (SE) of the ratio flow/gyro. Then, we also apply least square regression (both with and without bias) on the same dataset. Note that, prior to regression, the gyroscope measurements were first multiplied by $0.01$ so as to obtain comparable values (in terms of magnitude). The results from regression are displayed in Table~\ref{tab:gyroScaling}.
-
-\begin{table}[h!]
-	\centering
-	\begin{tabular}{|p{4cm}||p{1.5cm}|p{1.5cm}|p{1.5cm}|}
-	   \hline
-	   Method & \multicolumn{3}{|c|}{Angular rate scaling factor ($\times0.01$)} \\
-	   \hline
-	   \multirow{2}{*}{Mean Ratio (flow/gyro)} & Mean & SD & SE \\
-	   \cline{2-4}
-	   & 1.07 & 0.427 & 0.0288 \\
-	   \hhline{|=#=|=|=|}
-	   \multirow{2}{*}{Least Squares (full)} & Bias & Weight & RSS \\
-	   \cline{2-4}
-	   & 0.00192 & 0.826 & 0.00152 \\
-	   \hhline{|=#=|=|=|}
-	   \multirow{2}{*}{Least Squares (no bias)} & \multicolumn{2}{|c|}{Weight} & RSS \\
-	   \cline{2-4}
-	   & \multicolumn{2}{|c|}{0.984} & 0.00163 \\
-	   \hline
-	\end{tabular}
-	\caption{\textbf{Results from calibration of the angular rate scaling factor}-Based on 220 samples taken at the center of the camera image}
-	\label{tab:gyroScaling}
-\end{table}
-
-The results show a high standard deviation due to high noise in the optic-flow measurements. The low resolution and the sometimes uniform textures of the environment in which the data were sampled can be accounted for the high uncertainty in the scaling factor. Interestingly enough, this significantly impact the results of the full least square regression. Finally, the results from least square regression without bias conforts us in the magnitude of the scaling factor with only 2\% average error on its value. Therefore, as we are facing very noisy data, we kept the scaling factor to $0.01$ for the remaining of the project.
+However, before proceeding to the derotation of the optical flow, we must first consider scaling the angular rate values. Indeed, once projected on the unit sphere, the optical flow is given in [frame\textsuperscript{-1}] whereas the gyroscopes measurements are [rad.s\textsuperscript{-1}]. Given the refresh rate of the camera, the conversion is straight forward: 
+\begin{equation}
+w\mathrm{[frame\textsuperscript{-1}]} = 0.005 \cdot w\mathrm{[rad/s\textsuperscript{-1}]}
+\end{equation}
 
 \subsection{Finding the Focus of Expansion}
-In order to find the direction of translation, we use the derotated optical flow to constrain the translation direction to lie on a great circle. This great circle is the intersection of a plane - defined by the vector describing a viewing direction $d$, its corresponding optical flow vector $p_t$ and the center of the sphere $O$ - with the unit sphere \footnote{Indeed, the plane contains the viewing direction vector and the optic-flow sensor}. Hence, each optic-flow vector gives us a constrain on the position of the focus of expansion (FOE), which can be located anywhere on the great circle. Although only two great circles are required to constrain the location of the FOE to a single point, several measurements are used so as to recover from possible outliers and noise.
+In order to find the direction of translation, we use the derotated optical flow to constrain the translation direction to lie on a great circle. This great circle is the intersection of a plane - defined by the vector defined by the viewing direction $d$, its corresponding optical flow vector $p_t$ and the center of the sphere $O$ - with the unit sphere. Hence, each optic-flow vector gives us a constrain on the position of the focus of expansion (FOE), which can be located anywhere on the great circle. Although only two great circles are required to constrain the location of the FOE to two points (and thus to find the axis of motion), several measurements are used so as to recover from possible outliers and noise.
 
-For a robust estimation of the translation direction, two different approaches are possible. The first one relies on RANSAC (RANdom SAmple Consensus) and its variants. However, this method implies several estimations of the location of the FOE based on randomly sampled measurements and may not be suitable for implementation on a microcontroller and fast refresh rate. Another approach is to find the best intersection of all the great circle arising from the optical flow measurements such as the Hough-reminiscent voting method proposed in \cite{lim}. Voting has the advantage of performing in constant time under increasing outlier proportions without any loss of accuracy. Its higher robustness and the fact that it does not require an optimization process make this method the most suitable for embedded robotics. 
+For a robust estimation of the direction of translation, two different approaches are possible. The first one relies on RANSAC (RANdom SAmple Consensus) and its variants. However, this first method implies several estimations of the location of the FOE based on randomly sampled measurements and may not be suitable for implementation on a microcontroller and fast refresh rate. Another approach is to find the best intersection of all the great circle arising from the optical flow measurements such as the Hough-reminiscent voting method proposed in \cite{lim}. Voting has the advantage of performing in constant time under increasing outlier proportions without any loss of accuracy. Its higher robustness and the fact that it does not require an optimization process make this method the most suitable for embedded robotics. 
  
 % Let $\hat{p}_t = \dfrac{p_t}{\|p_t\|}$ be the normalized optical flow vector corresponding to the viewing direction $d$. A parametric equation of the great circle defined by these two normalized vectors is:
 % \begin{equation}
 % v(t)= cos(t)\cdot\hat{p}_t + sin(t)\cdot d
 % \end{equation}
 % From this equation, we can proceed to voting along the great circle corresponding to each optical flow measurement. For the procedure not to be too computationally heavy, we can perform a coarse voting to determine a first approximation for the location of the FOE. Then, we refine our estimate by projecting the great circle on a plane tangent to the unit sphere in the vicinity of the estimated location. Hence, the voting procedure is simplified by voting along lines in the plane and there are efficient algorithms to perform this task, such as the Bresenham line algorithm.
+
 In order to simplify the mathematical representation of the great circles, we rely on their normal vectors. Indeed, since a great circle is the intersection of the sphere with a plane passing though its origin, it can be defined using one of the unit normal vectors.
 Formally, for a unit vector $n = (n_x, n_y, n_z)^T$, a great circle on the unit sphere $S^2$ is defined as
 \begin{equation}
-C = S^2\bigcup \{ x|x^Tn = 0, x \in \mathbb{R}^3 \}
+C = S^2~\bigcup~\{ x|x^Tn = 0, x \in \mathbb{R}^3 \}
 \end{equation}
 This normal vector $n$ is readily computed using the cross-product,
 \begin{equation}
-n = \dfrac{d \times p_t}{\|d \times p_t\|}
+n = \dfrac{d \times f_t}{\|d \times f_t\|}
 \end{equation}
 % Considering two great circles and their corresponding normal vectors, namely $n_i$ and $n_j$, we can compute their intersections $a_{ij}$ and $a_{ji}$,
 % \begin{equation}
@@ -401,29 +380,29 @@ n = \dfrac{d \times p_t}{\|d \times p_t\|}
 % Hence, we can vote to the accumulator for either $a_{ij}$ and $a_{ji}$ for each pair of points. Of course, the intersection of the two great circles actually yields two points.
 Thus, we can vote along a great circle, given its normal vector, by computing simple dot products (i.e. 3 multiplications and 2 additions).
 
-In practice, the intersection of two great circles define 2 possible direction of translations. To disambiguate between the two, one may pick one of the two points and calculate the angle between it and the vector $p_t$. If the angle is larger than $\pi/2$ radians, then that point is the focus of expansion. Another possibility is to use an additional sensor (such as a sonar) to choose the correct direction. In order to improve the processing speed on the camera chip (and to avoid ambiguity), we only consider one hemisphere, that is half the number of possible directions of translation. In other words, we only determine the axis of translation rather than its direction and we work on the hemisphere defined by $z<0$.
+In practice, the intersection of two great circles define 2 possible directions of translation. To disambiguate between the two, one may pick one of the two points and calculate the angle between it and the vector $f_t$. If the angle is larger than $\pi/2$ radians, then that point is the focus of expansion. Another possibility is to use an additional sensor (such as a sonar) to choose the correct direction. In order to improve the processing speed on the camera chip (and to avoid ambiguity), we only consider one hemisphere, that is half the number of possible directions of translation. In other words, we only determine the axis of translation rather than its direction and we work on the hemisphere defined by $z<0$.
 
 The voting procedure requires the storage of evenly distributed vectors on the unit sphere. The minimal angle between these vectors define the resolution of the voting procedure. For tractability reasons, we cannot afford to vote on the complete unit sphere in one batch. Hence, we are considering an iterative method which can be divided in two phases. The first one is a coarse voting procedure where we compute a rough estimate of the direction of translation using a few directions sampled from one hemisphere. This estimate is then used in the next phase where we perform voting on a refined spherical grid of higher resolution but reduced spread. The complete voting procedure is detailed in Algorithm~\ref{algo:houghVoting}.
 
 \begin{algorithm}[colback=white, label=algo:houghVoting]{Hough-reminiscent voting}
 Select optic flow measurement $p_t$ and viewing direction $d$
 Compute normal vector $n = \dfrac{d \times p_t}{\|d \times p_t\|}$
-for i = 1 to $N_{coarse}$ do
-   if $x_i^Tn = 0$ then
+For i = 1 to $N_{coarse}$ do
+   If $x_i^Tn = 0$ then
       Vote for direction $x_i$
    end if
 end for
 Find the bins with maximum votes. This gives the coarse estimate.
 Rotate the refined bins to center them on coarse estimate
-for j = 1 to $N_{refined}$ do
-   if $x_j^Tn = 0$ then
+For j = 1 to $N_{refined}$ do
+   If $x_j^Tn = 0$ then
       Vote for direction $x_j$
    end if
 end for
 Find the bins with maximum votes. This gives the fine estimate
 \end{algorithm}
 
-The refined voting requires rotating the refined bins, which we computed for the a predefined direction (in our case $z = (0,~ 0,-1)$). There are three ways to achieve this transformation, namely the rotation matrix, axis-angle and quaternion methods. From a computational point of view, the rotation matrix method is the cheapest one (6 additions and 9 multiplications) whereas the quaternion method is the most expensive (18 additions and 21 multiplications). However, it is easier for us to use the axis-angle representation and than convert it to a rotation matrix so as to perform the transformation on every bins. The latter convertion accounts for 13 additions and 15 multiplications but the subsequent processing will only require 6 additions and 9 multiplications, provided that we can store the entire rotation matrix. A C implementation is given in Code~\ref{algo:rotation}.
+The refined voting requires rotating the refined bins, which we computed for the a predefined direction (in our case $z = (0,~ 0,-1)$). There are three ways to achieve this transformation, namely the rotation matrix, axis-angle and quaternion methods \cite{rotation}. From a computational point of view, the rotation matrix method is the cheapest one (6 additions and 9 multiplications) whereas the quaternion method is the most expensive (18 additions and 21 multiplications). However, it is easier for us to use the axis-angle representation and then convert it to a rotation matrix so as to perform the transformation on every bins. The latter convertion accounts for 13 additions and 15 multiplications but the subsequent processing will only require 6 additions and 9 multiplications, provided that we can store the entire rotation matrix. A C implementation is given in Code~\ref{algo:rotation}.
 
 Obviously, this whole method is sensible to noise which could affect the voting procedure if the accumulator has a finite resolution. In our case, the coarse resolution was set to $31^\circ$ and the fine resolution was chosen as approximately $4^\circ$. The latter value is justified considering the resolution of the camera (which is around 1.5°/pixel) and the additional noise induced by derotation. The former value was chosen so as to limit the number of coarse bins. The voting bins were evenly distributed on the unit and generated using the icosahedron method. Table~\ref{tab:votingBins} summarizes the voting bins parameters.
 
@@ -484,11 +463,7 @@ void rotate_bins(voting_bins *bins, float best_x,
 }
 \end{code}
 
-\subsection{Egomotion from Optical Flow Measurements}
-Another solution to our problem is to estimate the direction and the speed (scale) of translation. This can be achieved using EKF-based methods such as the one proposed in \cite{ekf}, which allows for more parameters to be estimated through the fusion of sensor measurements from the Inertial Measurement Unit (IMU) and the optic-flow sensor. 
+\subsection{Computational cost}
 
-Considering the available hardware, this method would require the transmission of the preprocessed data from the camera chip to the autopilot. Hence, it would be necessary to estimate the additional delay due to preprocessing and transmission. In this case, the computation of optical flow measurements and viewing direction, the projection on the unit sphere, and the derotation, could be performed on the camera chip while the remaining computations (EKF predictions and updates) would be realized by the autopilot.
-
-Unfortunately, this method is still sensitive to outliers and would benefit from the addition of a random sampling step (RANSAC) and/or a quality factor to remove erroneous optical flow measurements. 
 
 \newpage

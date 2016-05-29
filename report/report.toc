@@ -3,5 +3,5 @@
 \contentsline {subsection}{\numberline {2.1}Omnidirectional Camera Model}{3}
 \contentsline {subsection}{\numberline {2.2}Mapping Optical Flow to Unit Sphere}{6}
 \contentsline {subsection}{\numberline {2.3}Derotation of Optical Flow}{10}
-\contentsline {subsection}{\numberline {2.4}Finding the Focus of Expansion}{12}
-\contentsline {subsection}{\numberline {2.5}Egomotion from Optical Flow Measurements}{16}
+\contentsline {subsection}{\numberline {2.4}Finding the Focus of Expansion}{11}
+\contentsline {subsection}{\numberline {2.5}Computational cost}{15}
