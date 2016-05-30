@@ -615,27 +615,23 @@ int main(void)
 			find_best(&c_bins, &best_x, &best_y, &best_z);
 			for(uint8_t i=0; i<COARSE_BINS; i++) c_bins.acc[i]=0; // reset coarse accumulator
 
-			float prev_prec;
-
 			for (int k = 0; k < NB_ITERATIONS; k++)
 			{
 				/* rotate refined bins */
 				rotate_bins(&r_bins, best_x, best_y, best_z, r_grids[k]->x, r_grids[k]->y, r_grids[k]->z);
 
 				/* proceed to refined voting */
-				prev_prec = v_prec[k];
 				r_bins.prec = v_prec[k+1];
 				
 				for (int i = 0; i < NB_SAMPLES; i++)
 				{	
-					refined_voting(&r_bins, prev_prec, n_dir_3d.x[i], n_dir_3d.y[i], n_dir_3d.z[i], best_x, best_y, best_z);
+					refined_voting(&r_bins, v_prec[k], n_dir_3d.x[i], n_dir_3d.y[i], n_dir_3d.z[i], best_x, best_y, best_z);
 				}
 	
 				/* get refined estimate */
 				find_best(&r_bins, &best_x, &best_y, &best_z);
 				for(uint8_t i=0; i<REFINED_BINS; i++) r_bins.acc[i]=0; // reset refined accumulator
 			}
-			
 
 			//acc_flow_x /= 125.0f;
 			//acc_flow_y /= 125.0f;
