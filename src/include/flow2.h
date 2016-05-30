@@ -61,23 +61,24 @@ static inline void normalize(float *x, float *y, float *z)
 /**
 * @brief Converts axis-angle representation to rotation matrix
 *
-*   @param [u_x, u_y, u_z]    	cartesian coordinates of the axis
+*	@param R 					rotation matrix
+*   	@param [u_x, u_y, u_z]    			cartesian coordinates of the axis
 *	@param c 					cosinus of the angle
 *	@param s 					sinus of the angle
 *
 * @return Rotation matrix coefficients
 */
-static inline void aa2mat(float R[9], float u_x, float u_y, float u_z, float c, float s)
+static inline void aa2mat(float R[9], float u_x, float u_y, float u_z, float c, float s, float t)
 {
-	R[0] = SQR(u_x)*(1-c) + c;
-	R[1] = u_x*u_y*(1-c) - u_z*s;
-	R[2] = u_x*u_z*(1-c) + u_y*s;
-	R[3] = u_x*u_y*(1-c) + u_z*s;
-	R[4] = SQR(u_y)*(1-c) + c;
-	R[5] = u_y*u_z*(1-c) - u_x*s;
-	R[6] = u_x*u_z*(1-c) - u_y*s;
-	R[7] = u_y*u_z*(1-c) + u_x*s;
-	R[8] = SQR(u_z)*(1-c) + c;
+	R[0] = SQR(u_x)*t + c;
+	R[1] = u_x*u_y*t - u_z*s;
+	R[2] = u_x*u_z*t + u_y*s;
+	R[3] = u_x*u_y*t + u_z*s;
+	R[4] = SQR(u_y)*t + c;
+	R[5] = u_y*u_z*t - u_x*s;
+	R[6] = u_x*u_z*t - u_y*s;
+	R[7] = u_y*u_z*t + u_x*s;
+	R[8] = SQR(u_z)*t + c;
 }
 
 /**
