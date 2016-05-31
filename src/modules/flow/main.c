@@ -117,6 +117,7 @@ volatile uint32_t boot_time10_us = 0;
 static volatile unsigned timer[NTIMERS];
 static volatile unsigned timer_ms = MS_TIMER_COUNT;
 
+static uint32_t N_points = 70;
 /* timer/system booleans */
 bool send_system_state_now = true;
 bool receive_now = true;
@@ -327,14 +328,14 @@ int main(void)
 
 	union flow_lk {
 		struct {
-			int16_t x[125];
-			int16_t y[125];
+			int16_t x[N_points];
+			int16_t y[N_points];
 		};
 		// struct {
 		// 	uint8_t data_x[250];
 		// 	uint8_t data_y[250];
 		// };
-		uint8_t data[500];
+		uint8_t data[4*N_points];
 	} flow_lk;
 
 
@@ -449,6 +450,8 @@ int main(void)
 
 		static float DT;
 
+		// static float denzominateur[70];
+
 		/* compute optical flow */
 		if (FLOAT_EQ_INT(global_data.param[PARAM_SENSOR_POSITION], BOTTOM))
 		{
@@ -466,7 +469,7 @@ int main(void)
 			int32_t roi_sx = 10;
 			int32_t roi_sy = 10;
 
-			for (int i = 0; i < 125; ++i)
+			for (int i = 0; i < N_points; ++i)
 			{
 				/* code */
 				lucas_kanade( 	current_image, //dat_t * data, 
@@ -475,14 +478,24 @@ int main(void)
 						image_height, //int dsy, 
 						roi_sx, //int roi_sx, 
 						roi_sy, //int roi_sy, 
-						12 + i, //int const roi_x, 
+						5 + 9*i, //int const roi_x, 
 						(image_height - roi_sy) / 2, // int const roi_y, 
 						&num_x, //dat_t & num_x, 
 						&num_y, //dat_t & num_y, 
 						&den); //dat_t & den );
-			
+				
+				// denominateur[i] = den;
+				if(den > 100000)
+				{
 				flow_lk.x[i] = 1000 * num_x / den;
 				flow_lk.y[i] = 1000 * num_y / den;
+				}
+				else
+				{
+				flow_lk.x[i] = 0;
+				flow_lk.y[i] = 0;
+				}
+
 			}
 
 			// pixel_flow_x = num_x / den; 
@@ -595,7 +608,8 @@ int main(void)
   //                       PROBE_3(true);
 
             //serial mavlink  + usb mavlink output throttled
-			if (counter % (uint32_t)global_data.param[PARAM_BOTTOM_FLOW_SERIAL_THROTTLE_FACTOR] == 0)//throttling factor
+			// if (counter % (uint32_t)global_data.param[PARAM_BOTTOM_FLOW_SERIAL_THROTTLE_FACTOR] == 0)//throttling factor
+			if (counter % 10 == 0)
 			{
 
 				// float flow_comp_m_x = 0.0f;
@@ -629,20 +643,20 @@ int main(void)
 				// 		DT);
 
 				mavlink_msg_optical_flow_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-						flow_lk.x[30], flow_lk.x[50],
-						flow_lk.x[70], flow_lk.x[90], qual,
+						flow_lk.x[1], flow_lk.x[19],
+						flow_lk.x[23], flow_lk.x[42], qual,
 						DT);
 
 				mavlink_msg_data_transmission_handshake_send(
 						MAVLINK_COMM_0,
 						MAVLINK_TYPE_INT16_T,
-						500,
-						125, 
+						4*N_points,
+						N_points, 
 						2,
-						500 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
+						4*N_points / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
 						MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
 						100);
-				for (int frame = 0; frame < 500 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1; ++frame)
+				for (int frame = 0; frame < 4*N_points / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1; ++frame)
 				{
 					mavlink_msg_encapsulated_data_send(MAVLINK_COMM_0, frame, &((uint8_t *) flow_lk.data)[frame * MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN]);
 				}
@@ -681,7 +695,7 @@ int main(void)
 
 					mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
 							flow_lk.x[30], flow_lk.x[50],
-							flow_lk.x[70], flow_lk.x[90], qual,
+							flow_lk.x[70], flow_lk.x[20], qual,
 							DT);
 
 					// mavlink_msg_data_transmission_handshake_send(
