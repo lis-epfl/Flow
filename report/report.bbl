@@ -33,4 +33,9 @@ O.~Shakernia, R.~Vidal, and S.~Sastry, ``Omnidirectional egomotion estimation
 \bibitem{rotation}
 D.~Eberly, ``Rotation representations and performance issues,'' 2002.
 
+\bibitem{adapted_neighborhood}
+A.~Radgui~et al., ``Adapted approach for omnidirectional egomotion
+  estimation,'' {\em International Journal of Computer Vision and Image
+  Processing}, 2011.
+
 \end{thebibliography}

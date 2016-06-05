@@ -5,3 +5,6 @@
 \contentsline {subsection}{\numberline {2.3}Derotation of Optical Flow}{10}
 \contentsline {subsection}{\numberline {2.4}Finding the Focus of Expansion}{11}
 \contentsline {subsection}{\numberline {2.5}Computational cost}{15}
+\contentsline {section}{\numberline {3}Results \& Discussion}{16}
+\contentsline {subsection}{\numberline {3.1}Setup}{16}
+\contentsline {subsection}{\numberline {3.2}Results}{17}
