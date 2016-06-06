@@ -155,6 +155,7 @@ include_directories(
     lib/STM32_USB_OTG_Driver/inc
     mavlink/include/mavlink/v1.0
     mavlink/include/mavlink/v1.0/common
+    mavlink/include/mavlink/v1.0/mavric
     )
 
 # source
