@@ -1,10 +1,10 @@
 %--------------------------------------------------------------------------
-%   PROCESS FLOW 81 DATA
+%   PROCESS FLOW 117 DATA
 %--------------------------------------------------------------------------
 %% Process camera data
 clear all;
-load('flow81_cam.mat');
-load('flow81_200fps.mat');
+load('flow117_cam.mat');
+load('flow117_200fps.mat');
 
 % Rescale and align ground time
 offset = Time(1);
@@ -23,7 +23,6 @@ CamY_ = [];
 CamZ_ = [];
 GyroX_ = [];
 GyroY_ = [];
-GyroZ_ = [];
 
 for i=1:length(nanLine),
     if nanLine(i) == 0;
@@ -34,7 +33,6 @@ for i=1:length(nanLine),
         CamZ_ = [CamZ_ CamZ(i)];
         GyroX_ = [GyroX_ GyroX(i)];
         GyroY_ = [GyroY_ GyroY(i)];
-        GyroZ_ = [GyroZ_ GyroZ(i)];
     end
 end
 
@@ -47,7 +45,6 @@ CamY = [];
 CamZ = [];
 GyroX = [];
 GyroY = [];
-GyroZ = [];
 
 for i = 1:length(delayedLine),
     if delayedLine(i) == 0;
@@ -58,11 +55,10 @@ for i = 1:length(delayedLine),
         CamZ = [CamZ CamZ_(i)];
         GyroX = [GyroX GyroX_(i)];
         GyroY = [GyroY GyroY_(i)];
-        GyroZ = [GyroZ GyroZ_(i)];
     end
 end
 
-clear CamFrame_ CamTime_ CamX_ CamY_ CamZ_ GyroX_ GyroY_ GyroZ_ delayedLine nanLine i
+clear CamFrame_ CamTime_ CamX_ CamY_ CamZ_ GyroX_ GyroY_ delayedLine nanLine i
 
 % align CamFrame with 0
 offset = CamFrame(1);
@@ -74,19 +70,17 @@ end
 for i=1:length(GyroX(1,:));
     GyroX(1,i) = GyroX(1,i)*200;
     GyroY(1,i) = GyroY(1,i)*200;
-    GyroZ(1,i) = GyroZ(1,i)*200;
 end
 
 % Interpolate camera measurements
 camtime = 0:5:CamFrame(length(CamFrame))+5; 
 GyroX = interp1(CamFrame, GyroX, camtime);
 GyroY = interp1(CamFrame, GyroY, camtime);
-GyroZ = interp1(CamFrame, GyroZ, camtime);
 CamX = interp1(CamFrame, CamX, camtime);
 CamY = interp1(CamFrame, CamY, camtime);
 CamZ = interp1(CamFrame, CamZ, camtime);
 
-save('flow_81_cam_pro.mat', 'CamX', 'CamY', 'CamZ', 'GyroX', 'GyroY', 'GyroZ');
+save('flow_117_cam_pro.mat', 'CamX', 'CamY', 'CamZ', 'GyroX', 'GyroY');
 
 %% Process motion capture data
 % Estimate angular rates
@@ -115,7 +109,7 @@ rateY = rates(:,2);
 rateZ = rates(:,3);
 
 % Estimate direction of translation
-pos = [X, -Z, Y];
+pos = [X, Y, Z];
 
 dir = zeros(length(pos(:,1)), length(pos(1,:)));
 dir(1,:) = (pos(2,:) - pos(1,:))/timestep; % 2 points rule
@@ -143,12 +137,12 @@ dirZ = bodyDir(:,3);
 
 %clear angRates bodyDir dir dquat i invquat pos quat quatRates QuatX QuatY QuatW QuatZ rates rotM X Y Z
 
-save('flow_81_200fps_pro.mat', 'dirX', 'dirY', 'dirZ', 'rateX', 'rateY', 'rateZ', 'Time', 'ErrorMarkers');
+save('flow_117_200fps_pro.mat', 'dirX', 'dirY', 'dirZ', 'rateX', 'rateY', 'rateZ', 'Time', 'ErrorMarkers');
 
 %% Load full data
 clear all
-load('flow_81_cam_pro.mat');
-load('flow_81_200fps_pro.mat');
+load('flow_117_cam_pro.mat');
+load('flow_117_200fps_pro.mat');
 
 %% Synchronize measurements (convolution)
 
@@ -167,37 +161,29 @@ load('flow_81_200fps_pro.mat');
 
 %% Synchronize manually
 % define delay
-delay = 1445;
+delay = 1789;
 
 % plot results
 % rates around X
 figure;
 hold on
-h1 = plot(rateZ);
-h2 = plot(GyroX(delay:length(GyroX)));
+h1 = plot(rateZ(delay:length(rateZ)));
+h2 = plot(GyroX);
 legend([h1, h2], 'Optitrack Z','Gyroscope X');
 hold off
 
 % rates around Y
 figure;
 hold on
-h1 = plot(rateX);
-h2 = plot(GyroY(delay:length(GyroY)));
+h1 = plot(rateX(delay:length(rateX)));
+h2 = plot(GyroY);
 legend([h1, h2], 'Optitrack Z','Gyroscope Y');
-hold off
-
-% rates around Z
-figure;
-hold on
-plot(rateY);
-plot(GyroZ(delay:length(GyroZ)));
-legend([h1, h2], 'Optitrack Y','Gyroscope Z');
 hold off
 
 %% Compare direction estimates
 % crop data
 CamZ_ = CamZ(delay:length(CamZ));
-dirX_ = dirY(1:length(CamZ_));
+dirZ_ = dirZ(1:length(CamZ_));
 
 % plot raw measurements
 figure;
@@ -205,12 +191,12 @@ hold on
 h2 = plot(abs(CamZ_));
 drawnow;
 pause;
-h1 = plot(abs(dirY));
+h1 = plot(abs(dirZ_));
 legend([h1, h2], 'Optitrack Z','Gyroscope Y');
 hold off
 
 % plot error
-error = abs(CamZ_)'-abs(dirX_);
+error = abs(CamZ_)'-abs(dirZ_);
 figure;
 hold on
 plot(error);

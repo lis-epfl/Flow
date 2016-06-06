@@ -1,10 +1,10 @@
 %--------------------------------------------------------------------------
-%   PROCESS FLOW 81 DATA
+%   PROCESS FLOW 81 AV DATA
 %--------------------------------------------------------------------------
 %% Process camera data
 clear all;
-load('flow81_cam.mat');
-load('flow81_200fps.mat');
+load('flow81_cam_AV.mat');
+load('flow81_AV_200fps.mat');
 
 % Rescale and align ground time
 offset = Time(1);
@@ -86,7 +86,7 @@ CamX = interp1(CamFrame, CamX, camtime);
 CamY = interp1(CamFrame, CamY, camtime);
 CamZ = interp1(CamFrame, CamZ, camtime);
 
-save('flow_81_cam_pro.mat', 'CamX', 'CamY', 'CamZ', 'GyroX', 'GyroY', 'GyroZ');
+save('flow_81_cam_AV_pro.mat', 'CamX', 'CamY', 'CamZ', 'GyroX', 'GyroY', 'GyroZ');
 
 %% Process motion capture data
 % Estimate angular rates
@@ -143,12 +143,12 @@ dirZ = bodyDir(:,3);
 
 %clear angRates bodyDir dir dquat i invquat pos quat quatRates QuatX QuatY QuatW QuatZ rates rotM X Y Z
 
-save('flow_81_200fps_pro.mat', 'dirX', 'dirY', 'dirZ', 'rateX', 'rateY', 'rateZ', 'Time', 'ErrorMarkers');
+save('flow_81_200fps_AV_pro.mat', 'dirX', 'dirY', 'dirZ', 'rateX', 'rateY', 'rateZ', 'Time', 'ErrorMarkers');
 
 %% Load full data
 clear all
-load('flow_81_cam_pro.mat');
-load('flow_81_200fps_pro.mat');
+load('flow_81_cam_AV_pro.mat');
+load('flow_81_200fps_AV_pro.mat');
 
 %% Synchronize measurements (convolution)
 
@@ -167,8 +167,8 @@ load('flow_81_200fps_pro.mat');
 
 %% Synchronize manually
 % define delay
-delay = 1445;
-
+delay = 763;
+close all;
 % plot results
 % rates around X
 figure;
@@ -205,7 +205,7 @@ hold on
 h2 = plot(abs(CamZ_));
 drawnow;
 pause;
-h1 = plot(abs(dirY));
+h1 = plot(abs(dirX_));
 legend([h1, h2], 'Optitrack Z','Gyroscope Y');
 hold off
 
