@@ -115,12 +115,12 @@ rateY = rates(:,2);
 rateZ = rates(:,3);
 
 % Estimate direction of translation
-pos = [X, -Z, Y];
+pos = [X, Y, Z];
 
 dir = zeros(length(pos(:,1)), length(pos(1,:)));
 dir(1,:) = (pos(2,:) - pos(1,:))/timestep; % 2 points rule
 for i = 2:length(pos(:,1))-1,
-    dir(i,:) = (pos(i+1,:) - pos(i-1,:))/(2*timestep); % 3 points rule
+    dir(i,:) = (pos(i,:) - pos(i-1,:))/(timestep); % 3 points rule
 end
 dir(length(pos(:,1)),:) = (pos(length(pos(:,1)),:) - pos(length(pos(:,1))-1,:))/timestep; % 2 points rule
 
@@ -150,6 +150,53 @@ clear all
 load('flow_81_cam_pro.mat');
 load('flow_81_200fps_pro.mat');
 
+
+%% Smooth motion capture measurements
+clear all
+close all
+load('flow_81_cam_pro.mat');
+load('flow_81_200fps_pro.mat');
+
+g = gausswin(200,5);
+g = g/sum(g);
+plot(g);
+
+dirX_ = dirX;
+dirY_ = dirY;
+dirZ_ = dirZ;
+
+dirX = conv(dirX_, g, 'same');
+dirY = conv(dirY_, g, 'same');
+dirZ = conv(dirZ_, g, 'same');
+
+% Plot result
+figure;
+hold on
+h1 = plot(dirY_);
+h2 = plot(dirY);
+legend([h1 h2], 'smoothed', 'raw');
+hold off;
+
+%% Smooth optic-flow measurements
+g = gausswin(200,5);
+g = g/sum(g);
+plot(g);
+
+CamX_ = CamX;
+CamY_ = CamY;
+CamZ_ = CamZ;
+
+CamX = conv(CamX_, g, 'same');
+CamY = conv(CamY_, g, 'same');
+CamZ = conv(CamZ_, g, 'same');
+
+% Plot result
+figure;
+hold on
+h1 = plot(CamZ_);
+h2 = plot(CamZ);
+legend([h1 h2], 'raw', 'smoothed');
+hold off;
 %% Synchronize measurements (convolution)
 
 % Correlation with motion capture data
@@ -197,7 +244,7 @@ hold off
 %% Compare direction estimates
 % crop data
 CamZ_ = CamZ(delay:length(CamZ));
-dirX_ = dirY(1:length(CamZ_));
+dirY_ = dirY(1:length(CamZ_));
 
 % plot raw measurements
 figure;
@@ -205,12 +252,12 @@ hold on
 h2 = plot(abs(CamZ_));
 drawnow;
 pause;
-h1 = plot(abs(dirY));
+h1 = plot(abs(dirY_));
 legend([h1, h2], 'Optitrack Z','Gyroscope Y');
 hold off
 
 % plot error
-error = abs(CamZ_)'-abs(dirX_);
+error = CamZ_'+abs(dirY_);
 figure;
 hold on
 plot(error);
