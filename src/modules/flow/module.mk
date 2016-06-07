@@ -8,7 +8,7 @@ ST_LIB_VERSION=v1.0.2
 ST_LIB = $(ST_LIB_DIR)$(ST_LIB_VERSION)/
 
 INCLUDE_DIRS	 += $(MAVLINK_SRC) \
-									$(MAVLINK_SRC)common \
+									$(MAVLINK_SRC)mavric \
 									$(ST_LIB)STM32F4xx_StdPeriph_Driver/inc \
 									$(ST_LIB)STM32_USB_Device_Library/Class/cdc/inc \
 									$(ST_LIB)STM32_USB_Device_Library/Core/inc \
@@ -18,8 +18,8 @@ INCLUDE_DIRS	 += $(MAVLINK_SRC) \
 
 SRCS = 	$(ST_LIB)startup_stm32f4xx.s \
 					system_stm32f4xx.c \
-					stm32f4xx_it.c 
-					
+					stm32f4xx_it.c
+
 
 SRCS += 		main.c \
           utils.c \
