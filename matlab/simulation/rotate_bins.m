@@ -17,7 +17,7 @@ if(best_x == 0.0 && best_y == 0.0 && best_z == -1.0),
 else
     % angle
     c = -best_z;                          % cosine
-    s = maths_fast_sqrt(1.0 - c^2); 	% absolute value of sine
+    s = sqrt(1.0 - c^2); 	% absolute value of sine
     t = 1.0 - c;
 
     % axis (gives the actual rotation direction) 

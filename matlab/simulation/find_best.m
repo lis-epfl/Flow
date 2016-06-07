@@ -1,13 +1,14 @@
-function [ d_est ] = find_best( bins, acc )
+function [ d_est ] = find_best( bins, acc, option)
 %FIND_BEST Find bin with highest number of votes and returns the
 % corresponding direction
 %   bins:   voting bins
 %   acc:    accumulator
+%   option: 1=raw estimate / 2=averaged
 
 best = 0;	% highest accumulated value
 best_n = 0;	% number of indices with same accumulated value
 
-for i = 1:lenth(acc),
+for i = 1:length(acc),
     if acc(i) > best,
         best = acc(i);
         best_n = 1;
@@ -21,7 +22,7 @@ best_y = 0;
 best_z = 0;
 
 cnt = 0;
-for j = 0:length(acc),
+for j = 1:length(acc),
     if(acc(j)==best)
         if (option == 2),
         best_x = best_x + bins(j,1)/best_n;
@@ -41,7 +42,7 @@ for j = 0:length(acc),
 end
 
 d_est = [best_x, best_y, best_z];
-d_est = norm(d_est);
+d_est = normr(d_est);
 
 end
 
