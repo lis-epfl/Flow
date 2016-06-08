@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/W32TeX) (preloaded format=pdflatex 2015.8.15)  8 JUN 2016 15:34
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/W32TeX) (preloaded format=pdflatex 2015.8.15)  8 JUN 2016 16:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1513,9 +1513,6 @@ matlab/mocapPos81_sig20-eps-converted-to.pdf>] (./conclusion.tex) [24
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
  ) 
 Here is how much of TeX's memory you used:
  29721 strings out of 493091
@@ -1541,7 +1538,7 @@ dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2015/texmf-dist/font
 s/type1/public/amsfonts/cm/cmsy8.pfb><c:/texlive/2015/texmf-dist/fonts/type1/pu
 blic/amsfonts/cm/cmti10.pfb><c:/texlive/2015/texmf-dist/fonts/type1/public/amsf
 onts/symbols/msbm10.pfb>
-Output written on report.pdf (29 pages, 6277719 bytes).
+Output written on report.pdf (29 pages, 6277717 bytes).
 PDF statistics:
  295 PDF objects out of 1000 (max. 8388607)
  193 compressed objects within 2 object streams

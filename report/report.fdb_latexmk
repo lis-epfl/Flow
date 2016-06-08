@@ -1,7 +1,7 @@
 # Fdb version 3
-["bibtex report"] 1465392884 "report.aux" "report.bbl" "report" 1465392884
+["bibtex report"] 1465397727 "report.aux" "report.bbl" "report" 1465397727
   "c:/texlive/2015/texmf-dist/bibtex/bst/base/ieeetr.bst" 1439643670 18361 1a00e58565e7f19bf2b3e1bfb82254ae ""
-  "report.aux" 1465392883 6378 e90a8bf88a6ee752cf4c1dccc13e9851 ""
+  "report.aux" 1465397725 6380 d28b8eb5943c2e8c89c865b0c567cdc0 ""
   "report.bcf" 0 -1 0 ""
   "report.bib" 1465147824 2325 02b49ace7c0fe12e36a2249b8af8fb93 ""
   (generated)
@@ -138,10 +138,10 @@
   "report.tex" 1459516528 543 5173e5b3441c4b0fbcaae8be22e69bb2 ""
   "titlepage.tex" 1459515690 1727 6d7a9b874d131499b21b7c8e035d8735 ""
   (generated)
-  "report.dvi"
   "report.aux"
+  "report.dvi"
   "report.log"
-["pdflatex"] 1465392880 "report.tex" "report.pdf" "report" 1465392879
+["pdflatex"] 1465397722 "report.tex" "report.pdf" "report" 1465397722
   "./images/camera/0.png" 1464512170 11108 ab1e8b1cdaccc35d8750e94a9b58367c ""
   "./images/camera/1.png" 1464512170 10669 753ac44d43a2944f9a87764111987a69 ""
   "./images/camera/2.png" 1464512170 11324 0637b8f2970bc7ebb8e15b12361f8c80 ""
@@ -442,17 +442,17 @@
   "introduction.tex" 1465387597 5285 5c075b58f525a934e02a033ad71fec08 ""
   "logo_epfl_coul.eps" 1464512170 104278 219d8aa7344b79d17fac5aecd0d7c98d ""
   "method.tex" 1465388331 27607 06b1f3500f62dda7365f248465c1fcb8 ""
-  "report.aux" 1465350671 6409 d1cc1823646fcb48e739b2dbe7e89527 ""
-  "report.bbl" 1465349078 1551 e93434704fd3af2485f4a79d40a86283 "bibtex report"
+  "report.aux" 1465392883 6378 e90a8bf88a6ee752cf4c1dccc13e9851 ""
+  "report.bbl" 1465392885 1551 e93434704fd3af2485f4a79d40a86283 "bibtex report"
   "report.tex" 1465349073 1648 8f8dd635c815559305e58ca8c725ed5c ""
-  "report.toc" 1465350671 852 77c115cf4f34f95e7b36054c54907352 ""
-  "results.tex" 1465392588 15947 15ba9eea753b25735757f3959ce7ebd9 ""
+  "report.toc" 1465392883 852 77c115cf4f34f95e7b36054c54907352 ""
+  "results.tex" 1465397706 15951 eb125f9648cc89fabe1aa9be5dba322e ""
   "titlepage.tex" 1464512170 1729 615f467e4911ee9441967bf201c57dcb ""
   (generated)
-  "content.aux"
-  "report.aux"
-  "titlepage.aux"
   "report.pdf"
-  "report.toc"
-  "report.log"
   "report.listing"
+  "report.toc"
+  "report.aux"
+  "report.log"
+  "content.aux"
+  "titlepage.aux"

@@ -154,18 +154,18 @@ The direction of motion was estimated from motion capture outputs using the 3 po
 \caption{\textbf{Comparison of optic-flow sensor estimate with "ground-truth"} - The horizontal axis correspond to the index of the frame ($\sim$5ms) \label{fig:mocapPos81}}
 \end{figure}
 
-To cope with the high oscillations, we smoothed the data using gaussian windows. The first one, which is equivalent to a $\sigma=4ms$, yields the graph shown in Figure~\ref{fig:mocapPos81_sig4}. The result shows a good correlation between the two signal although the optic-flow sensor estimate still exhibit high error when compared to the motion capture measurements. By increasing the width of the gaussian window ($\sigma = 20ms$), the estimates still appear correlated, meaning that our method is correct. 
+To cope with the high oscillations, we smoothed the data using gaussian windows. The first one, which is equivalent to a $\sigma=20ms$, yields the graph shown in Figure~\ref{fig:mocapPos81_sig4}. The result shows a good correlation between the two signal although the optic-flow sensor estimate still exhibit high error when compared to the motion capture measurements. By increasing the width of the gaussian window ($\sigma = 100ms$), the estimates still appear correlated, meaning that our method is correct. 
 
 However, in all cases, the values are far from the "ground truth" (even using 117 samples). Whether or not the changing ambiant lighting has influenced the estimation of the estimation of the direction of motion remains an open question.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width = \linewidth]{images/matlab/mocapPos81_sig4}
-\caption{\textbf{Comparison of optic-flow sensor estimate with "ground-truth" (cont'd)} - A gaussian window ($\sigma = 4ms$) was applied. The horizontal axis correspond to the index of the frame (~5ms) \label{fig:mocapPos81_sig4}}
+\caption{\textbf{Comparison of optic-flow sensor estimate with "ground-truth" (cont'd)} - A gaussian window ($\sigma = 20ms$) was applied. The horizontal axis correspond to the index of the frame (~5ms) \label{fig:mocapPos81_sig4}}
 \end{figure}
 
 \begin{figure}[b]
 \centering
 \includegraphics[width = \linewidth]{images/matlab/mocapPos81_sig20}
-\caption{\textbf{Comparison of optic-flow sensor estimate with "ground-truth" (cont'd)} - A gaussian window ($\sigma = 20ms$) was applied. The horizontal axis correspond to the index of the frame (~5ms) \label{fig:mocapPos81_sig20}}
+\caption{\textbf{Comparison of optic-flow sensor estimate with "ground-truth" (cont'd)} - A gaussian window ($\sigma = 100ms$) was applied. The horizontal axis correspond to the index of the frame (~5ms) \label{fig:mocapPos81_sig20}}
 \end{figure}
