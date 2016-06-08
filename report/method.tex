@@ -290,9 +290,9 @@ void flow2world(float *flow_x, float *flow_y, float *flow_z,
 \end{code}
 \end{center}
 
-This method is obviously quite computationally expensive. Indeed, further testing on the camera board revealed that the computation  and processing of $117$ optic-flow vectors accounts for approximately 6ms. This value is to be compared to the refresh rate of our camera which is 200Hz. Thus, the runtime (for one iteration) is more than doubled by the use of the above method. 
+This method is obviously quite computationally expensive. Indeed, further testing on the camera board revealed that the computation  and processing of $117$ optic-flow vectors accounts for approximately 12ms. This value is to be compared to the refresh rate of our camera which is 200Hz. Thus, the runtime (for one iteration) is more than doubled by the use of the above method. 
 
-In an attempt to reduce the computational overhead, we considered an approximate projection of the optic-flow measurement on the unit sphere. Considering the high refresh rate of the camera, any motion will induce a low displacement of the pixels on the camera image (i.e. a small optic-flow measurement). The latter remark allows us to take advantage of the small-angle approximation. More formally, we approximate the actual optic-flow projection $F$ to the difference between a sampling direction $P_1$ and a virtual point $P_2$ that is obtained from the projection of the point $p_2 = p_1 + f$, where $p_1$ is the point on the camera image corresponding to the 3D vector $P_1$ and $f$ is the 2D optic-flow:
+In an attempt to reduce the computational overhead, we considered an approximate projection of the optic-flow measurements on the unit sphere. Considering the high refresh rate of the camera, any motion will induce a low displacement of the pixels on the camera image (i.e. a small optic-flow measurement). The latter remark allows us to take advantage of the small-angle approximation. More formally, we approximate the actual optic-flow projection $F$ to the difference between a sampling direction $P_1$ and a virtual point $P_2$ that is obtained from the projection of the point $p_2 = p_1 + f$, where $p_1$ is the point on the camera image corresponding to the 3D vector $P_1$ and $f$ is the 2D optic-flow:
 \begin{align}
 \begin{split}
 {}&P_2 = g(p_2) = g(p_1 + f)\\
@@ -380,7 +380,7 @@ n = \dfrac{d \times f_t}{\|d \times f_t\|}
 % Hence, we can vote to the accumulator for either $a_{ij}$ and $a_{ji}$ for each pair of points. Of course, the intersection of the two great circles actually yields two points.
 Thus, we can vote along a great circle, given its normal vector, by computing simple dot products (i.e. 3 multiplications and 2 additions).
 
-In practice, the intersection of two great circles define 2 possible directions of translation. To disambiguate between the two, one may pick one of the two points and calculate the angle between it and the vector $f_t$. If the angle is larger than $\pi/2$ radians, then that point is the focus of expansion. Another possibility is to use an additional sensor (such as a sonar) to choose the correct direction. In order to improve the processing speed on the camera chip (and to avoid ambiguity), we only consider one hemisphere, that is half the number of possible directions of translation. In other words, we only determine the axis of translation rather than its direction and we work on the hemisphere defined by $z<0$.
+In practice, the intersection of two great circles defines 2 possible directions of translation. To disambiguate between the two, one may pick one of the two points and calculate the angle between it and the vector $f_t$. If the angle is larger than $\pi/2$ radians, then that point is the focus of expansion. Another possibility is to use an additional sensor (such as a sonar) to choose the correct direction. In order to improve the processing speed on the camera chip (and to avoid ambiguity), we only consider one hemisphere, that is half the number of possible directions of translation. In other words, we only determine the axis of translation rather than its direction and we work on the hemisphere defined by $z<0$.
 
 The voting procedure requires the storage of evenly distributed vectors on the unit sphere. The minimal angle between these vectors define the resolution of the voting procedure. For tractability reasons, we cannot afford to vote on the complete unit sphere in one batch. Hence, we are considering an iterative method which can be divided in two phases. The first one is a coarse voting procedure where we compute a rough estimate of the direction of translation using a few directions sampled from one hemisphere. This estimate is then used in the next phase where we perform voting on a refined spherical grid of higher resolution but reduced spread. The complete voting procedure is detailed in Algorithm~\ref{algo:houghVoting}.
 
@@ -430,7 +430,7 @@ The voting bins were evenly distributed on the unit and generated using the icos
 	    & Refined & Previous estimate & 7 & 1.6\\
 	   \hline
 	\end{tabular}
-	\caption{\textbf{Voting bins parameters}-The voting bins are evely distributed on the unit sphere and were generated using icosahedron method.}
+	\caption{\textbf{Voting bins parameters} - The voting bins are evely distributed on the unit sphere and were generated using icosahedron method.}
 	\label{tab:votingBins}
 \end{table}
 

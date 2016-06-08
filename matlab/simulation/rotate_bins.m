@@ -23,7 +23,7 @@ else
     
     % angle
     c = -best_z;    % cosine
-    s = norm(u);    % sine
+    s = sqrt(1 - c^2);    % sine
     t = 1.0 - c;
     
     % normalize axis

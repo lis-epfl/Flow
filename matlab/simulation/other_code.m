@@ -23,7 +23,7 @@ model = struct('pol', [6.660506*10^1, 0.0, -6.426152*10^(-3), 2.306550*10^(-5), 
 		'width', 160,...
 		'height', 120);
 
-for iter = 1:100,
+for iter = 1:1,
 % Generate sampling pixels
 N = 80;
 size = [model.width, model.height];
@@ -56,7 +56,7 @@ F = generate_optic_flow(v, w, P, D);
 % mesh(x_, y_, z_,'Edgecolor', 'k');
 
 % Add Outliers
-pOutliers = 0.75;   % proportion of outliers
+pOutliers = 0.25;   % proportion of outliers
 % disp(floor(length(P)*pOutliers));
 indices = randsample(length(P), floor(length(P)*pOutliers)); % indices of outliers
 for i=1:length(indices),

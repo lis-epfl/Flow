@@ -4,17 +4,19 @@ This section is dedicated to the description of the results obtaine from several
 \subsection{Simulation on Matlab}
 The algorithm described in the previous section was first implemented in C to work on the embedded hardware. However, in order to verify its efficiency the code was translated into Matlab as faithfully as possible to the code used on the optic-flow sensor. Thus, the inner-workings of the key functions (e.g. back-projection, voting, etc.) were kept the same and did not make use of equivalent Matlab built-in functions. 
 
-The sampling pixels were chosen identical to the ones used on the vision system, i.e. 81 pixels were uniformly distributed on a rectangular grid of 160x120 (corresponding to the camera resolution). They are then back-projected onto the unit sphere using the method detailed above. The optic-flow measurements are generated using the first-order approximation (\ref{equ:opticflow}). Outliers are simulated by adding randomly generated tangent vectors to a subset of the optic-flow vectors. The resulting optic-flow vectors are derotated and the normal vectors corresponding the great circles are computed in the same way as in the C implementatin. Finally, voting is performed and the best estimate is found and compared to the actual direction of motion set by the user.
+The sampling pixels were chosen identical to the ones used on the vision system, i.e. 81 pixels were uniformly distributed on a rectangular grid of 160x120 (corresponding to the camera resolution). They are then back-projected onto the unit sphere using the method detailed above. The optic-flow measurements are generated using the first-order approximation (\ref{equ:opticflow}). Outliers are simulated by adding randomly generated tangent vectors to a subset of the optic-flow vectors. The resulting optic-flow vectors are derotated and the normal vectors corresponding to the great circles are computed in the same way as in the C implementatin. Finally, voting is performed and the best estimate is found and compared to the actual direction of motion set by the user.
 
 We first consider a single refinement stage in the estimation of the direction of translation. Then, 3 more stages are added as stated in the previous section. The parameters that were used are detailed in Table~\ref{tab:simParam}.
 \begin{table}[h]
 \centering
-\begin{tabular}{c|c|c|c}
+\begin{tabular}{|c|c|c|c|}
+\hline
 Velocity ($V$) & Angular rate ($w$) & Depth of scene ($D$) & Samples ($P$)\\
 \hline
 $[0.56, 0.42, 0.13]$ & $[0, \pi/3, \pi/5]$ & $50\cdot10^{-2}$ & 81\\
+\hline
 \end{tabular}
-\caption{\textbf{Simulation parameters} - The velocity and angular velocity were divided by the frequency of the camera (200Hz) to emulate real optic-flow computation\label{tab:simParam}}
+\caption{\textbf{Simulation parameters} - The velocity and angular rates were divided by the frequency of the camera (200Hz) to emulate real optic-flow computation\label{tab:simParam}}
 \end{table}
 Figures~\ref{fig:simOpticFlow}-\ref{fig:simDerotation} depicts respectively the sampling points and the optic-flow vectors, the outliers and the final set of vectors after derotation.
 
@@ -39,7 +41,9 @@ Figures~\ref{fig:simOpticFlow}-\ref{fig:simDerotation} depicts respectively the 
 \label{fig:simDerotation}
 \end{figure}
 
-Both versions of the algorithm (Table~\ref{tab:votingBins}) are applied on synthetic optic-flow field with varying propotions of outliers. These outliers are randomly generated using the same seed for a fair comparision between the two. The results are averaged over 100 runs and correspond to the values of the dot products between the estimated and real directions of motion (which are unit vectors). From Table~\ref{tab:simResults}, it can be inferred that using fewer voting stages makes the algorithm less slightly less sensible to outliers (at the expense of a significantly higher computational cost). Indeed, more stages means that outliers may still be present in intermediary stages and influence the estimate, all the more so when their proportion is greater than the one of the inliers. As the latter case may be rare in reality or avoided through the use of a quality factor on the optic-flow measurements, one may consider finding a trade-off between the number of stages (i.e. lowering the runtime) and the number of bins in each stage (i.e. the robustness and accuracy).
+Both versions of the algorithm (Table~\ref{tab:votingBins}) are applied on synthetic optic-flow field with varying proportions of outliers. These outliers are randomly generated using the same seed for a fair comparision between the two. The results are averaged over 100 runs and correspond to the values of the dot products between the estimated and real directions of motion (which are unit vectors). 
+
+From Table~\ref{tab:simResults}, it can be inferred that using fewer voting stages makes the algorithm slightly less sensible to outliers (at the expense of a significantly higher computational cost). Indeed, more stages means that outliers may still be present in intermediary stages and influence the estimate, all the more so when their proportion is greater than the one of the inliers. As the latter case may be rare in reality or avoided through the use of a quality factor on the optic-flow measurements, one may consider finding a trade-off between the number of stages (i.e. lowering the runtime) and the number of bins in each stage (i.e. the robustness and accuracy).
 
 \begin{table}
 \centering
@@ -68,7 +72,7 @@ Experiments were conducted moving the camera by hand in a synthetic environment 
 
 The optic-flow sensor consists in a PX4Flow board which integrates a 168MHz Cortex M4F CPU, a 3-axis rate gyro, a sonar, and the actual machine vision sensor. The biases and noise of the gyro are compensated by averaging and low-pass filtering and the scaling factor for derotation is stored in memory. A Sunex DSL215 fisheye lens is mounted on the board, allowing for a 185 degrees diagonal field of view in full frame format. The camera image is 160x120 pixel wide and sampled at 200Hz. All computations are performed on the chip and the estimates of the direction of motion are sent via USB and logged through QGroundControl (v.2.7).
 
-We sample up to 117 optic-flow at each iteration (~160Hz), the latter of which are estimated using the Lucas-Kanade method on 10x10 binned image (patch). The vantage points corresponding to the optic-flow measurements are evenly distributed on the (rectangular) camera image. Although evenly-distributing points on the unit sphere was first considered - as it allows to uniformly sample the field of view -, this latter solution would imply overlapping in the binned image, thus increasing the statistical probability of encountering outliers. To cope with this issue, one may choose to adapt the size of the neighborhood (image patches) used in the optic-flow computation as proposed in \cite{adapted_neighborhood}.
+We sample up to 117 optic-flow at each iteration ($\sim$160Hz), the latter of which are estimated using the Lucas-Kanade method on 10x10 binned image (patch). The vantage points corresponding to the optic-flow measurements are evenly distributed on the (rectangular) camera image. Although evenly-distributing points on the unit sphere was first considered - as it allows to uniformly sample the field of view -, this latter solution would imply overlapping in the binned image, thus increasing the statistical probability of encountering outliers. To cope with this issue, one may choose to adapt the size of the neighborhood (image patches) used in the optic-flow computation as proposed in \cite{adapted_neighborhood}.
 
 % Describe optic-flow sensor board (chip + gyroscope)
 % Describe lens (sunex)
@@ -124,35 +128,35 @@ Motion capture using passive markers requires the emission of IR lights that are
 \subsubsection{Results}
 The experiments were performed using the algorithm detailed above with 5 stages refinements. Two different number of samples were tested; the first one being 81, which typically enables a runtime of 5.3ms, and the second one being 117, which runs at approximately 160Hz.
 
-As the measurements obtained from the optic-flow sensor and the motion capture system were not started simultaneously, we had to synchronize them afterwards. To ease up the process, we performed a recognizable motion that involved the gyroscope of the camera. Indeed, the gyroscope measurements are typically much less noisy than the optic-flow data. Hence, the angular rates measured by the optic-flow sensor were stored and compared to the estimates of the rates inferred from the motion capture system. The derivatives of the quaternions given by OptiTrack were computed using the three points rule, which typically allows for a better estimate. They were then converted from global to local (camera) coordinates. The synchronization was realized manually as recognizable points were easily located. Note that since the two systems exhibit different refresh rates, the values of the camera gyroscope were interpolated using a standard linear regressor between each datapoint. Finally, one may consider smoothing the data (e.g. using a gaussian window) although this was not required for synchronizing the signals in our case. Some results of the synchronization process are shown in Figures~\ref{fig:mocapGyro81}-\ref{fig:mocapGyro117}.
+As the measurements obtained from the optic-flow sensor and the motion capture system were not started simultaneously, we had to synchronize them afterwards. To ease up the process, we performed a recognizable motion that involved the gyroscope of the camera. Indeed, the gyroscope measurements are typically much less noisy than the optic-flow data. Hence, the angular rates measured by the optic-flow sensor were stored and compared to the estimates of the rates inferred from the motion capture system. The derivatives of the quaternions given by OptiTrack were computed using the three points rule, which typically allows for a better estimate. They were then converted from global to local (camera) coordinates. The synchronization was realized manually as recognizable features were easily located. Note that since the two systems exhibit different refresh rates, the values of the camera gyroscope were interpolated using a standard linear regressor between each datapoint. Finally, one may consider smoothing the data (e.g. using a gaussian window) though this was not required for synchronizing the signals in our case. Some results of the synchronization process are shown in Figures~\ref{fig:mocapGyro81}-\ref{fig:mocapGyro117}.
 
 \begin{figure}
 \centering
 \includegraphics[width = 0.8\linewidth]{images/matlab/mocapGyro81}
-\caption{\textbf{Synchronized signals from camera and optitrack} - The signals were synchronized manually using recognizable features. The axes of the optitrack were circularly permutated so as to correspond to the ones used in the camera frame. The horizontal axis correspond to the index of the frame (~5ms)}
+\caption{\textbf{Synchronized signals from camera and optitrack} - The signals were synchronized manually using recognizable features. The axes of the optitrack were circularly permutated so as to correspond to the ones used in the camera frame. The horizontal axis correspond to the index of the frame ($\sim$5ms)}
 \label{fig:mocapGyro81}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width = 0.8\linewidth]{images/matlab/mocapGyro117}
-\caption{\textbf{Synchronized signals from camera and optitrack} - The signals were synchronized manually using recognizable features. The axes of the optitrack were circularly permutated so as to correspond to the ones used in the camera frame. The horizontal axis correspond to the index of the frame (~5ms)}
+\caption{\textbf{Synchronized signals from camera and optitrack} - The signals were synchronized manually using recognizable features. The axes of the optitrack were circularly permutated so as to correspond to the ones used in the camera frame. The horizontal axis correspond to the index of the frame ($\sim$5ms)}
 \label{fig:mocapGyro117}
 \end{figure}
 
 As it can be seen on Figures~\ref{fig:mocapGyro81}-\ref{fig:mocapGyro117}, both signals display comparable accuracy although some spikes are visible on the OptiTrack estimates. These spikes may be due to markers being lost by the motion capture system (thus inducing very fast changes in the orientation of the rigid body).
 
-The direction of motion was estimated from motion capture outputs using the 3 point rule on the 3D position. This so-called "ground-truth" is compared to the optic-flow sensor estimates. The raw meaasurements obtained for 81 viewing directions are shown in Figure~\ref{fig:mocapPos81}. As it can be seen on the figure, the signals are display very fast oscillations that can hardly be considered similar although they seem to follow a same "trend".
+The direction of motion was estimated from motion capture outputs using the 3 point rule on the 3D position. This so-called "ground-truth" is compared to the optic-flow sensor estimates. The raw measurements obtained for 81 viewing directions are shown in Figure~\ref{fig:mocapPos81}. As it can be seen on the figure, the signals display very fast oscillations that can hardly be considered similar although they seem to follow the same "trend".
 
 \begin{figure}
 \centering
 \includegraphics[width = \linewidth]{images/matlab/mocapPos81}
-\caption{\textbf{Comparison of optic-flow sensor estimate with "ground-truth"} - The horizontal axis correspond to the index of the frame (~5ms) \label{fig:mocapPos81}}
+\caption{\textbf{Comparison of optic-flow sensor estimate with "ground-truth"} - The horizontal axis correspond to the index of the frame ($\sim$5ms) \label{fig:mocapPos81}}
 \end{figure}
 
-To cope with the high oscillations, we smooth the data using gaussian windows. The first one, which is equivalent to a $\sigma=4ms$, yields the graph shown in Figure~\ref{fig:mocapPos81_sig4}. The result shows a good correlation between the two signal although the optic-flow sensor estimate still exhibit high error when compared to the motion capture measurements. By increasing the width of the gaussian window ($\sigma = 20ms$), the estimates still appear correlated, meaning that our method is correct. 
+To cope with the high oscillations, we smoothed the data using gaussian windows. The first one, which is equivalent to a $\sigma=4ms$, yields the graph shown in Figure~\ref{fig:mocapPos81_sig4}. The result shows a good correlation between the two signal although the optic-flow sensor estimate still exhibit high error when compared to the motion capture measurements. By increasing the width of the gaussian window ($\sigma = 20ms$), the estimates still appear correlated, meaning that our method is correct. 
 
-However, in all cases, the values are far from the "ground truth". Whether the changing ambiant lighting has influenced the estimation of the estimation of the direction of motion remains an open question.
+However, in all cases, the values are far from the "ground truth" (even using 117 samples). Whether or not the changing ambiant lighting has influenced the estimation of the estimation of the direction of motion remains an open question.
 
 \begin{figure}[t]
 \centering
@@ -165,4 +169,3 @@ However, in all cases, the values are far from the "ground truth". Whether the c
 \includegraphics[width = \linewidth]{images/matlab/mocapPos81_sig20}
 \caption{\textbf{Comparison of optic-flow sensor estimate with "ground-truth" (cont'd)} - A gaussian window ($\sigma = 20ms$) was applied. The horizontal axis correspond to the index of the frame (~5ms) \label{fig:mocapPos81_sig20}}
 \end{figure}
-
