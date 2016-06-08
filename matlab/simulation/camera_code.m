@@ -1,10 +1,14 @@
 %--------------------------------------------------------------------------
 %   OPTIC-FLOW SIMULATOR
 %--------------------------------------------------------------------------
-%% Initialization
+% Initialization
 clc
 clear all;
 close all;
+seed = 1;
+rng(seed);
+
+accuracy =[];
 
 % Camera model
 model = struct('pol', [6.660506*10^1, 0.0, -6.426152*10^(-3), 2.306550*10^(-5), -2.726345*10^(-7)],...
@@ -19,7 +23,7 @@ model = struct('pol', [6.660506*10^1, 0.0, -6.426152*10^(-3), 2.306550*10^(-5), 
 		'width', 160,...
 		'height', 120);
 
-%% Generate sampling pixels
+% Generate sampling pixels
 N = 80;
 size = [model.width, model.height];
 p = generate_sampling(size, N);
@@ -29,54 +33,58 @@ P = back_project(p, model);
 P = normr(P);
 
 % Plot projected optic-flow vectors
-figure;
-hold on
-plot3(P(:,1), P(:,2), P(:,3), '.');
-[x_, y_, z_] = sphere;
-mesh(x_, y_, z_,'Edgecolor', 'k');
+% figure;
+% hold on
+% plot3(P(:,1), P(:,2), P(:,3), '.');
+% [x_, y_, z_] = sphere;
+% mesh(x_, y_, z_,'Edgecolor', 'k');
 
-%% Generate optic-flow
+for iter = 1:100,
+% Generate optic-flow
 freq = 200;                         % refresh rate of the camera
-v = [0.10, 0.20, 0.05]/freq;        % translational velocity of the camera (m.frame^-1)
-w = [0, pi/2, pi/4]/freq;           % angular velocity of the camera (rad.frame^-1)
+v = [0.56, 0.42, 0.13]/freq;        % translational velocity of the camera (m.frame^-1)
+w = [0, pi/3, pi/5]/freq;           % angular velocity of the camera (rad.frame^-1)
 D = 50*10^(-2);                     % depth of the scene
 F = generate_optic_flow(v, w, P, D);
 
 % Plot projected optic-flow vectors
-figure;
-hold on
-quiver3(P(:,1), P(:,2), P(:,3), F(:,1), F(:,2), F(:,3));
-[x_, y_, z_] = sphere;
-mesh(x_, y_, z_,'Edgecolor', 'k');
+% figure;
+% hold on
+% plot3(P(:,1), P(:,2), P(:,3), '.');
+% quiver3(P(:,1), P(:,2), P(:,3), F(:,1), F(:,2), F(:,3));
+% [x_, y_, z_] = sphere;
+% mesh(x_, y_, z_,'Edgecolor', 'k');
 
-%% Add Outliers
-pOutliers = 0.25;   % proportion of outliers
-disp(floor(length(P)*pOutliers));
+% Add Outliers
+pOutliers = 0.75;   % proportion of outliers
+% disp(floor(length(P)*pOutliers));
 indices = randsample(length(P), floor(length(P)*pOutliers)); % indices of outliers
 for i=1:length(indices),
     F(indices(i),:) = F(indices(i),:) + cross(P(indices(i),:),F(indices(i),:))*randn;
 end
 
 % Plot optic-flow vectors with outliers
-figure;
-hold on
-quiver3(P(:,1), P(:,2), P(:,3), F(:,1), F(:,2), F(:,3));
-[x_, y_, z_] = sphere;
-mesh(x_, y_, z_,'Edgecolor', 'k');
+% figure;
+% hold on
+% plot3(P(:,1), P(:,2), P(:,3), '.');
+% quiver3(P(:,1), P(:,2), P(:,3), F(:,1), F(:,2), F(:,3));
+% [x_, y_, z_] = sphere;
+% mesh(x_, y_, z_,'Edgecolor', 'k');
 
-%% Derotate optic-flow
+% Derotate optic-flow
 W = repmat(w,length(P),1);
 F = F + cross(W,P);
 
 % Plot derotated optic-flow vectors
-figure;
-hold on
-quiver3(P(:,1), P(:,2), P(:,3), F(:,1), F(:,2), F(:,3));
-[x_, y_, z_] = sphere;
-mesh(x_, y_, z_,'Edgecolor', 'k');
+% figure;
+% hold on
+% plot3(P(:,1), P(:,2), P(:,3), '.');
+% quiver3(P(:,1), P(:,2), P(:,3), F(:,1), F(:,2), F(:,3));
+% [x_, y_, z_] = sphere;
+% mesh(x_, y_, z_,'Edgecolor', 'k');
 
-%% Voting
-option = 2; % 1=raw / 2=averaged
+% Voting
+option = 1; % 1=raw / 2=averaged
 
 % Compute normal vectors
 G = get_normal_vector(F,P);
@@ -98,7 +106,7 @@ end
 
 % Find best estimate
 d_est = find_best(cbins, c_acc, option);
-disp(dot(normr(v),d_est));
+% disp(dot(normr(v),d_est));
 
 % Perform refined votings
 load('rbins1.mat');
@@ -121,17 +129,21 @@ for k = 0:3,
         end
     end
     d_est = find_best(bins, r_acc, option);
-    disp(dot(normr(v),d_est));
+%     disp(dot(normr(v),d_est));
     r_acc = zeros(length(r_acc));
 end
 
 % Plot results
-figure;
-hold on
-[x_, y_, z_] = sphere;
-mesh(x_, y_, z_,'FaceAlpha', 0, 'Edgecolor', 'k', 'EdgeAlpha', 0.5);
-h1 = quiver3(0, 0, 0, d_est(1), d_est(2), d_est(3));
-v = normr(v);
-h2 = quiver3(0, 0, 0, v(1), v(2), v(3));
-legend([h1,h2], 'actual direction', 'estimated direction');
-hold off
+% figure;
+% hold on
+% [x_, y_, z_] = sphere;
+% mesh(x_, y_, z_,'FaceAlpha', 0, 'Edgecolor', 'k', 'EdgeAlpha', 0.1);
+% h1 = quiver3(0, 0, 0, d_est(1), d_est(2), d_est(3));
+% v = normr(v);
+% h2 = quiver3(0, 0, 0, v(1), v(2), v(3));
+% legend([h1,h2], 'estimated direction', 'actual direction');
+% hold off
+
+% Statistics
+accuracy = [accuracy, dot(normr(v),d_est)];
+end

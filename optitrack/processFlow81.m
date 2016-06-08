@@ -146,57 +146,11 @@ dirZ = bodyDir(:,3);
 save('flow_81_200fps_pro.mat', 'dirX', 'dirY', 'dirZ', 'rateX', 'rateY', 'rateZ', 'Time', 'ErrorMarkers');
 
 %% Load full data
-clear all
-load('flow_81_cam_pro.mat');
-load('flow_81_200fps_pro.mat');
-
-
-%% Smooth motion capture measurements
-clear all
 close all
+clear all
 load('flow_81_cam_pro.mat');
 load('flow_81_200fps_pro.mat');
 
-g = gausswin(200,5);
-g = g/sum(g);
-plot(g);
-
-dirX_ = dirX;
-dirY_ = dirY;
-dirZ_ = dirZ;
-
-dirX = conv(dirX_, g, 'same');
-dirY = conv(dirY_, g, 'same');
-dirZ = conv(dirZ_, g, 'same');
-
-% Plot result
-figure;
-hold on
-h1 = plot(dirY_);
-h2 = plot(dirY);
-legend([h1 h2], 'smoothed', 'raw');
-hold off;
-
-%% Smooth optic-flow measurements
-g = gausswin(200,5);
-g = g/sum(g);
-plot(g);
-
-CamX_ = CamX;
-CamY_ = CamY;
-CamZ_ = CamZ;
-
-CamX = conv(CamX_, g, 'same');
-CamY = conv(CamY_, g, 'same');
-CamZ = conv(CamZ_, g, 'same');
-
-% Plot result
-figure;
-hold on
-h1 = plot(CamZ_);
-h2 = plot(CamZ);
-legend([h1 h2], 'raw', 'smoothed');
-hold off;
 %% Synchronize measurements (convolution)
 
 % Correlation with motion capture data
@@ -246,18 +200,60 @@ hold off
 CamZ_ = CamZ(delay:length(CamZ));
 dirY_ = dirY(1:length(CamZ_));
 
-% plot raw measurements
+%% Smooth motion capture measurements
+g = gausswin(200,5);
+g = g/sum(g);
+plot(g);
+
+% dirX_ = dirX;
+% dirY_ = dirY;
+% dirZ_ = dirZ;
+
+% dirX = conv(dirX_, g, 'same');
+dirY = conv(dirY_, g, 'same');
+% dirZ = conv(dirZ_, g, 'same');
+
+% Plot result
 figure;
 hold on
-h2 = plot(abs(CamZ_));
+h1 = plot(dirY_);
+h2 = plot(dirY);
+legend([h1 h2], 'smoothed', 'raw');
+hold off;
+
+%% Smooth optic-flow measurements
+g = gausswin(200,5);
+g = g/sum(g);
+plot(g);
+
+% CamX_ = CamX;
+% CamY_ = CamY;
+% CamZ_ = CamZ;
+
+% CamX = conv(CamX_, g, 'same');
+% CamY = conv(CamY_, g, 'same');
+CamZ = conv(CamZ_, g, 'same');
+
+% Plot result
+figure;
+hold on
+h1 = plot(CamZ_);
+h2 = plot(CamZ);
+legend([h1 h2], 'raw', 'smoothed');
+hold off;
+
+%% Plot raw measurements
+figure;
+hold on
+h2 = plot(abs(CamZ));
 drawnow;
 pause;
-h1 = plot(abs(dirY_));
-legend([h1, h2], 'Optitrack Z','Gyroscope Y');
+h1 = plot(abs(dirY));
+legend([h1, h2], 'Optitrack Y','Camera Z');
 hold off
 
-% plot error
-error = CamZ_'+abs(dirY_);
-figure;
-hold on
-plot(error);
+% % plot error
+% error = CamZ_'+abs(dirY_);
+% figure;
+% hold on
+% plot(error);

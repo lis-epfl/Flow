@@ -290,7 +290,7 @@ void flow2world(float *flow_x, float *flow_y, float *flow_z,
 \end{code}
 \end{center}
 
-This method is obviously quite computationally expensive. Indeed, further testing on the camera board revealed that the computation of $117$ optic-flow vectors accounts for approximately 6ms. This value is to be compared to the refresh rate of our camera which is 200Hz. Thus, the runtime (for one iteration) is more than doubled by the use of the above method. 
+This method is obviously quite computationally expensive. Indeed, further testing on the camera board revealed that the computation  and processing of $117$ optic-flow vectors accounts for approximately 6ms. This value is to be compared to the refresh rate of our camera which is 200Hz. Thus, the runtime (for one iteration) is more than doubled by the use of the above method. 
 
 In an attempt to reduce the computational overhead, we considered an approximate projection of the optic-flow measurement on the unit sphere. Considering the high refresh rate of the camera, any motion will induce a low displacement of the pixels on the camera image (i.e. a small optic-flow measurement). The latter remark allows us to take advantage of the small-angle approximation. More formally, we approximate the actual optic-flow projection $F$ to the difference between a sampling direction $P_1$ and a virtual point $P_2$ that is obtained from the projection of the point $p_2 = p_1 + f$, where $p_1$ is the point on the camera image corresponding to the 3D vector $P_1$ and $f$ is the 2D optic-flow:
 \begin{align}
@@ -303,7 +303,7 @@ where $g$ is the spherical projection function described in the previous section
 
 The resulting optic-flow vector is obviously not perpendicular to the sphere. However, building on the same assumption, we can neglect the radial component of the flow and simply use this raw vector for subsequent computations. The C implementation is shown in Code~\ref{code:fastFlowProjection}.
 
-As for computational gain, running this version of the flow projection dramatically reduces the runtime with less than 2ms to process the $117$ optic-flow measurements.
+As for computational gain, running this version of the flow projection dramatically reduces the runtime, with only half the time required by the initial algorithm to process the $117$ optic-flow measurements.
 
 \begin{center}
 \begin{code}[colback=white, label=code:fastFlowProjection]{Fast backprojection of optical flow}
@@ -404,19 +404,30 @@ Find the bins with maximum votes. This gives the fine estimate
 
 The refined voting requires rotating the refined bins, which we computed for the a predefined direction (in our case $z = (0,~ 0,-1)$). There are three ways to achieve this transformation, namely the rotation matrix, axis-angle and quaternion methods \cite{rotation}. From a computational point of view, the rotation matrix method is the cheapest one (6 additions and 9 multiplications) whereas the quaternion method is the most expensive (18 additions and 21 multiplications). However, it is easier for us to use the axis-angle representation and then convert it to a rotation matrix so as to perform the transformation on every bins. The latter convertion accounts for 13 additions and 15 multiplications but the subsequent processing will only require 6 additions and 9 multiplications, provided that we can store the entire rotation matrix. A C implementation is given in Code~\ref{algo:rotation}.
 
-Obviously, this whole method is sensible to noise which could affect the voting procedure if the accumulator has a finite resolution. In our case, the coarse resolution was set to $31^\circ$ and the fine resolution was chosen as approximately $4^\circ$. The latter value is justified considering the resolution of the camera (which is around 1.5°/pixel) and the additional noise induced by derotation. The former value was chosen so as to limit the number of coarse bins. The voting bins were evenly distributed on the unit and generated using the icosahedron method. Table~\ref{tab:votingBins} summarizes the voting bins parameters.
+Obviously, this whole method is sensible to noise which could affect the voting procedure if the accumulator has a finite resolution. In a first case, the coarse resolution was set to $31^\circ$ and the fine resolution was chosen as approximately $4^\circ$. The former value was chosen so as to limit the number of coarse bins while the second one offers a trade-off between the resolution and the required computational power. In a second case, we added 3 more stages of refined voting so as to reduce the number of voting bins in each stage (i.e. reduce computational overhead) and simultaneously slightly increase the accuracy of the result. Indeed, the computational cost of the votin procedure typically grows linearly with the number of samples and the number of bins while more stages allow for a higher resolution in the refined votings.\\
+The voting bins were evenly distributed on the unit and generated using the icosahedron method. Table~\ref{tab:votingBins} summarizes the voting bins parameters.
 
 \begin{table}[h!]
 	\centering
-	\begin{tabular}{|p{2cm}||p{3cm}|p{3cm}|p{3cm}|}
+	\begin{tabular}{|c|p{2cm}||p{3cm}|p{3cm}|p{3cm}|}
 	   \hline
-	   \multicolumn{4}{|c|}{Voting bins parameter} \\
+	   \multicolumn{5}{|c|}{Voting bins parameter} \\
 	   \hline
-	   Voting set & Region & Number of bins & Resolution ($^\circ$) \\
+	   Stages & Voting set & Region & Number of bins & Resolution ($^\circ$) \\
 	   \hline
-	   Coarse & Hemisphere & 25 & 31\\
-	   \hline
-	   Refined & Coarse estimate & 42 & 4\\
+	   \multirow{2}{*}{2} & Coarse & Hemisphere & 25 & 31\\
+	   \cline{2-5}
+	    & Refined & Coarse estimate & 42 & 4\\
+	   \hhline{|=|=#=|=|=|}
+	   \multirow{5}{*}{5} & Coarse & Hemisphere & 8 & 100\\
+	   \cline{2-5}
+	    & Refined & Coarse estimate & 7 & 31.7\\
+	   \cline{2-5}
+	    & Refined & Previous estimate & 7 & 11.4\\
+	   \cline{2-5}
+	    & Refined & Previous estimate & 7 & 3.4\\
+	   \cline{2-5}
+	    & Refined & Previous estimate & 7 & 1.6\\
 	   \hline
 	\end{tabular}
 	\caption{\textbf{Voting bins parameters}-The voting bins are evely distributed on the unit sphere and were generated using icosahedron method.}
@@ -463,8 +474,5 @@ void rotate_bins(voting_bins *bins, float best_x,
 	}
 }
 \end{code}
-
-\subsection{Computational cost}
-
 
 \newpage

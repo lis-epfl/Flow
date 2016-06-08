@@ -4,7 +4,9 @@
 \contentsline {subsection}{\numberline {2.2}Mapping Optical Flow to Unit Sphere}{6}
 \contentsline {subsection}{\numberline {2.3}Derotation of Optical Flow}{10}
 \contentsline {subsection}{\numberline {2.4}Finding the Focus of Expansion}{11}
-\contentsline {subsection}{\numberline {2.5}Computational cost}{15}
-\contentsline {section}{\numberline {3}Results \& Discussion}{16}
-\contentsline {subsection}{\numberline {3.1}Setup}{16}
-\contentsline {subsection}{\numberline {3.2}Results}{17}
+\contentsline {section}{\numberline {3}Results \& Discussion}{15}
+\contentsline {subsection}{\numberline {3.1}Simulation on Matlab}{15}
+\contentsline {subsection}{\numberline {3.2}Experiments with motion capture}{17}
+\contentsline {subsubsection}{\numberline {3.2.1}Setup}{17}
+\contentsline {subsubsection}{\numberline {3.2.2}Results}{19}
+\contentsline {section}{\numberline {4}Conclusion}{24}

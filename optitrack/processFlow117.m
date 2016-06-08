@@ -2,6 +2,7 @@
 %   PROCESS FLOW 117 DATA
 %--------------------------------------------------------------------------
 %% Process camera data
+close all;
 clear all;
 load('flow117_cam.mat');
 load('flow117_200fps.mat');
@@ -144,6 +145,49 @@ clear all
 load('flow_117_cam_pro.mat');
 load('flow_117_200fps_pro.mat');
 
+%% Smooth motion capture measurements
+% 
+% g = gausswin(200,25);
+% g = g/sum(g);
+% plot(g);
+% 
+% dirX_ = dirX;
+% dirY_ = dirY;
+% dirZ_ = dirZ;
+% 
+% dirX = conv(dirX_, g, 'same');
+% dirY = conv(dirY_, g, 'same');
+% dirZ = conv(dirZ_, g, 'same');
+% 
+% % Plot result
+% figure;
+% hold on
+% h1 = plot(dirY_);
+% h2 = plot(dirY);
+% legend([h1 h2], 'smoothed', 'raw');
+% hold off;
+% 
+% %% Smooth optic-flow measurements
+% g = gausswin(200,25);
+% g = g/sum(g);
+% plot(g);
+% 
+% CamX_ = CamX;
+% CamY_ = CamY;
+% CamZ_ = CamZ;
+% 
+% CamX = conv(CamX_, g, 'same');
+% CamY = conv(CamY_, g, 'same');
+% CamZ = conv(CamZ_, g, 'same');
+% 
+% % Plot result
+% figure;
+% hold on
+% h1 = plot(CamZ_);
+% h2 = plot(CamZ);
+% legend([h1 h2], 'raw', 'smoothed');
+% hold off;
+
 %% Synchronize measurements (convolution)
 
 % Correlation with motion capture data
@@ -182,7 +226,11 @@ hold off
 
 %% Compare direction estimates
 % crop data
+CamX_ = CamX(delay:length(CamX));
+CamY_ = CamY(delay:length(CamY));
 CamZ_ = CamZ(delay:length(CamZ));
+dirX_ = dirX(1:length(CamX_));
+dirY_ = dirY(1:length(CamY_));
 dirZ_ = dirZ(1:length(CamZ_));
 
 % plot raw measurements
@@ -191,12 +239,13 @@ hold on
 h2 = plot(abs(CamZ_));
 drawnow;
 pause;
-h1 = plot(abs(dirZ_));
+h1 = plot(abs(dirY_));
 legend([h1, h2], 'Optitrack Z','Gyroscope Y');
 hold off
 
 % plot error
-error = abs(CamZ_)'-abs(dirZ_);
-figure;
-hold on
-plot(error);
+% error = abs(CamZ_)'-abs(dirZ_);
+% figure;
+% hold on
+% plot(error);
+
