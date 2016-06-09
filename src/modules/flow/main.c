@@ -320,23 +320,23 @@ int main(void)
 
 	/* variables */
 	uint32_t counter = 0;
-	uint8_t qual = 0;
+	// uint8_t qual = 0;
 
 	/* Lucas Kanade flow */
 	// float flow_lk.x[100];
 	// float flow_lk.y[100];
 
-	union flow_lk {
-		struct {
-			int16_t x[N_points];
-			int16_t y[N_points];
-		};
-		// struct {
-		// 	uint8_t data_x[250];
-		// 	uint8_t data_y[250];
-		// };
-		uint8_t data[4*N_points];
-	} flow_lk;
+	// union flow_lk {
+	// 	struct {
+	// 		int16_t x[N_points];
+	// 		int16_t y[N_points];
+	// 	};
+	// 	// struct {
+	// 	// 	uint8_t data_x[250];
+	// 	// 	uint8_t data_y[250];
+	// 	// };
+	// 	uint8_t data[4*N_points];
+	// } flow_lk;
 
 
 	float optic_flow_big_debug[N_points];
@@ -365,7 +365,7 @@ int main(void)
 	// static uint16_t accumulated_framecount = 0;
 	// static uint16_t accumulated_quality = 0;
 	// static uint32_t integration_timespan = 0;
-	static uint32_t lasttime = 0;
+	// static uint32_t lasttime = 0;
 	// uint32_t time_since_last_sonar_update= 0;
 
 	uavcan_start();
@@ -449,7 +449,7 @@ int main(void)
 			sonar_distance_raw = 0.0f;
 		}
 
-		static float DT;
+		// static float DT;
 
 		// static float denzominateur[70];
 
@@ -494,7 +494,7 @@ int main(void)
 				}
 				else
 				{
-					optic_flow_big_debug[i] = 0;
+				optic_flow_big_debug[i] = 0;
 				// flow_lk.x[i] = 0;
 				// flow_lk.y[i] = 0;
 				}
@@ -557,10 +557,10 @@ int main(void)
 			// 	velocity_y_lp = (1.0f - global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW]) * velocity_y_lp;
 			// }
 			
-			DT = get_boot_time_us() - lasttime;
+			// DT = get_boot_time_us() - lasttime;
 
 			//update lasttime
-			lasttime = get_boot_time_us();
+			// lasttime = get_boot_time_us();
 
 			// pixel_flow_x_sum += pixel_flow_x;
 			// pixel_flow_y_sum += pixel_flow_y;
@@ -612,7 +612,7 @@ int main(void)
 
             //serial mavlink  + usb mavlink output throttled
 			// if (counter % (uint32_t)global_data.param[PARAM_BOTTOM_FLOW_SERIAL_THROTTLE_FACTOR] == 0)//throttling factor
-			if (counter % 5 == 0)
+			if (counter % 10 == 0)
 			{
 
 				// float flow_comp_m_x = 0.0f;
@@ -645,13 +645,10 @@ int main(void)
 				// 		// ground_distance);
 				// 		DT);
 
-				float of[60];
-		        for (uint32_t i = 0; i < 60; i++)
-		          {
-		              of[i] = optic_flow_big_debug[i];
-		          }
+				
+		      
 
-				mavlink_msg_big_debug_vect_send(MAVLINK_COMM_0, "OF", get_boot_time_us(), of);
+				mavlink_msg_big_debug_vect_send(MAVLINK_COMM_0, "OF", get_boot_time_us(), optic_flow_big_debug);
 
 				// mavlink_msg_optical_flow_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
 				// 		flow_lk.x[1], flow_lk.x[19],
@@ -661,13 +658,13 @@ int main(void)
 				// mavlink_msg_data_transmission_handshake_send(
 				// 		MAVLINK_COMM_0,
 				// 		MAVLINK_TYPE_INT16_T,
-				// 		2*N_points,
+				// 		4*N_points,
 				// 		N_points, 
 				// 		1,
-				// 		2*N_points / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
+				// 		4*N_points / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
 				// 		MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
 				// 		100);
-				// for (int frame = 0; frame < 2*N_points / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1; ++frame)
+				// for (int frame = 0; frame < 4*N_points / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1; ++frame)
 				// {
 				// 	mavlink_msg_encapsulated_data_send(MAVLINK_COMM_0, frame, &((uint8_t *) flow_lk.data)[frame * MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN]);
 				// }
@@ -704,10 +701,10 @@ int main(void)
 				{
 					// float dt = get_time_between_images();
 
-					mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-							flow_lk.x[30], flow_lk.x[50],
-							flow_lk.x[70], flow_lk.x[20], qual,
-							DT);
+					// mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
+					// 		flow_lk.x[30], flow_lk.x[50],
+					// 		flow_lk.x[70], flow_lk.x[20], qual,
+					// 		DT);
 
 					// mavlink_msg_data_transmission_handshake_send(
 					// 		MAVLINK_COMM_2,
