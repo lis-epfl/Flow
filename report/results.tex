@@ -126,46 +126,74 @@ Experiments were performed using an OptiTrack motion capture system which high p
 Motion capture using passive markers requires the emission of IR lights that are sensed by the camera due to its small size. Due to the frequency at which these articial lights were emitted (250Hz), the ambiant illumination as seen by the camera (200Hz) typically changed every 150ms inducing an automatic calibration of the luminosity, which requires extra 5ms before new readings are sampled. Although this setup was kept due to time constraints, this issue could be avoided by switching of IR lights and using active markers (i.e. a set IR LEDs).
 
 \subsubsection{Results}
-The experiments were performed using the algorithm detailed above with 5 stages refinements. Two different number of samples were tested; the first one being 81, which typically enables a runtime of 5.3ms, and the second one being 117, which runs at approximately 160Hz.
+The experiments were performed using the algorithm detailed above with 5 stages refinements. The number of samples was first fixed to 81, which typically enables a runtime of 5.3ms ($\sim$ 180Hz); and then slightly increased up to 117 samples. As the results are mostly similar in both cases, we will focus on the lower number of samples in the remaining of this part.
 
-As the measurements obtained from the optic-flow sensor and the motion capture system were not started simultaneously, we had to synchronize them afterwards. To ease up the process, we performed a recognizable motion that involved the gyroscope of the camera. Indeed, the gyroscope measurements are typically much less noisy than the optic-flow data. Hence, the angular rates measured by the optic-flow sensor were stored and compared to the estimates of the rates inferred from the motion capture system. The derivatives of the quaternions given by OptiTrack were computed using the three points rule, which typically allows for a better estimate. They were then converted from global to local (camera) coordinates. The synchronization was realized manually as recognizable features were easily located. Note that since the two systems exhibit different refresh rates, the values of the camera gyroscope were interpolated using a standard linear regressor between each datapoint. Finally, one may consider smoothing the data (e.g. using a gaussian window) though this was not required for synchronizing the signals in our case. Some results of the synchronization process are shown in Figures~\ref{fig:mocapGyro81}-\ref{fig:mocapGyro117}.
+As the measurements obtained from the optic-flow sensor and the motion capture system were not started simultaneously, we had to synchronize them afterwards. To ease up the process, we performed a recognizable motion that involved the gyroscope of the camera. Indeed, the gyroscope measurements are typically much less noisy than the optic-flow data. Hence, the angular rates measured by the optic-flow sensor were stored and compared to the estimates of the rates inferred from the motion capture system. The derivatives of the quaternions given by OptiTrack were computed using the three points rule, which typically allows for a better estimate. They were then converted from global to local (camera) coordinates. The synchronization was realized manually as recognizable features were easily located. Note that since the two systems exhibit different refresh rates, the values of the camera gyroscope were interpolated using a standard linear regressor between each datapoint. Finally, one may consider smoothing the data (e.g. using a gaussian window) though this was not required for synchronizing the signals in our case. Some results of the synchronization process are shown in Figures~\ref{fig:mocapGyro81X}-\ref{fig:mocapGyro81YZ}.
 
 \begin{figure}
 \centering
-\includegraphics[width = 0.8\linewidth]{images/matlab/mocapGyro81}
-\caption{\textbf{Synchronized signals from camera and optitrack} - The signals were synchronized manually using recognizable features. The axes of the optitrack were circularly permutated so as to correspond to the ones used in the camera frame. The horizontal axis correspond to the index of the frame ($\sim$5ms)}
-\label{fig:mocapGyro81}
+\includegraphics[width = 0.8\linewidth]{images/matlab/mocapGyroX81}
+\caption{\textbf{Synchronized signals from camera and OptiTrack (X axis)} - The signals were synchronized manually using recognizable features (e.g. around frame 2000). The axes of the optitrack were circularly permutated so as to correspond to the ones of the camera frame.}
+\label{fig:mocapGyro81X}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width = 0.8\linewidth]{images/matlab/mocapGyro117}
-\caption{\textbf{Synchronized signals from camera and optitrack} - The signals were synchronized manually using recognizable features. The axes of the optitrack were circularly permutated so as to correspond to the ones used in the camera frame. The horizontal axis correspond to the index of the frame ($\sim$5ms)}
-\label{fig:mocapGyro117}
+\includegraphics[width = 0.48\linewidth]{images/matlab/mocapGyroY81}
+\includegraphics[width = 0.48\linewidth]{images/matlab/mocapGyroZ81}
+\caption{\textbf{Synchronized signals from camera and OptiTrack (Y \& Z axes)} - The signals were synchronized manually using recognizable features. The axes of the optitrack were circularly permutated so as to correspond to the ones of the camera frame.}
+\label{fig:mocapGyro81YZ}
 \end{figure}
 
-As it can be seen on Figures~\ref{fig:mocapGyro81}-\ref{fig:mocapGyro117}, both signals display comparable accuracy although some spikes are visible on the OptiTrack estimates. These spikes may be due to markers being lost by the motion capture system (thus inducing very fast changes in the orientation of the rigid body).
+As it can be seen on Figures~\ref{fig:mocapGyro81X}-\ref{fig:mocapGyro81YZ}, both signals display comparable accuracy although some spikes are visible on the OptiTrack estimates. These spikes may be due to markers being lost by the motion capture system (thus inducing very fast changes in the orientation of the rigid body).
 
-The direction of motion was estimated from motion capture outputs using the 3 point rule on the 3D position. This so-called "ground-truth" is compared to the optic-flow sensor estimates. The raw measurements obtained for 81 viewing directions are shown in Figure~\ref{fig:mocapPos81}. As it can be seen on the figure, the signals display very fast oscillations that can hardly be considered similar although they seem to follow the same "trend".
+The direction of motion was estimated from motion capture outputs using the 3 points rule on the 3D position. This so-called "ground-truth" is compared to the optic-flow sensor estimates by considering the absolute value of the estimates (as only the axis of motion is estimated by the optic-flow sensor). To cope with the high oscillations observed in both signals, the raw measurements obtained for 81 viewing directions were smoothed using gaussian windows. The first one, which is equivalent to a $\sigma=20ms$, yields the graph shown in Figure~\ref{fig:mocapPos81_sig20}. Both signals seem to follow the same trend although the optic-flow sensor estimate still exhibit high error when compared to the motion capture measurements. By increasing the width of the gaussian window ($\sigma = 100ms$), the estimates still appear correlated, meaning that our method is correct but our estimates remain poor (Fig.~\ref{fig:mocapPos81_sig100}). 
 
 \begin{figure}
 \centering
-\includegraphics[width = \linewidth]{images/matlab/mocapPos81}
-\caption{\textbf{Comparison of optic-flow sensor estimate with "ground-truth"} - The horizontal axis correspond to the index of the frame ($\sim$5ms) \label{fig:mocapPos81}}
+\includegraphics[width = \linewidth]{images/matlab/comparison_sig_20_X}
+\includegraphics[width = \linewidth]{images/matlab/comparison_sig_20_Y}
+\includegraphics[width = \linewidth]{images/matlab/comparison_sig_20_Z}
+\caption{\textbf{Comparison of optic-flow sensor estimates with "ground-truth" (20 ms gaussian window)} - The signals appear to follow the same trend although the optic-flow estimates are still very noisy. \label{fig:mocapPos81_sig20}}
 \end{figure}
-
-To cope with the high oscillations, we smoothed the data using gaussian windows. The first one, which is equivalent to a $\sigma=20ms$, yields the graph shown in Figure~\ref{fig:mocapPos81_sig4}. The result shows a good correlation between the two signal although the optic-flow sensor estimate still exhibit high error when compared to the motion capture measurements. By increasing the width of the gaussian window ($\sigma = 100ms$), the estimates still appear correlated, meaning that our method is correct. 
-
-However, in all cases, the values are far from the "ground truth" (even using 117 samples). Whether or not the changing ambiant lighting has influenced the estimation of the estimation of the direction of motion remains an open question.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width = \linewidth]{images/matlab/mocapPos81_sig4}
-\caption{\textbf{Comparison of optic-flow sensor estimate with "ground-truth" (cont'd)} - A gaussian window ($\sigma = 20ms$) was applied. The horizontal axis correspond to the index of the frame (~5ms) \label{fig:mocapPos81_sig4}}
+\includegraphics[width = \linewidth]{images/matlab/comparison_sig_100_X}
+\includegraphics[width = \linewidth]{images/matlab/comparison_sig_100_Y}
+\includegraphics[width = \linewidth]{images/matlab/comparison_sig_100_Z}
+\caption{\textbf{Comparison of optic-flow sensor estimates with "ground-truth" (100 ms gaussian window)} - The signals appear to follow the same trend although the optic-flow estimates still exhibit a high error. \label{fig:mocapPos81_sig100}}
 \end{figure}
 
-\begin{figure}[b]
+The accuracy of the estimation is computed using the absolute value of the dot product of the (normalized) estimated direction and the (normalized) ground truth at each frame. The results are summarized in Table~\ref{tab:mocapStatistics}. As can be seen, the method exhibit a very low average accuracy, which is slightly higher than $50^o$. Surprisingly enough, the overall accuracy is even way lower than the simulated one in the worst conditions (i.e. with 75\% outliers).
+
+As the latter statistics are not fully representative of the actual performance, the accuracy at each time step was plotted in Figure~\ref{fig:mocapAccuracy81}. The system displays regular drops in the accuracy of his estimate. This drops may be related to rapid changes in the motion of the camera, the latter of which were quite frequent when moving the camera by hand.
+
+\begin{table}
 \centering
-\includegraphics[width = \linewidth]{images/matlab/mocapPos81_sig20}
-\caption{\textbf{Comparison of optic-flow sensor estimate with "ground-truth" (cont'd)} - A gaussian window ($\sigma = 100ms$) was applied. The horizontal axis correspond to the index of the frame (~5ms) \label{fig:mocapPos81_sig20}}
+\begin{tabular}{|c|c|c|}
+\hline
+\multirow{2}{*}{Statistics} & \multicolumn{2}{|c|}{Width of the Gaussian window}\\
+\cline{2-3}
+& $\sigma = 20ms$ & $\sigma = 100ms$\\
+\hline
+Mean & 0.692394 & 0.669445 \\
+\hline
+Std. dev. & 0.274798 & 0.277248 \\ 
+\hline
+Max & 0.999980 & 0.999988 \\
+\hline
+Min & 0.000097 & 0.000054 \\
+\hline
+\end{tabular}
+\caption{\textbf{Statistics from the motion capture experiments} - The accuracy corresponds to the absolute value of the dot product between both (normalized) direction of motion estimates (optic-flow sensor and motion capture system). The optic-flow sensor yields really poor average accuracy which is slightly higher than $50^o$.\label{tab:mocapStatistics}}
+\end{table}
+
+Nevertheless, in all cases, the values are far from the "ground truth", even when more samples are processed. Unfortunately, whether or not the changing ambiant lighting has influenced the estimation of the direction of motion remains an open question. Finally, considering the quality of the data gathered from optic-flow processing, it may be sensible to perform further post-processing on the estimates, such filtering or averaging, which will most likely improve performance at the expense of a lower sensitivity (or slower response time) to (very) fast changes in the direction of motion.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.48\linewidth]{images/matlab/accuracy_sig_20}
+\includegraphics[width=0.48\linewidth]{images/matlab/accuracy_sig_100}
+\caption{\textbf{Accuracy of the estimate over the duration of the experiment} - The accuracy corresponds to the absolute value of the dot product between both (normalized) direction of motion estimates (optic-flow sensor and motion capture system). The system displays regular drops in the accuracy of his estimate, which may be due to rapid changes in the motion of the camera.\label{fig:mocapAccuracy81}}
 \end{figure}

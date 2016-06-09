@@ -34,7 +34,7 @@
 \@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces \textbf  {Great circles intersection and direction of motion} - The great circles were obtained from the sampling directions and the translational part of the optic-flow vectors. One of their intersection corresponds to the focus of expansion. \relax }}{13}}
 \newlabel{fig:voting}{{5}{13}}
 \newlabel{equ:normalVector}{{11}{13}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces \textbf  {Normal vector and its corresponding great circle} - The normal vector is computed using Equation\nobreakspace  {}11\hbox {}. The great circle is plotted using its parametric equation: $v(t) = cos(t) \cdot \mathaccentV {hat}05E{f}_t + sin(t) \cdot d$, where $\mathaccentV {hat}05E{f}_t = \genfrac  {}{}{}0{f_t}{\delimiter "026B30D f_t\delimiter "026B30D }$. \relax }}{14}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces \textbf  {Normal vector and its corresponding great circle} - The normal vector is computed using Equation\nobreakspace  {}11\hbox {}. The great circle is plotted using its parametric equation: $v(t) = cos(t) \cdot \mathaccentV {hat}05E{f}_t + sin(t) \cdot d$, where $\mathaccentV {hat}05E{f}_t = \genfrac  {}{}{}0{f_t}{\delimiter "026B30D f_t\delimiter "026B30D }$ is the normalized translational component of the optic-flow and $d$ is the viewing (or sampling) direction. \relax }}{14}}
 \newlabel{fig:normalVector}{{6}{14}}
 \citation{rotation}
 \newlabel{algo:houghVoting}{{1}{15}}
@@ -61,17 +61,19 @@
 \@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces \textbf  {Optic-flow sensor mounted on its motion capture frame} - The frame is equipped with 5 passive markers attached at known positions to obtain 3D position and orientation of the rigid body out of the 21 IR cameras.\relax }}{21}}
 \newlabel{fig:motionCapture}{{11}{21}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Results}{22}}
-\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces \textbf  {Synchronized signals from camera and optitrack} - The signals were synchronized manually using recognizable features. The axes of the optitrack were circularly permutated so as to correspond to the ones used in the camera frame. The horizontal axis correspond to the index of the frame ($\sim $5ms)\relax }}{23}}
-\newlabel{fig:mocapGyro81}{{12}{23}}
-\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces \textbf  {Synchronized signals from camera and optitrack} - The signals were synchronized manually using recognizable features. The axes of the optitrack were circularly permutated so as to correspond to the ones used in the camera frame. The horizontal axis correspond to the index of the frame ($\sim $5ms)\relax }}{23}}
-\newlabel{fig:mocapGyro117}{{13}{23}}
-\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces \textbf  {Comparison of optic-flow sensor estimate with "ground-truth"} - The horizontal axis correspond to the index of the frame ($\sim $5ms) \relax }}{24}}
-\newlabel{fig:mocapPos81}{{14}{24}}
-\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces \textbf  {Comparison of optic-flow sensor estimate with "ground-truth" (cont'd)} - A gaussian window ($\sigma = 20ms$) was applied. The horizontal axis correspond to the index of the frame (\nobreakspace  {}5ms) \relax }}{25}}
-\newlabel{fig:mocapPos81_sig4}{{15}{25}}
-\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces \textbf  {Comparison of optic-flow sensor estimate with "ground-truth" (cont'd)} - A gaussian window ($\sigma = 100ms$) was applied. The horizontal axis correspond to the index of the frame (\nobreakspace  {}5ms) \relax }}{26}}
-\newlabel{fig:mocapPos81_sig20}{{16}{26}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Conclusion}{27}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces \textbf  {Synchronized signals from camera and OptiTrack (X axis)} - The signals were synchronized manually using recognizable features (e.g. around frame 2000). The axes of the optitrack were circularly permutated so as to correspond to the ones of the camera frame.\relax }}{23}}
+\newlabel{fig:mocapGyro81X}{{12}{23}}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces \textbf  {Synchronized signals from camera and OptiTrack (Y \& Z axes)} - The signals were synchronized manually using recognizable features. The axes of the optitrack were circularly permutated so as to correspond to the ones of the camera frame.\relax }}{23}}
+\newlabel{fig:mocapGyro81YZ}{{13}{23}}
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces \textbf  {Comparison of optic-flow sensor estimates with "ground-truth" (20 ms gaussian window)} - The signals appear to follow the same trend although the optic-flow estimates are still very noisy. \relax }}{24}}
+\newlabel{fig:mocapPos81_sig20}{{14}{24}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces \textbf  {Statistics from the motion capture experiments} - The accuracy corresponds to the absolute value of the dot product between both (normalized) direction of motion estimates (optic-flow sensor and motion capture system). The optic-flow sensor yields really poor average accuracy which is slightly higher than $50^o$.\relax }}{25}}
+\newlabel{tab:mocapStatistics}{{4}{25}}
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces \textbf  {Comparison of optic-flow sensor estimates with "ground-truth" (100 ms gaussian window)} - The signals appear to follow the same trend although the optic-flow estimates still exhibit a high error. \relax }}{26}}
+\newlabel{fig:mocapPos81_sig100}{{15}{26}}
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces \textbf  {Accuracy of the estimate over the duration of the experiment} - The accuracy corresponds to the absolute value of the dot product between both (normalized) direction of motion estimates (optic-flow sensor and motion capture system). The system displays regular drops in the accuracy of his estimate, which may be due to rapid changes in the motion of the camera.\relax }}{27}}
+\newlabel{fig:mocapAccuracy81}{{16}{27}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Conclusion}{28}}
 \bibstyle{ieeetr}
 \bibdata{report}
 \bibcite{ekf}{1}

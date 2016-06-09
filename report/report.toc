@@ -9,4 +9,4 @@
 \contentsline {subsection}{\numberline {3.2}Experiments with motion capture}{20}
 \contentsline {subsubsection}{\numberline {3.2.1}Setup}{20}
 \contentsline {subsubsection}{\numberline {3.2.2}Results}{22}
-\contentsline {section}{\numberline {4}Conclusion}{27}
+\contentsline {section}{\numberline {4}Conclusion}{28}

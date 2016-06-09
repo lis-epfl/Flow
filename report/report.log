@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/W32TeX) (preloaded format=pdflatex 2015.8.15)  9 JUN 2016 18:38
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/W32TeX) (preloaded format=pdflatex 2015.8.15)  10 JUN 2016 00:15
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1556,110 +1556,240 @@ File: images/moCapFrame.jpg Graphic file (type jpg)
 Package pdftex.def Info: images/moCapFrame.jpg used on input line 118.
 (pdftex.def)             Requested size: 209.12683pt x 117.6138pt.
  [21 <./images/moCapFrame.jpg>]
-Package epstopdf Info: Source file: <images/matlab/mocapGyro81.eps>
-(epstopdf)                    date: 2016-06-08 00:46:00
-(epstopdf)                    size: 589615 bytes
-(epstopdf)             Output file: <images/matlab/mocapGyro81-eps-converted-to
-.pdf>
-(epstopdf)                    date: 2016-06-08 01:19:55
-(epstopdf)                    size: 173917 bytes
-(epstopdf)             Command: <repstopdf --outfile=images/matlab/mocapGyro81-
-eps-converted-to.pdf images/matlab/mocapGyro81.eps>
+Package epstopdf Info: Source file: <images/matlab/mocapGyroX81.eps>
+(epstopdf)                    date: 2016-06-09 21:26:28
+(epstopdf)                    size: 517316 bytes
+(epstopdf)             Output file: <images/matlab/mocapGyroX81-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2016-06-09 22:33:04
+(epstopdf)                    size: 154010 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/mocapGyroX81
+-eps-converted-to.pdf images/matlab/mocapGyroX81.eps>
 (epstopdf)             \includegraphics on input line 135.
 Package epstopdf Info: Output file is already uptodate.
 
-<images/matlab/mocapGyro81-eps-converted-to.pdf, id=242, 603.25375pt x 345.29pt
->
-File: images/matlab/mocapGyro81-eps-converted-to.pdf Graphic file (type pdf)
- <use images/matlab/mocapGyro81-eps-converted-to.pdf>
-Package pdftex.def Info: images/matlab/mocapGyro81-eps-converted-to.pdf used on
- input line 135.
-(pdftex.def)             Requested size: 334.60422pt x 191.51703pt.
-Package epstopdf Info: Source file: <images/matlab/mocapGyro117.eps>
-(epstopdf)                    date: 2016-06-08 00:41:50
-(epstopdf)                    size: 474726 bytes
-(epstopdf)             Output file: <images/matlab/mocapGyro117-eps-converted-t
+<images/matlab/mocapGyroX81-eps-converted-to.pdf, id=242, 421.575pt x 316.18124
+pt>
+File: images/matlab/mocapGyroX81-eps-converted-to.pdf Graphic file (type pdf)
+ <use images/matlab/mocapGyroX81-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/mocapGyroX81-eps-converted-to.pdf used o
+n input line 135.
+(pdftex.def)             Requested size: 334.60422pt x 250.95763pt.
+Package epstopdf Info: Source file: <images/matlab/mocapGyroY81.eps>
+(epstopdf)                    date: 2016-06-09 21:26:50
+(epstopdf)                    size: 516885 bytes
+(epstopdf)             Output file: <images/matlab/mocapGyroY81-eps-converted-t
 o.pdf>
-(epstopdf)                    date: 2016-06-08 01:19:57
-(epstopdf)                    size: 142725 bytes
-(epstopdf)             Command: <repstopdf --outfile=images/matlab/mocapGyro117
--eps-converted-to.pdf images/matlab/mocapGyro117.eps>
+(epstopdf)                    date: 2016-06-09 22:35:36
+(epstopdf)                    size: 154963 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/mocapGyroY81
+-eps-converted-to.pdf images/matlab/mocapGyroY81.eps>
 (epstopdf)             \includegraphics on input line 142.
 Package epstopdf Info: Output file is already uptodate.
 
-<images/matlab/mocapGyro117-eps-converted-to.pdf, id=243, 603.25375pt x 342.278
-75pt>
-File: images/matlab/mocapGyro117-eps-converted-to.pdf Graphic file (type pdf)
- <use images/matlab/mocapGyro117-eps-converted-to.pdf>
-Package pdftex.def Info: images/matlab/mocapGyro117-eps-converted-to.pdf used o
+<images/matlab/mocapGyroY81-eps-converted-to.pdf, id=243, 421.575pt x 316.18124
+pt>
+File: images/matlab/mocapGyroY81-eps-converted-to.pdf Graphic file (type pdf)
+ <use images/matlab/mocapGyroY81-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/mocapGyroY81-eps-converted-to.pdf used o
 n input line 142.
-(pdftex.def)             Requested size: 334.60422pt x 189.84682pt.
-Package epstopdf Info: Source file: <images/matlab/mocapPos81.eps>
-(epstopdf)                    date: 2016-06-08 03:08:41
-(epstopdf)                    size: 182782 bytes
-(epstopdf)             Output file: <images/matlab/mocapPos81-eps-converted-to.
-pdf>
-(epstopdf)                    date: 2016-06-08 03:08:46
-(epstopdf)                    size: 65181 bytes
-(epstopdf)             Command: <repstopdf --outfile=images/matlab/mocapPos81-e
-ps-converted-to.pdf images/matlab/mocapPos81.eps>
-(epstopdf)             \includegraphics on input line 153.
+(pdftex.def)             Requested size: 200.75996pt x 150.57361pt.
+Package epstopdf Info: Source file: <images/matlab/mocapGyroZ81.eps>
+(epstopdf)                    date: 2016-06-09 21:27:09
+(epstopdf)                    size: 517474 bytes
+(epstopdf)             Output file: <images/matlab/mocapGyroZ81-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2016-06-09 22:35:38
+(epstopdf)                    size: 155836 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/mocapGyroZ81
+-eps-converted-to.pdf images/matlab/mocapGyroZ81.eps>
+(epstopdf)             \includegraphics on input line 143.
 Package epstopdf Info: Output file is already uptodate.
 
-<images/matlab/mocapPos81-eps-converted-to.pdf, id=244, 603.25375pt x 369.38pt>
-File: images/matlab/mocapPos81-eps-converted-to.pdf Graphic file (type pdf)
-<use images/matlab/mocapPos81-eps-converted-to.pdf>
-Package pdftex.def Info: images/matlab/mocapPos81-eps-converted-to.pdf used on 
-input line 153.
-(pdftex.def)             Requested size: 418.25368pt x 256.10118pt.
-Package epstopdf Info: Source file: <images/matlab/mocapPos81_sig4.eps>
-(epstopdf)                    date: 2016-06-08 03:10:32
-(epstopdf)                    size: 100869 bytes
-(epstopdf)             Output file: <images/matlab/mocapPos81_sig4-eps-converte
-d-to.pdf>
-(epstopdf)                    date: 2016-06-08 03:10:39
-(epstopdf)                    size: 36253 bytes
-(epstopdf)             Command: <repstopdf --outfile=images/matlab/mocapPos81_s
-ig4-eps-converted-to.pdf images/matlab/mocapPos81_sig4.eps>
+<images/matlab/mocapGyroZ81-eps-converted-to.pdf, id=244, 421.575pt x 316.18124
+pt>
+File: images/matlab/mocapGyroZ81-eps-converted-to.pdf Graphic file (type pdf)
+ <use images/matlab/mocapGyroZ81-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/mocapGyroZ81-eps-converted-to.pdf used o
+n input line 143.
+(pdftex.def)             Requested size: 200.75996pt x 150.57361pt.
+Package epstopdf Info: Source file: <images/matlab/comparison_sig_20_X.eps>
+(epstopdf)                    date: 2016-06-09 22:55:39
+(epstopdf)                    size: 138210 bytes
+(epstopdf)             Output file: <images/matlab/comparison_sig_20_X-eps-conv
+erted-to.pdf>
+(epstopdf)                    date: 2016-06-09 22:55:45
+(epstopdf)                    size: 51729 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/comparison_s
+ig_20_X-eps-converted-to.pdf images/matlab/comparison_sig_20_X.eps>
+(epstopdf)             \includegraphics on input line 154.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/matlab/comparison_sig_20_X-eps-converted-to.pdf, id=245, 658.46pt x 202
+.7575pt>
+File: images/matlab/comparison_sig_20_X-eps-converted-to.pdf Graphic file (type
+ pdf)
+ <use images/matlab/comparison_sig_20_X-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/comparison_sig_20_X-eps-converted-to.pdf
+ used on input line 154.
+(pdftex.def)             Requested size: 418.25368pt x 128.7929pt.
+Package epstopdf Info: Source file: <images/matlab/comparison_sig_20_Y.eps>
+(epstopdf)                    date: 2016-06-09 22:54:26
+(epstopdf)                    size: 140054 bytes
+(epstopdf)             Output file: <images/matlab/comparison_sig_20_Y-eps-conv
+erted-to.pdf>
+(epstopdf)                    date: 2016-06-09 22:54:32
+(epstopdf)                    size: 52233 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/comparison_s
+ig_20_Y-eps-converted-to.pdf images/matlab/comparison_sig_20_Y.eps>
+(epstopdf)             \includegraphics on input line 155.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/matlab/comparison_sig_20_Y-eps-converted-to.pdf, id=246, 657.45625pt x 
+206.7725pt>
+File: images/matlab/comparison_sig_20_Y-eps-converted-to.pdf Graphic file (type
+ pdf)
+ <use images/matlab/comparison_sig_20_Y-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/comparison_sig_20_Y-eps-converted-to.pdf
+ used on input line 155.
+(pdftex.def)             Requested size: 418.25368pt x 131.54517pt.
+Package epstopdf Info: Source file: <images/matlab/comparison_sig_20_Z.eps>
+(epstopdf)                    date: 2016-06-09 22:55:12
+(epstopdf)                    size: 137570 bytes
+(epstopdf)             Output file: <images/matlab/comparison_sig_20_Z-eps-conv
+erted-to.pdf>
+(epstopdf)                    date: 2016-06-09 22:55:20
+(epstopdf)                    size: 51105 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/comparison_s
+ig_20_Z-eps-converted-to.pdf images/matlab/comparison_sig_20_Z.eps>
+(epstopdf)             \includegraphics on input line 156.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/matlab/comparison_sig_20_Z-eps-converted-to.pdf, id=247, 658.46pt x 203
+.76125pt>
+File: images/matlab/comparison_sig_20_Z-eps-converted-to.pdf Graphic file (type
+ pdf)
+ <use images/matlab/comparison_sig_20_Z-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/comparison_sig_20_Z-eps-converted-to.pdf
+ used on input line 156.
+(pdftex.def)             Requested size: 418.25368pt x 129.43047pt.
+Package epstopdf Info: Source file: <images/matlab/comparison_sig_100_X.eps>
+(epstopdf)                    date: 2016-06-09 22:59:36
+(epstopdf)                    size: 137245 bytes
+(epstopdf)             Output file: <images/matlab/comparison_sig_100_X-eps-con
+verted-to.pdf>
+(epstopdf)                    date: 2016-06-09 23:00:56
+(epstopdf)                    size: 51562 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/comparison_s
+ig_100_X-eps-converted-to.pdf images/matlab/comparison_sig_100_X.eps>
+(epstopdf)             \includegraphics on input line 162.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/matlab/comparison_sig_100_X-eps-converted-to.pdf, id=248, 659.46375pt x
+ 194.7275pt>
+File: images/matlab/comparison_sig_100_X-eps-converted-to.pdf Graphic file (typ
+e pdf)
+ <use images/matlab/comparison_sig_100_X-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/comparison_sig_100_X-eps-converted-to.pd
+f used on input line 162.
+(pdftex.def)             Requested size: 418.25368pt x 123.50497pt.
+Package epstopdf Info: Source file: <images/matlab/comparison_sig_100_Y.eps>
+(epstopdf)                    date: 2016-06-09 22:59:51
+(epstopdf)                    size: 139318 bytes
+(epstopdf)             Output file: <images/matlab/comparison_sig_100_Y-eps-con
+verted-to.pdf>
+(epstopdf)                    date: 2016-06-09 23:00:58
+(epstopdf)                    size: 51996 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/comparison_s
+ig_100_Y-eps-converted-to.pdf images/matlab/comparison_sig_100_Y.eps>
 (epstopdf)             \includegraphics on input line 163.
 Package epstopdf Info: Output file is already uptodate.
 
-<images/matlab/mocapPos81_sig4-eps-converted-to.pdf, id=245, 603.25375pt x 372.
-39125pt>
-File: images/matlab/mocapPos81_sig4-eps-converted-to.pdf Graphic file (type pdf
-)
- <use images/matlab/mocapPos81_sig4-eps-converted-to.pdf>
-Package pdftex.def Info: images/matlab/mocapPos81_sig4-eps-converted-to.pdf use
-d on input line 163.
-(pdftex.def)             Requested size: 418.25368pt x 258.18896pt.
-Package epstopdf Info: Source file: <images/matlab/mocapPos81_sig20.eps>
-(epstopdf)                    date: 2016-06-08 03:11:45
-(epstopdf)                    size: 588259 bytes
-(epstopdf)             Output file: <images/matlab/mocapPos81_sig20-eps-convert
-ed-to.pdf>
-(epstopdf)                    date: 2016-06-08 03:11:52
-(epstopdf)                    size: 182246 bytes
-(epstopdf)             Command: <repstopdf --outfile=images/matlab/mocapPos81_s
-ig20-eps-converted-to.pdf images/matlab/mocapPos81_sig20.eps>
-(epstopdf)             \includegraphics on input line 169.
+<images/matlab/comparison_sig_100_Y-eps-converted-to.pdf, id=249, 659.46375pt x
+ 194.7275pt>
+File: images/matlab/comparison_sig_100_Y-eps-converted-to.pdf Graphic file (typ
+e pdf)
+ <use images/matlab/comparison_sig_100_Y-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/comparison_sig_100_Y-eps-converted-to.pd
+f used on input line 163.
+(pdftex.def)             Requested size: 418.25368pt x 123.50497pt.
+Package epstopdf Info: Source file: <images/matlab/comparison_sig_100_Z.eps>
+(epstopdf)                    date: 2016-06-09 23:00:02
+(epstopdf)                    size: 136463 bytes
+(epstopdf)             Output file: <images/matlab/comparison_sig_100_Z-eps-con
+verted-to.pdf>
+(epstopdf)                    date: 2016-06-09 23:01:00
+(epstopdf)                    size: 50640 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/comparison_s
+ig_100_Z-eps-converted-to.pdf images/matlab/comparison_sig_100_Z.eps>
+(epstopdf)             \includegraphics on input line 164.
 Package epstopdf Info: Output file is already uptodate.
 
-<images/matlab/mocapPos81_sig20-eps-converted-to.pdf, id=246, 603.25375pt x 375
-.4025pt>
-File: images/matlab/mocapPos81_sig20-eps-converted-to.pdf Graphic file (type pd
-f)
- <use images/matlab/mocapPos81_sig20-eps-converted-to.pdf>
-Package pdftex.def Info: images/matlab/mocapPos81_sig20-eps-converted-to.pdf us
-ed on input line 169.
-(pdftex.def)             Requested size: 418.25368pt x 260.27675pt.
-) [22]
-[23 <./images/matlab/mocapGyro81-eps-converted-to.pdf> <./images/matlab/mocapGy
-ro117-eps-converted-to.pdf>] [24 <./images/matlab/mocapPos81-eps-converted-to.p
-df>] [25 <./images/matlab/mocapPos81_sig4-eps-converted-to.pdf>] [26 <./images/
-matlab/mocapPos81_sig20-eps-converted-to.pdf>] (./conclusion.tex) [27
+<images/matlab/comparison_sig_100_Z-eps-converted-to.pdf, id=250, 659.46375pt x
+ 194.7275pt>
+File: images/matlab/comparison_sig_100_Z-eps-converted-to.pdf Graphic file (typ
+e pdf)
+ <use images/matlab/comparison_sig_100_Z-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/comparison_sig_100_Z-eps-converted-to.pd
+f used on input line 164.
+(pdftex.def)             Requested size: 418.25368pt x 123.50497pt.
 
-]
-(./report.bbl) [28
+[22] [23 <./images/matlab/mocapGyroX81-eps-converted-to.pdf> <./images/matlab/m
+ocapGyroY81-eps-converted-to.pdf> <./images/matlab/mocapGyroZ81-eps-converted-t
+o.pdf>] [24 <./images/matlab/comparison_sig_20_X-eps-converted-to.pdf> <./image
+s/matlab/comparison_sig_20_Y-eps-converted-to.pdf> <./images/matlab/comparison_
+sig_20_Z-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <images/matlab/accuracy_sig_20.eps>
+(epstopdf)                    date: 2016-06-09 22:04:12
+(epstopdf)                    size: 74713 bytes
+(epstopdf)             Output file: <images/matlab/accuracy_sig_20-eps-converte
+d-to.pdf>
+(epstopdf)                    date: 2016-06-09 23:36:48
+(epstopdf)                    size: 27815 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/accuracy_sig
+_20-eps-converted-to.pdf images/matlab/accuracy_sig_20.eps>
+(epstopdf)             \includegraphics on input line 196.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/matlab/accuracy_sig_20-eps-converted-to.pdf, id=290, 421.575pt x 316.18
+124pt>
+File: images/matlab/accuracy_sig_20-eps-converted-to.pdf Graphic file (type pdf
+)
+ <use images/matlab/accuracy_sig_20-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/accuracy_sig_20-eps-converted-to.pdf use
+d on input line 196.
+(pdftex.def)             Requested size: 200.75996pt x 150.57361pt.
+Package epstopdf Info: Source file: <images/matlab/accuracy_sig_100.eps>
+(epstopdf)                    date: 2016-06-09 22:07:15
+(epstopdf)                    size: 74879 bytes
+(epstopdf)             Output file: <images/matlab/accuracy_sig_100-eps-convert
+ed-to.pdf>
+(epstopdf)                    date: 2016-06-09 23:36:50
+(epstopdf)                    size: 27734 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/accuracy_sig
+_100-eps-converted-to.pdf images/matlab/accuracy_sig_100.eps>
+(epstopdf)             \includegraphics on input line 197.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/matlab/accuracy_sig_100-eps-converted-to.pdf, id=291, 421.575pt x 316.1
+8124pt>
+File: images/matlab/accuracy_sig_100-eps-converted-to.pdf Graphic file (type pd
+f)
+ <use images/matlab/accuracy_sig_100-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/accuracy_sig_100-eps-converted-to.pdf us
+ed on input line 197.
+(pdftex.def)             Requested size: 200.75996pt x 150.57361pt.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) [25] [26 <./images/matlab/comparison_sig_100_X-eps-converted-to.pdf> <./image
+s/matlab/comparison_sig_100_Y-eps-converted-to.pdf> <./images/matlab/comparison
+_sig_100_Z-eps-converted-to.pdf>] [27 <./images/matlab/accuracy_sig_20-eps-conv
+erted-to.pdf> <./images/matlab/accuracy_sig_100-eps-converted-to.pdf>]
+(./conclusion.tex) [28
+
+] (./report.bbl) [29
 
 ] (./report.aux)
 
@@ -1667,10 +1797,10 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 29762 strings out of 493091
- 625910 string characters out of 6138531
- 721506 words of memory out of 5000000
- 32678 multiletter control sequences out of 15000+600000
+ 29793 strings out of 493091
+ 627518 string characters out of 6138531
+ 721513 words of memory out of 5000000
+ 32703 multiletter control sequences out of 15000+600000
  20413 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  63i,15n,101p,10491b,1349s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1690,10 +1820,10 @@ dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2015/texmf-dist/font
 s/type1/public/amsfonts/cm/cmsy8.pfb><c:/texlive/2015/texmf-dist/fonts/type1/pu
 blic/amsfonts/cm/cmti10.pfb><c:/texlive/2015/texmf-dist/fonts/type1/public/amsf
 onts/symbols/msbm10.pfb>
-Output written on report.pdf (32 pages, 6385108 bytes).
+Output written on report.pdf (33 pages, 6598867 bytes).
 PDF statistics:
- 348 PDF objects out of 1000 (max. 8388607)
- 228 compressed objects within 3 object streams
+ 387 PDF objects out of 1000 (max. 8388607)
+ 254 compressed objects within 3 object streams
  0 named destinations out of 1000 (max. 500000)
- 168 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 198 words of extra memory for PDF output out of 10000 (max. 10000000)
 

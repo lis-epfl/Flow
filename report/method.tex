@@ -406,7 +406,7 @@ Thus, we can vote along a great circle, given its normal vector, by computing si
 \begin{figure}
 \centering
 \includegraphics[width=0.7\linewidth]{images/matlab/normalVector}
-\caption{\textbf{Normal vector and its corresponding great circle} - The normal vector is computed using Equation~\ref{equ:normalVector}. The great circle is plotted using its parametric equation: $v(t) = cos(t) \cdot \hat{f}_t + sin(t) \cdot d$, where $\hat{f}_t = \dfrac{f_t}{\|f_t\|}$. \label{fig:normalVector}}
+\caption{\textbf{Normal vector and its corresponding great circle} - The normal vector is computed using Equation~\ref{equ:normalVector}. The great circle is plotted using its parametric equation: $v(t) = cos(t) \cdot \hat{f}_t + sin(t) \cdot d$, where $\hat{f}_t = \dfrac{f_t}{\|f_t\|}$ is the normalized translational component of the optic-flow and $d$ is the viewing (or sampling) direction. \label{fig:normalVector}}
 \end{figure}
 
 In practice, the intersection of two great circles defines 2 possible directions of translation. To disambiguate between the two, one may pick one of the two points and calculate the angle between it and the vector $f_t$. If the angle is larger than $\pi/2$ radians, then that point is the focus of expansion. Another possibility is to use an additional sensor (such as a sonar) to choose the correct direction. In order to improve the processing speed on the camera chip (and to avoid ambiguity), we only consider one hemisphere, that is half the number of possible directions of translation. In other words, we only determine the axis of translation rather than its direction and we work on the hemisphere defined by $z<0$.
