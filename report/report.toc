@@ -1,12 +1,12 @@
 \contentsline {section}{\numberline {1}Introduction}{1}
 \contentsline {section}{\numberline {2}Method for Direction of Motion Estimation}{3}
 \contentsline {subsection}{\numberline {2.1}Omnidirectional Camera Model}{3}
-\contentsline {subsection}{\numberline {2.2}Mapping Optical Flow to Unit Sphere}{6}
-\contentsline {subsection}{\numberline {2.3}Derotation of Optical Flow}{10}
-\contentsline {subsection}{\numberline {2.4}Finding the Focus of Expansion}{11}
-\contentsline {section}{\numberline {3}Results \& Discussion}{15}
-\contentsline {subsection}{\numberline {3.1}Simulation on Matlab}{15}
-\contentsline {subsection}{\numberline {3.2}Experiments with motion capture}{17}
-\contentsline {subsubsection}{\numberline {3.2.1}Setup}{17}
-\contentsline {subsubsection}{\numberline {3.2.2}Results}{19}
-\contentsline {section}{\numberline {4}Conclusion}{24}
+\contentsline {subsection}{\numberline {2.2}Mapping Optical Flow to Unit Sphere}{7}
+\contentsline {subsection}{\numberline {2.3}Derotation of Optical Flow}{11}
+\contentsline {subsection}{\numberline {2.4}Finding the Focus of Expansion}{12}
+\contentsline {section}{\numberline {3}Results \& Discussion}{18}
+\contentsline {subsection}{\numberline {3.1}Simulation on Matlab}{18}
+\contentsline {subsection}{\numberline {3.2}Experiments with motion capture}{20}
+\contentsline {subsubsection}{\numberline {3.2.1}Setup}{20}
+\contentsline {subsubsection}{\numberline {3.2.2}Results}{22}
+\contentsline {section}{\numberline {4}Conclusion}{27}

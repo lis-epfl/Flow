@@ -16,51 +16,62 @@
 \newlabel{fig:cameraImages}{{1}{4}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces \textbf  {Reprojection on the camera image after calibration}\relax }}{5}}
 \newlabel{fig:cameraReproj}{{2}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces \textbf  {Sampled pixels and projection on the unit sphere} - 81 pixels are uniformly sampled on a 160x120 grid (left) and back-projected on the unit sphere using the camera model (right).\relax }}{6}}
+\newlabel{fig:pixelMapping}{{3}{6}}
 \citation{backproj}
-\newlabel{code:cameraModel}{{1}{6}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Mapping Optical Flow to Unit Sphere}{6}}
-\newlabel{code:flowProjection}{{2}{8}}
+\newlabel{code:cameraModel}{{1}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Mapping Optical Flow to Unit Sphere}{7}}
+\newlabel{code:flowProjection}{{2}{9}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces \textbf  {Sampling points and corresponding optic-flow vectors} - The optic-flow vectors were obtained for a straight motion along the $X$ axis.\relax }}{10}}
+\newlabel{fig:flowMapping}{{4}{10}}
+\newlabel{code:fastFlowProjection}{{3}{11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Derotation of Optical Flow}{11}}
 \citation{derotation}
 \citation{autocalib}
-\newlabel{code:fastFlowProjection}{{3}{10}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Derotation of Optical Flow}{10}}
-\newlabel{equ:opticflow}{{8}{10}}
 \citation{lim}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Finding the Focus of Expansion}{11}}
+\newlabel{equ:opticflow}{{8}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Finding the Focus of Expansion}{12}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces \textbf  {Great circles intersection and direction of motion} - The great circles were obtained from the sampling directions and the translational part of the optic-flow vectors. One of their intersection corresponds to the focus of expansion. \relax }}{13}}
+\newlabel{fig:voting}{{5}{13}}
+\newlabel{equ:normalVector}{{11}{13}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces \textbf  {Normal vector and its corresponding great circle} - The normal vector is computed using Equation\nobreakspace  {}11\hbox {}. The great circle is plotted using its parametric equation: $v(t) = cos(t) \cdot \mathaccentV {hat}05E{f}_t + sin(t) \cdot d$, where $\mathaccentV {hat}05E{f}_t = \genfrac  {}{}{}0{f_t}{\delimiter "026B30D f_t\delimiter "026B30D }$. \relax }}{14}}
+\newlabel{fig:normalVector}{{6}{14}}
 \citation{rotation}
-\newlabel{algo:houghVoting}{{1}{12}}
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces \textbf  {Voting bins parameters} - The voting bins are evely distributed on the unit sphere and were generated using icosahedron method.\relax }}{13}}
-\newlabel{tab:votingBins}{{1}{13}}
-\newlabel{algo:rotation}{{4}{14}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Results \& Discussion}{15}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Simulation on Matlab}{15}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces \textbf  {Simulation parameters} - The velocity and angular rates were divided by the frequency of the camera (200Hz) to emulate real optic-flow computation\relax }}{15}}
-\newlabel{tab:simParam}{{2}{15}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces \textbf  {Generated sampling points and optic-flow vectors} - Synthesized using the first-order approximation and the parameters detailed in Table\nobreakspace  {}2\hbox {}\relax }}{16}}
-\newlabel{fig:simOpticFlow}{{3}{16}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces \textbf  {Generated outliers} - Synthesized using the first-order approximation and the parameters detailed in Table\nobreakspace  {}2\hbox {} and additional randomly generated tangent vectors\relax }}{16}}
-\newlabel{fig:simOutliers}{{4}{16}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces \textbf  {Derotated optic-flow vectors} - Synthesized using the first-order approximation and the parameters detailed in Table\nobreakspace  {}2\hbox {} and additional randomly generated tangent vectors\relax }}{17}}
-\newlabel{fig:simDerotation}{{5}{17}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces \textbf  {Influence of outliers on estiamte} - The dot products of the estimated and real directions of motion are averaged over 100 runs with various proportions of outliers\relax }}{17}}
-\newlabel{tab:simResults}{{3}{17}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Experiments with motion capture}{17}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Setup}{17}}
+\newlabel{algo:houghVoting}{{1}{15}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces \textbf  {Refined bins before and after rotation} - The refined bins, centered around $z<0$, are stored (left) before being rotated to be centered around the latest direction estimate (right).\relax }}{15}}
+\newlabel{fig:refinedBins}{{7}{15}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces \textbf  {Voting bins parameters} - The voting bins are evely distributed on the unit sphere and were generated using icosahedron method.\relax }}{16}}
+\newlabel{tab:votingBins}{{1}{16}}
+\newlabel{algo:rotation}{{4}{17}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Results \& Discussion}{18}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Simulation on Matlab}{18}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces \textbf  {Simulation parameters} - The velocity and angular rates were divided by the frequency of the camera (200Hz) to emulate real optic-flow computation\relax }}{18}}
+\newlabel{tab:simParam}{{2}{18}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces \textbf  {Generated sampling points and optic-flow vectors} - Synthesized using the first-order approximation and the parameters detailed in Table\nobreakspace  {}2\hbox {}\relax }}{19}}
+\newlabel{fig:simOpticFlow}{{8}{19}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces \textbf  {Generated outliers} - Synthesized using the first-order approximation and the parameters detailed in Table\nobreakspace  {}2\hbox {} and additional randomly generated tangent vectors\relax }}{19}}
+\newlabel{fig:simOutliers}{{9}{19}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces \textbf  {Derotated optic-flow vectors} - Synthesized using the first-order approximation and the parameters detailed in Table\nobreakspace  {}2\hbox {} and additional randomly generated tangent vectors\relax }}{20}}
+\newlabel{fig:simDerotation}{{10}{20}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces \textbf  {Influence of outliers on estiamte} - The dot products of the estimated and real directions of motion are averaged over 100 runs with various proportions of outliers\relax }}{20}}
+\newlabel{tab:simResults}{{3}{20}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Experiments with motion capture}{20}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Setup}{20}}
 \citation{adapted_neighborhood}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces \textbf  {Optic-flow sensor mounted on its motion capture frame} - The frame is equipped with 5 passive markers attached at known positions to obtain 3D position and orientation of the rigid body out of the 21 IR cameras.\relax }}{18}}
-\newlabel{fig:motionCapture}{{6}{18}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Results}{19}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces \textbf  {Synchronized signals from camera and optitrack} - The signals were synchronized manually using recognizable features. The axes of the optitrack were circularly permutated so as to correspond to the ones used in the camera frame. The horizontal axis correspond to the index of the frame ($\sim $5ms)\relax }}{20}}
-\newlabel{fig:mocapGyro81}{{7}{20}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces \textbf  {Synchronized signals from camera and optitrack} - The signals were synchronized manually using recognizable features. The axes of the optitrack were circularly permutated so as to correspond to the ones used in the camera frame. The horizontal axis correspond to the index of the frame ($\sim $5ms)\relax }}{20}}
-\newlabel{fig:mocapGyro117}{{8}{20}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces \textbf  {Comparison of optic-flow sensor estimate with "ground-truth"} - The horizontal axis correspond to the index of the frame ($\sim $5ms) \relax }}{21}}
-\newlabel{fig:mocapPos81}{{9}{21}}
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces \textbf  {Comparison of optic-flow sensor estimate with "ground-truth" (cont'd)} - A gaussian window ($\sigma = 20ms$) was applied. The horizontal axis correspond to the index of the frame (\nobreakspace  {}5ms) \relax }}{22}}
-\newlabel{fig:mocapPos81_sig4}{{10}{22}}
-\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces \textbf  {Comparison of optic-flow sensor estimate with "ground-truth" (cont'd)} - A gaussian window ($\sigma = 100ms$) was applied. The horizontal axis correspond to the index of the frame (\nobreakspace  {}5ms) \relax }}{23}}
-\newlabel{fig:mocapPos81_sig20}{{11}{23}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Conclusion}{24}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces \textbf  {Optic-flow sensor mounted on its motion capture frame} - The frame is equipped with 5 passive markers attached at known positions to obtain 3D position and orientation of the rigid body out of the 21 IR cameras.\relax }}{21}}
+\newlabel{fig:motionCapture}{{11}{21}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Results}{22}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces \textbf  {Synchronized signals from camera and optitrack} - The signals were synchronized manually using recognizable features. The axes of the optitrack were circularly permutated so as to correspond to the ones used in the camera frame. The horizontal axis correspond to the index of the frame ($\sim $5ms)\relax }}{23}}
+\newlabel{fig:mocapGyro81}{{12}{23}}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces \textbf  {Synchronized signals from camera and optitrack} - The signals were synchronized manually using recognizable features. The axes of the optitrack were circularly permutated so as to correspond to the ones used in the camera frame. The horizontal axis correspond to the index of the frame ($\sim $5ms)\relax }}{23}}
+\newlabel{fig:mocapGyro117}{{13}{23}}
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces \textbf  {Comparison of optic-flow sensor estimate with "ground-truth"} - The horizontal axis correspond to the index of the frame ($\sim $5ms) \relax }}{24}}
+\newlabel{fig:mocapPos81}{{14}{24}}
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces \textbf  {Comparison of optic-flow sensor estimate with "ground-truth" (cont'd)} - A gaussian window ($\sigma = 20ms$) was applied. The horizontal axis correspond to the index of the frame (\nobreakspace  {}5ms) \relax }}{25}}
+\newlabel{fig:mocapPos81_sig4}{{15}{25}}
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces \textbf  {Comparison of optic-flow sensor estimate with "ground-truth" (cont'd)} - A gaussian window ($\sigma = 100ms$) was applied. The horizontal axis correspond to the index of the frame (\nobreakspace  {}5ms) \relax }}{26}}
+\newlabel{fig:mocapPos81_sig20}{{16}{26}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Conclusion}{27}}
 \bibstyle{ieeetr}
 \bibdata{report}
 \bibcite{ekf}{1}

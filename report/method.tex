@@ -124,7 +124,8 @@ $
 \end{center}
 As we can see from the coefficients of the matrix in (\ref{equ:cameraModel2}), there is not significant misalignment between the camera and the lenses. Hence, we can neglect this part of the model if necessary. Nevertheless, the estimated location of the center is not exactly the actual center of the $160 \times 120$ grid of pixels. The reprojections of the points used for calibration appear on Figure~\ref{fig:cameraReproj}. 
 
-This model was implemented as a structure which is passed as parameters to any function that needs it. The implementation of the projection from camera image to the (3D) scene is shown in Code~\ref{code:cameraModel}.
+This model was implemented as a structure which is passed as parameters to any function that needs it. The implementation of the projection from camera image to the (3D) scene is shown in Code~\ref{code:cameraModel}. Finally, an example of mapping on the unit sphere is given in Figure~\ref{fig:pixelMapping}.
+
 \newpage
 
 \begin{figure}[h]
@@ -160,6 +161,15 @@ This model was implemented as a structure which is passed as parameters to any f
     \caption{\textbf{Reprojection on the camera image after calibration}}
     \label{fig:cameraReproj}
 \end{figure}
+
+\newpage
+
+\begin{figure}[h]
+\includegraphics[width=0.5\linewidth]{images/matlab/camPixels}
+\includegraphics[width=0.5\linewidth]{images/matlab/sphericalMapping}
+\caption{\textbf{Sampled pixels and projection on the unit sphere} - 81 pixels are uniformly sampled on a 160x120 grid (left) and back-projected on the unit sphere using the camera model (right).\label{fig:pixelMapping}}
+\end{figure}
+
 \newpage
 
 \begin{center}
@@ -242,7 +252,7 @@ Therefore, we can compute the mapping of an image point $(u,v)^T$ (considered di
 \begin{align}
 s &= b/\|b\| & \dot{s} &= SJ \begin{bmatrix} \dot{x} \\ \dot{y} \end{bmatrix}
 \end{align}
-A possible C implementation is detailed in Code~\ref{code:flowProjection}
+A possible C implementation is detailed in Code~\ref{code:flowProjection}.
 
 \begin{center}
 \begin{code}[colback=white, label=code:flowProjection]{Backprojection of optical flow}
@@ -290,7 +300,13 @@ void flow2world(float *flow_x, float *flow_y, float *flow_z,
 \end{code}
 \end{center}
 
-This method is obviously quite computationally expensive. Indeed, further testing on the camera board revealed that the computation  and processing of $117$ optic-flow vectors accounts for approximately 12ms. This value is to be compared to the refresh rate of our camera which is 200Hz. Thus, the runtime (for one iteration) is more than doubled by the use of the above method. 
+This method is obviously quite computationally expensive. Indeed, further testing on the camera board using the full framework - which encompasses the sensor readings (i.e. gyroscope measurements and image buffers) and the estimation of the direction of motion - revealed that the computation and processing of $117$ optic-flow vectors accounts for approximately 12ms. The latter value is to be compared to the refresh rate of our camera which is 200Hz. Thus, the runtime (for one iteration) is more than doubled by the use of the above method. 
+
+\begin{figure}[t]
+\centering
+\includegraphics[width = 0.7\linewidth]{images/matlab/opticFlow}
+\caption{\textbf{Sampling points and corresponding optic-flow vectors} - The optic-flow vectors were obtained for a straight motion along the $X$ axis.\label{fig:flowMapping}}
+\end{figure}
 
 In an attempt to reduce the computational overhead, we considered an approximate projection of the optic-flow measurements on the unit sphere. Considering the high refresh rate of the camera, any motion will induce a low displacement of the pixels on the camera image (i.e. a small optic-flow measurement). The latter remark allows us to take advantage of the small-angle approximation. More formally, we approximate the actual optic-flow projection $F$ to the difference between a sampling direction $P_1$ and a virtual point $P_2$ that is obtained from the projection of the point $p_2 = p_1 + f$, where $p_1$ is the point on the camera image corresponding to the 3D vector $P_1$ and $f$ is the 2D optic-flow:
 \begin{align}
@@ -301,9 +317,9 @@ In an attempt to reduce the computational overhead, we considered an approximate
 \end{align}
 where $g$ is the spherical projection function described in the previous section and $F$ is the spherical projection of the optic-flow.
 
-The resulting optic-flow vector is obviously not perpendicular to the sphere. However, building on the same assumption, we can neglect the radial component of the flow and simply use this raw vector for subsequent computations. The C implementation is shown in Code~\ref{code:fastFlowProjection}.
+The resulting optic-flow vector is obviously not perpendicular to the sphere. However, building on the same assumption, we can neglect the radial component of the flow and simply use this raw vector for subsequent computations. The C implementation is shown in Code~\ref{code:fastFlowProjection}. An example of back-projected flow is shown in Figure~\ref{fig:flowMapping}.
 
-As for computational gain, running this version of the flow projection dramatically reduces the runtime, with only half the time required by the initial algorithm to process the $117$ optic-flow measurements.
+As for computational gain, running this version of the flow projection dramatically reduces the runtime, with only half the time required by the initial algorithm to process the $117$ optic-flow measurements. Therefore, sensors readings set aside, the latter method accounts for less than 1ms.
 
 \begin{center}
 \begin{code}[colback=white, label=code:fastFlowProjection]{Fast backprojection of optical flow}
@@ -351,7 +367,13 @@ w\mathrm{[frame\textsuperscript{-1}]} = 0.005 \cdot w\mathrm{[rad/s\textsuperscr
 \end{equation}
 
 \subsection{Finding the Focus of Expansion}
-In order to find the direction of translation, we use the derotated optical flow to constrain the translation direction to lie on a great circle. This great circle is the intersection of a plane - defined by the vector defined by the viewing direction $d$, its corresponding optical flow vector $p_t$ and the center of the sphere $O$ - with the unit sphere. Hence, each optic-flow vector gives us a constrain on the position of the focus of expansion (FOE), which can be located anywhere on the great circle. Although only two great circles are required to constrain the location of the FOE to two points (and thus to find the axis of motion), several measurements are used so as to recover from possible outliers and noise.
+In order to find the direction of translation, we use the derotated optical flow to constrain the translation direction to lie on a great circle. This great circle is the intersection of a plane - defined by the vector defined by the viewing direction $d$, its corresponding optical flow vector $p_t$ and the center of the sphere $O$ - with the unit sphere (Fig.~\ref{fig:voting}). Hence, each optic-flow vector gives us a constrain on the position of the focus of expansion (FOE), which can be located anywhere on the great circle. Although only two great circles are required to constrain the location of the FOE to two points (and thus to find the axis of motion), several measurements are used so as to recover from possible outliers and noise.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\linewidth]{images/matlab/voting}
+\caption{\textbf{Great circles intersection and direction of motion} - The great circles were obtained from the sampling directions and the translational part of the optic-flow vectors. One of their intersection corresponds to the focus of expansion. \label{fig:voting}}
+\end{figure}
 
 For a robust estimation of the direction of translation, two different approaches are possible. The first one relies on RANSAC (RANdom SAmple Consensus) and its variants. However, this first method implies several estimations of the location of the FOE based on randomly sampled measurements and may not be suitable for implementation on a microcontroller and fast refresh rate. Another approach is to find the best intersection of all the great circle arising from the optical flow measurements such as the Hough-reminiscent voting method proposed in \cite{lim}. Voting has the advantage of performing in constant time under increasing outlier proportions without any loss of accuracy. Its higher robustness and the fact that it does not require an optimization process make this method the most suitable for embedded robotics. 
  
@@ -369,6 +391,7 @@ C = S^2~\bigcup~\{ x|x^Tn = 0, x \in \mathbb{R}^3 \}
 This normal vector $n$ is readily computed using the cross-product,
 \begin{equation}
 n = \dfrac{d \times f_t}{\|d \times f_t\|}
+\label{equ:normalVector}
 \end{equation}
 % Considering two great circles and their corresponding normal vectors, namely $n_i$ and $n_j$, we can compute their intersections $a_{ij}$ and $a_{ji}$,
 % \begin{equation}
@@ -378,7 +401,13 @@ n = \dfrac{d \times f_t}{\|d \times f_t\|}
 % \end{cases}
 % \end{equation}
 % Hence, we can vote to the accumulator for either $a_{ij}$ and $a_{ji}$ for each pair of points. Of course, the intersection of the two great circles actually yields two points.
-Thus, we can vote along a great circle, given its normal vector, by computing simple dot products (i.e. 3 multiplications and 2 additions).
+Thus, we can vote along a great circle, given its normal vector, by computing simple dot products (i.e. 3 multiplications and 2 additions). Figure~\ref{fig:normalVector} illustrates the notion of normal vector.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\linewidth]{images/matlab/normalVector}
+\caption{\textbf{Normal vector and its corresponding great circle} - The normal vector is computed using Equation~\ref{equ:normalVector}. The great circle is plotted using its parametric equation: $v(t) = cos(t) \cdot \hat{f}_t + sin(t) \cdot d$, where $\hat{f}_t = \dfrac{f_t}{\|f_t\|}$. \label{fig:normalVector}}
+\end{figure}
 
 In practice, the intersection of two great circles defines 2 possible directions of translation. To disambiguate between the two, one may pick one of the two points and calculate the angle between it and the vector $f_t$. If the angle is larger than $\pi/2$ radians, then that point is the focus of expansion. Another possibility is to use an additional sensor (such as a sonar) to choose the correct direction. In order to improve the processing speed on the camera chip (and to avoid ambiguity), we only consider one hemisphere, that is half the number of possible directions of translation. In other words, we only determine the axis of translation rather than its direction and we work on the hemisphere defined by $z<0$.
 
@@ -402,7 +431,13 @@ end for
 Find the bins with maximum votes. This gives the fine estimate
 \end{algorithm}
 
-The refined voting requires rotating the refined bins, which we computed for the a predefined direction (in our case $z = (0,~ 0,-1)$). There are three ways to achieve this transformation, namely the rotation matrix, axis-angle and quaternion methods \cite{rotation}. From a computational point of view, the rotation matrix method is the cheapest one (6 additions and 9 multiplications) whereas the quaternion method is the most expensive (18 additions and 21 multiplications). However, it is easier for us to use the axis-angle representation and then convert it to a rotation matrix so as to perform the transformation on every bins. The latter convertion accounts for 13 additions and 15 multiplications but the subsequent processing will only require 6 additions and 9 multiplications, provided that we can store the entire rotation matrix. A C implementation is given in Code~\ref{algo:rotation}.
+\begin{figure}[h]
+\includegraphics[width = 0.5\linewidth]{images/matlab/refinedBinsNoRot}
+\includegraphics[width = 0.5\linewidth]{images/matlab/refinedBinsRot}
+\caption{\textbf{Refined bins before and after rotation} - The refined bins, centered around $z<0$, are stored (left) before being rotated to be centered around the latest direction estimate (right).\label{fig:refinedBins}}
+\end{figure}
+
+The refined voting requires rotating the refined bins, which we computed for the a predefined direction (in our case $z = (0,~ 0,-1)$). There are three ways to achieve this transformation, namely the rotation matrix, axis-angle and quaternion methods \cite{rotation}. From a computational point of view, the rotation matrix method is the cheapest one (6 additions and 9 multiplications) whereas the quaternion method is the most expensive (18 additions and 21 multiplications). However, it is easier for us to use the axis-angle representation and then convert it to a rotation matrix so as to perform the transformation on every bins. The latter convertion accounts for 13 additions and 15 multiplications but the subsequent processing will only require 6 additions and 9 multiplications, provided that we can store the entire rotation matrix. A C implementation is given in Code~\ref{algo:rotation}. Figure~\ref{fig:refinedBins} depicts the principle of the refined voting (i.e. refined bins storage and rotation).
 
 Obviously, this whole method is sensible to noise which could affect the voting procedure if the accumulator has a finite resolution. In a first case, the coarse resolution was set to $31^\circ$ and the fine resolution was chosen as approximately $4^\circ$. The former value was chosen so as to limit the number of coarse bins while the second one offers a trade-off between the resolution and the required computational power. In a second case, we added 3 more stages of refined voting so as to reduce the number of voting bins in each stage (i.e. reduce computational overhead) and simultaneously slightly increase the accuracy of the result. Indeed, the computational cost of the votin procedure typically grows linearly with the number of samples and the number of bins while more stages allow for a higher resolution in the refined votings.\\
 The voting bins were evenly distributed on the unit and generated using the icosahedron method. Table~\ref{tab:votingBins} summarizes the voting bins parameters.
@@ -434,6 +469,7 @@ The voting bins were evenly distributed on the unit and generated using the icos
 	\label{tab:votingBins}
 \end{table}
 
+\newpage
 \begin{code}[colback=white, label=algo:rotation]{Hough-reminiscent voting}
 void rotate_bins(voting_bins *bins, float best_x, 
 						float best_y, float best_z, 

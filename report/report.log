@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/W32TeX) (preloaded format=pdflatex 2015.8.15)  8 JUN 2016 16:55
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/W32TeX) (preloaded format=pdflatex 2015.8.15)  9 JUN 2016 18:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1157,7 +1157,7 @@ Package epstopdf Info: Source file: <images/camera/Reproj7.eps>
 (epstopdf)                    size: 18043 bytes
 (epstopdf)             Command: <repstopdf --outfile=images/camera/Reproj7-eps-
 converted-to.pdf images/camera/Reproj7.eps>
-(epstopdf)             \includegraphics on input line 134.
+(epstopdf)             \includegraphics on input line 135.
 Package epstopdf Info: Output file is already uptodate.
 
 <images/camera/Reproj7-eps-converted-to.pdf, id=51, 603.25375pt x 339.2675pt>
@@ -1165,7 +1165,7 @@ File: images/camera/Reproj7-eps-converted-to.pdf Graphic file (type pdf)
 
 <use images/camera/Reproj7-eps-converted-to.pdf>
 Package pdftex.def Info: images/camera/Reproj7-eps-converted-to.pdf used on inp
-ut line 134.
+ut line 135.
 (pdftex.def)             Requested size: 167.2989pt x 94.0883pt.
 Package epstopdf Info: Source file: <images/camera/Reproj6.eps>
 (epstopdf)                    date: 2016-05-29 17:14:34
@@ -1176,7 +1176,7 @@ Package epstopdf Info: Source file: <images/camera/Reproj6.eps>
 (epstopdf)                    size: 18316 bytes
 (epstopdf)             Command: <repstopdf --outfile=images/camera/Reproj6-eps-
 converted-to.pdf images/camera/Reproj6.eps>
-(epstopdf)             \includegraphics on input line 138.
+(epstopdf)             \includegraphics on input line 139.
 Package epstopdf Info: Output file is already uptodate.
 
 <images/camera/Reproj6-eps-converted-to.pdf, id=52, 603.25375pt x 339.2675pt>
@@ -1184,7 +1184,7 @@ File: images/camera/Reproj6-eps-converted-to.pdf Graphic file (type pdf)
 
 <use images/camera/Reproj6-eps-converted-to.pdf>
 Package pdftex.def Info: images/camera/Reproj6-eps-converted-to.pdf used on inp
-ut line 138.
+ut line 139.
 (pdftex.def)             Requested size: 167.2989pt x 94.0883pt.
 Package epstopdf Info: Source file: <images/camera/Reproj5.eps>
 (epstopdf)                    date: 2016-05-29 17:14:37
@@ -1195,7 +1195,7 @@ Package epstopdf Info: Source file: <images/camera/Reproj5.eps>
 (epstopdf)                    size: 18487 bytes
 (epstopdf)             Command: <repstopdf --outfile=images/camera/Reproj5-eps-
 converted-to.pdf images/camera/Reproj5.eps>
-(epstopdf)             \includegraphics on input line 142.
+(epstopdf)             \includegraphics on input line 143.
 Package epstopdf Info: Output file is already uptodate.
 
 <images/camera/Reproj5-eps-converted-to.pdf, id=53, 603.25375pt x 339.2675pt>
@@ -1203,7 +1203,7 @@ File: images/camera/Reproj5-eps-converted-to.pdf Graphic file (type pdf)
 
 <use images/camera/Reproj5-eps-converted-to.pdf>
 Package pdftex.def Info: images/camera/Reproj5-eps-converted-to.pdf used on inp
-ut line 142.
+ut line 143.
 (pdftex.def)             Requested size: 167.2989pt x 94.0883pt.
 Package epstopdf Info: Source file: <images/camera/Reproj4.eps>
 (epstopdf)                    date: 2016-05-29 17:14:38
@@ -1214,7 +1214,7 @@ Package epstopdf Info: Source file: <images/camera/Reproj4.eps>
 (epstopdf)                    size: 17904 bytes
 (epstopdf)             Command: <repstopdf --outfile=images/camera/Reproj4-eps-
 converted-to.pdf images/camera/Reproj4.eps>
-(epstopdf)             \includegraphics on input line 146.
+(epstopdf)             \includegraphics on input line 147.
 Package epstopdf Info: Output file is already uptodate.
 
 <images/camera/Reproj4-eps-converted-to.pdf, id=54, 603.25375pt x 339.2675pt>
@@ -1222,7 +1222,7 @@ File: images/camera/Reproj4-eps-converted-to.pdf Graphic file (type pdf)
 
 <use images/camera/Reproj4-eps-converted-to.pdf>
 Package pdftex.def Info: images/camera/Reproj4-eps-converted-to.pdf used on inp
-ut line 146.
+ut line 147.
 (pdftex.def)             Requested size: 167.2989pt x 94.0883pt.
 Package epstopdf Info: Source file: <images/camera/Reproj3.eps>
 (epstopdf)                    date: 2016-05-29 17:14:40
@@ -1233,7 +1233,7 @@ Package epstopdf Info: Source file: <images/camera/Reproj3.eps>
 (epstopdf)                    size: 18226 bytes
 (epstopdf)             Command: <repstopdf --outfile=images/camera/Reproj3-eps-
 converted-to.pdf images/camera/Reproj3.eps>
-(epstopdf)             \includegraphics on input line 150.
+(epstopdf)             \includegraphics on input line 151.
 Package epstopdf Info: Output file is already uptodate.
 
 <images/camera/Reproj3-eps-converted-to.pdf, id=55, 603.25375pt x 339.2675pt>
@@ -1241,7 +1241,7 @@ File: images/camera/Reproj3-eps-converted-to.pdf Graphic file (type pdf)
 
 <use images/camera/Reproj3-eps-converted-to.pdf>
 Package pdftex.def Info: images/camera/Reproj3-eps-converted-to.pdf used on inp
-ut line 150.
+ut line 151.
 (pdftex.def)             Requested size: 167.2989pt x 94.0883pt.
 Package epstopdf Info: Source file: <images/camera/Reproj2.eps>
 (epstopdf)                    date: 2016-05-29 17:14:41
@@ -1252,7 +1252,7 @@ Package epstopdf Info: Source file: <images/camera/Reproj2.eps>
 (epstopdf)                    size: 17499 bytes
 (epstopdf)             Command: <repstopdf --outfile=images/camera/Reproj2-eps-
 converted-to.pdf images/camera/Reproj2.eps>
-(epstopdf)             \includegraphics on input line 154.
+(epstopdf)             \includegraphics on input line 155.
 Package epstopdf Info: Output file is already uptodate.
 
 <images/camera/Reproj2-eps-converted-to.pdf, id=56, 603.25375pt x 339.2675pt>
@@ -1260,7 +1260,7 @@ File: images/camera/Reproj2-eps-converted-to.pdf Graphic file (type pdf)
 
 <use images/camera/Reproj2-eps-converted-to.pdf>
 Package pdftex.def Info: images/camera/Reproj2-eps-converted-to.pdf used on inp
-ut line 154.
+ut line 155.
 (pdftex.def)             Requested size: 167.2989pt x 94.0883pt.
 Package epstopdf Info: Source file: <images/camera/Reproj1.eps>
 (epstopdf)                    date: 2016-05-29 17:14:43
@@ -1271,7 +1271,7 @@ Package epstopdf Info: Source file: <images/camera/Reproj1.eps>
 (epstopdf)                    size: 17659 bytes
 (epstopdf)             Command: <repstopdf --outfile=images/camera/Reproj1-eps-
 converted-to.pdf images/camera/Reproj1.eps>
-(epstopdf)             \includegraphics on input line 158.
+(epstopdf)             \includegraphics on input line 159.
 Package epstopdf Info: Output file is already uptodate.
 
 <images/camera/Reproj1-eps-converted-to.pdf, id=57, 603.25375pt x 339.2675pt>
@@ -1279,13 +1279,58 @@ File: images/camera/Reproj1-eps-converted-to.pdf Graphic file (type pdf)
 
 <use images/camera/Reproj1-eps-converted-to.pdf>
 Package pdftex.def Info: images/camera/Reproj1-eps-converted-to.pdf used on inp
-ut line 158.
+ut line 159.
 (pdftex.def)             Requested size: 167.2989pt x 94.0883pt.
  [5 <./images/camera/Reproj7-eps-converted-to.pdf> <./images/camera/Reproj6-eps
 -converted-to.pdf> <./images/camera/Reproj5-eps-converted-to.pdf> <./images/cam
 era/Reproj4-eps-converted-to.pdf> <./images/camera/Reproj3-eps-converted-to.pdf
 > <./images/camera/Reproj2-eps-converted-to.pdf> <./images/camera/Reproj1-eps-c
 onverted-to.pdf>]
+Package epstopdf Info: Source file: <images/matlab/camPixels.eps>
+(epstopdf)                    date: 2016-06-09 16:00:15
+(epstopdf)                    size: 86264 bytes
+(epstopdf)             Output file: <images/matlab/camPixels-eps-converted-to.p
+df>
+(epstopdf)                    date: 2016-06-09 17:45:25
+(epstopdf)                    size: 11849 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/camPixels-ep
+s-converted-to.pdf images/matlab/camPixels.eps>
+(epstopdf)             \includegraphics on input line 168.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/matlab/camPixels-eps-converted-to.pdf, id=124, 421.575pt x 316.18124pt>
+File: images/matlab/camPixels-eps-converted-to.pdf Graphic file (type pdf)
+<use images/matlab/camPixels-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/camPixels-eps-converted-to.pdf used on i
+nput line 168.
+(pdftex.def)             Requested size: 209.12683pt x 156.84549pt.
+Package epstopdf Info: Source file: <images/matlab/sphericalMapping.eps>
+(epstopdf)                    date: 2016-06-09 17:01:22
+(epstopdf)                    size: 175842 bytes
+(epstopdf)             Output file: <images/matlab/sphericalMapping-eps-convert
+ed-to.pdf>
+(epstopdf)                    date: 2016-06-09 17:46:33
+(epstopdf)                    size: 21135 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/sphericalMap
+ping-eps-converted-to.pdf images/matlab/sphericalMapping.eps>
+(epstopdf)             \includegraphics on input line 169.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/matlab/sphericalMapping-eps-converted-to.pdf, id=125, 421.575pt x 316.1
+8124pt>
+File: images/matlab/sphericalMapping-eps-converted-to.pdf Graphic file (type pd
+f)
+ <use images/matlab/sphericalMapping-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/sphericalMapping-eps-converted-to.pdf us
+ed on input line 169.
+(pdftex.def)             Requested size: 209.12683pt x 156.84549pt.
+
+Overfull \hbox (2.43332pt too wide) in paragraph at lines 168--170
+[][] [] 
+ []
+
+[6 <./images/matlab/camPixels-eps-converted-to.pdf> <./images/matlab/sphericalM
+apping-eps-converted-to.pdf>]
 \openout5 = `report.listing'.
 
 
@@ -1295,7 +1340,7 @@ File: lstlang1.sty 2015/06/04 1.6 listings language file
 (c:/texlive/2015/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2015/06/04 1.6 (Carsten Heinz)
 )
-LaTeX Font Info:    Try loading font information for OT1+zi4 on input line 196.
+LaTeX Font Info:    Try loading font information for OT1+zi4 on input line 206.
 
 
 (c:/texlive/2015/texmf-dist/tex/latex/inconsolata/ot1zi4.fd
@@ -1308,7 +1353,7 @@ LaTeX Font Info:    Font shape `OT1/zi4/bx/n' in size <10.95> not available
 LaTeX Font Warning: Font shape `OT1/zi4/m/it' undefined
 (Font)              using `OT1/zi4/m/n' instead on input line 14.
 
-) [6]
+) [7]
 \openout5 = `report.listing'.
 
  (./report.listing
@@ -1316,14 +1361,73 @@ Overfull \hbox (7.24745pt too wide) in paragraph at lines 1--2
 [][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-) [7]
+) [8]
 Overfull \vbox (14.83334pt too high) has occurred while \output is active []
 
 
-[8]
+[9]
+Package epstopdf Info: Source file: <images/matlab/opticFlow.eps>
+(epstopdf)                    date: 2016-06-09 17:02:08
+(epstopdf)                    size: 159511 bytes
+(epstopdf)             Output file: <images/matlab/opticFlow-eps-converted-to.p
+df>
+(epstopdf)                    date: 2016-06-09 17:54:47
+(epstopdf)                    size: 16851 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/opticFlow-ep
+s-converted-to.pdf images/matlab/opticFlow.eps>
+(epstopdf)             \includegraphics on input line 307.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/matlab/opticFlow-eps-converted-to.pdf, id=152, 421.575pt x 316.18124pt>
+File: images/matlab/opticFlow-eps-converted-to.pdf Graphic file (type pdf)
+<use images/matlab/opticFlow-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/opticFlow-eps-converted-to.pdf used on i
+nput line 307.
+(pdftex.def)             Requested size: 292.77629pt x 219.5837pt.
+ [10 <./images/matlab/opticFlow-eps-converted-to.pdf>]
 \openout5 = `report.listing'.
 
- (./report.listing) [9] [10] [11]
+ (./report.listing) [11]
+Package epstopdf Info: Source file: <images/matlab/voting.eps>
+(epstopdf)                    date: 2016-06-09 17:03:08
+(epstopdf)                    size: 234970 bytes
+(epstopdf)             Output file: <images/matlab/voting-eps-converted-to.pdf>
+
+(epstopdf)                    date: 2016-06-09 18:06:12
+(epstopdf)                    size: 25295 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/voting-eps-c
+onverted-to.pdf images/matlab/voting.eps>
+(epstopdf)             \includegraphics on input line 374.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/matlab/voting-eps-converted-to.pdf, id=164, 421.575pt x 316.18124pt>
+File: images/matlab/voting-eps-converted-to.pdf Graphic file (type pdf)
+
+<use images/matlab/voting-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/voting-eps-converted-to.pdf used on inpu
+t line 374.
+(pdftex.def)             Requested size: 292.77629pt x 219.5837pt.
+ [12]
+Package epstopdf Info: Source file: <images/matlab/normalVector.eps>
+(epstopdf)                    date: 2016-06-09 18:31:18
+(epstopdf)                    size: 141575 bytes
+(epstopdf)             Output file: <images/matlab/normalVector-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2016-06-09 18:31:29
+(epstopdf)                    size: 16357 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/normalVector
+-eps-converted-to.pdf images/matlab/normalVector.eps>
+(epstopdf)             \includegraphics on input line 408.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/matlab/normalVector-eps-converted-to.pdf, id=168, 421.575pt x 316.18124
+pt>
+File: images/matlab/normalVector-eps-converted-to.pdf Graphic file (type pdf)
+ <use images/matlab/normalVector-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/normalVector-eps-converted-to.pdf used o
+n input line 408.
+(pdftex.def)             Requested size: 292.77629pt x 219.5837pt.
+ [13 <./images/matlab/voting-eps-converted-to.pdf>]
 \openout5 = `report.listing'.
 
  (./report.listing
@@ -1331,10 +1435,58 @@ Overfull \hbox (3.04823pt too wide) in paragraph at lines 8--9
 [][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-) [12]
+) [14 <./images/matlab/normalVector-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <images/matlab/refinedBinsNoRot.eps>
+(epstopdf)                    date: 2016-06-09 18:33:30
+(epstopdf)                    size: 125042 bytes
+(epstopdf)             Output file: <images/matlab/refinedBinsNoRot-eps-convert
+ed-to.pdf>
+(epstopdf)                    date: 2016-06-09 18:34:22
+(epstopdf)                    size: 15305 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/refinedBinsN
+oRot-eps-converted-to.pdf images/matlab/refinedBinsNoRot.eps>
+(epstopdf)             \includegraphics on input line 435.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/matlab/refinedBinsNoRot-eps-converted-to.pdf, id=186, 421.575pt x 316.1
+8124pt>
+File: images/matlab/refinedBinsNoRot-eps-converted-to.pdf Graphic file (type pd
+f)
+ <use images/matlab/refinedBinsNoRot-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/refinedBinsNoRot-eps-converted-to.pdf us
+ed on input line 435.
+(pdftex.def)             Requested size: 209.12683pt x 156.84549pt.
+Package epstopdf Info: Source file: <images/matlab/refinedBinsRot.eps>
+(epstopdf)                    date: 2016-06-09 18:34:15
+(epstopdf)                    size: 125978 bytes
+(epstopdf)             Output file: <images/matlab/refinedBinsRot-eps-converted
+-to.pdf>
+(epstopdf)                    date: 2016-06-09 18:34:24
+(epstopdf)                    size: 16606 bytes
+(epstopdf)             Command: <repstopdf --outfile=images/matlab/refinedBinsR
+ot-eps-converted-to.pdf images/matlab/refinedBinsRot.eps>
+(epstopdf)             \includegraphics on input line 436.
+Package epstopdf Info: Output file is already uptodate.
+
+<images/matlab/refinedBinsRot-eps-converted-to.pdf, id=187, 421.575pt x 316.181
+24pt>
+File: images/matlab/refinedBinsRot-eps-converted-to.pdf Graphic file (type pdf)
+
+ <use images/matlab/refinedBinsRot-eps-converted-to.pdf>
+Package pdftex.def Info: images/matlab/refinedBinsRot-eps-converted-to.pdf used
+ on input line 436.
+(pdftex.def)             Requested size: 209.12683pt x 156.84549pt.
+
+Overfull \hbox (2.43332pt too wide) in paragraph at lines 435--437
+[][] [] 
+ []
+
+[15 <./images/matlab/refinedBinsNoRot-eps-converted-to.pdf> <./images/matlab/re
+finedBinsRot-eps-converted-to.pdf>] [16]
 \openout5 = `report.listing'.
 
- (./report.listing) [13] [14]) (./results.tex
+ (./report.listing) [17])
+(./results.tex
 Package epstopdf Info: Source file: <images/matlab/simOpticFlow.eps>
 (epstopdf)                    date: 2016-06-07 21:26:26
 (epstopdf)                    size: 188911 bytes
@@ -1347,7 +1499,7 @@ o.pdf>
 (epstopdf)             \includegraphics on input line 25.
 Package epstopdf Info: Output file is already uptodate.
 
-<images/matlab/simOpticFlow-eps-converted-to.pdf, id=157, 421.575pt x 316.18124
+<images/matlab/simOpticFlow-eps-converted-to.pdf, id=210, 421.575pt x 316.18124
 pt>
 File: images/matlab/simOpticFlow-eps-converted-to.pdf Graphic file (type pdf)
  <use images/matlab/simOpticFlow-eps-converted-to.pdf>
@@ -1366,7 +1518,7 @@ eps-converted-to.pdf images/matlab/simOutliers.eps>
 (epstopdf)             \includegraphics on input line 32.
 Package epstopdf Info: Output file is already uptodate.
 
-<images/matlab/simOutliers-eps-converted-to.pdf, id=158, 421.575pt x 316.18124p
+<images/matlab/simOutliers-eps-converted-to.pdf, id=211, 421.575pt x 316.18124p
 t>
 File: images/matlab/simOutliers-eps-converted-to.pdf Graphic file (type pdf)
  <use images/matlab/simOutliers-eps-converted-to.pdf>
@@ -1385,25 +1537,25 @@ n-eps-converted-to.pdf images/matlab/simDerotation.eps>
 (epstopdf)             \includegraphics on input line 39.
 Package epstopdf Info: Output file is already uptodate.
 
-<images/matlab/simDerotation-eps-converted-to.pdf, id=159, 421.575pt x 316.1812
+<images/matlab/simDerotation-eps-converted-to.pdf, id=212, 421.575pt x 316.1812
 4pt>
 File: images/matlab/simDerotation-eps-converted-to.pdf Graphic file (type pdf)
  <use images/matlab/simDerotation-eps-converted-to.pdf>
 Package pdftex.def Info: images/matlab/simDerotation-eps-converted-to.pdf used 
 on input line 39.
 (pdftex.def)             Requested size: 250.95476pt x 188.21942pt.
- [15
+ [18
 
-] [16 <./images/matlab/simOpticFlow-eps-converted-to.pdf> <./images/matlab/simO
-utliers-eps-converted-to.pdf>] [17 <./images/matlab/simDerotation-eps-converted
+] [19 <./images/matlab/simOpticFlow-eps-converted-to.pdf> <./images/matlab/simO
+utliers-eps-converted-to.pdf>] [20 <./images/matlab/simDerotation-eps-converted
 -to.pdf>]
-<images/moCapFrame.jpg, id=185, 5331.92pt x 2999.205pt>
+<images/moCapFrame.jpg, id=237, 5331.92pt x 2999.205pt>
 File: images/moCapFrame.jpg Graphic file (type jpg)
 
 <use images/moCapFrame.jpg>
 Package pdftex.def Info: images/moCapFrame.jpg used on input line 118.
 (pdftex.def)             Requested size: 209.12683pt x 117.6138pt.
- [18 <./images/moCapFrame.jpg>]
+ [21 <./images/moCapFrame.jpg>]
 Package epstopdf Info: Source file: <images/matlab/mocapGyro81.eps>
 (epstopdf)                    date: 2016-06-08 00:46:00
 (epstopdf)                    size: 589615 bytes
@@ -1416,7 +1568,7 @@ eps-converted-to.pdf images/matlab/mocapGyro81.eps>
 (epstopdf)             \includegraphics on input line 135.
 Package epstopdf Info: Output file is already uptodate.
 
-<images/matlab/mocapGyro81-eps-converted-to.pdf, id=189, 603.25375pt x 345.29pt
+<images/matlab/mocapGyro81-eps-converted-to.pdf, id=242, 603.25375pt x 345.29pt
 >
 File: images/matlab/mocapGyro81-eps-converted-to.pdf Graphic file (type pdf)
  <use images/matlab/mocapGyro81-eps-converted-to.pdf>
@@ -1435,7 +1587,7 @@ o.pdf>
 (epstopdf)             \includegraphics on input line 142.
 Package epstopdf Info: Output file is already uptodate.
 
-<images/matlab/mocapGyro117-eps-converted-to.pdf, id=190, 603.25375pt x 342.278
+<images/matlab/mocapGyro117-eps-converted-to.pdf, id=243, 603.25375pt x 342.278
 75pt>
 File: images/matlab/mocapGyro117-eps-converted-to.pdf Graphic file (type pdf)
  <use images/matlab/mocapGyro117-eps-converted-to.pdf>
@@ -1454,7 +1606,7 @@ ps-converted-to.pdf images/matlab/mocapPos81.eps>
 (epstopdf)             \includegraphics on input line 153.
 Package epstopdf Info: Output file is already uptodate.
 
-<images/matlab/mocapPos81-eps-converted-to.pdf, id=191, 603.25375pt x 369.38pt>
+<images/matlab/mocapPos81-eps-converted-to.pdf, id=244, 603.25375pt x 369.38pt>
 File: images/matlab/mocapPos81-eps-converted-to.pdf Graphic file (type pdf)
 <use images/matlab/mocapPos81-eps-converted-to.pdf>
 Package pdftex.def Info: images/matlab/mocapPos81-eps-converted-to.pdf used on 
@@ -1472,7 +1624,7 @@ ig4-eps-converted-to.pdf images/matlab/mocapPos81_sig4.eps>
 (epstopdf)             \includegraphics on input line 163.
 Package epstopdf Info: Output file is already uptodate.
 
-<images/matlab/mocapPos81_sig4-eps-converted-to.pdf, id=192, 603.25375pt x 372.
+<images/matlab/mocapPos81_sig4-eps-converted-to.pdf, id=245, 603.25375pt x 372.
 39125pt>
 File: images/matlab/mocapPos81_sig4-eps-converted-to.pdf Graphic file (type pdf
 )
@@ -1492,7 +1644,7 @@ ig20-eps-converted-to.pdf images/matlab/mocapPos81_sig20.eps>
 (epstopdf)             \includegraphics on input line 169.
 Package epstopdf Info: Output file is already uptodate.
 
-<images/matlab/mocapPos81_sig20-eps-converted-to.pdf, id=193, 603.25375pt x 375
+<images/matlab/mocapPos81_sig20-eps-converted-to.pdf, id=246, 603.25375pt x 375
 .4025pt>
 File: images/matlab/mocapPos81_sig20-eps-converted-to.pdf Graphic file (type pd
 f)
@@ -1500,14 +1652,14 @@ f)
 Package pdftex.def Info: images/matlab/mocapPos81_sig20-eps-converted-to.pdf us
 ed on input line 169.
 (pdftex.def)             Requested size: 418.25368pt x 260.27675pt.
-) [19]
-[20 <./images/matlab/mocapGyro81-eps-converted-to.pdf> <./images/matlab/mocapGy
-ro117-eps-converted-to.pdf>] [21 <./images/matlab/mocapPos81-eps-converted-to.p
-df>] [22 <./images/matlab/mocapPos81_sig4-eps-converted-to.pdf>] [23 <./images/
-matlab/mocapPos81_sig20-eps-converted-to.pdf>] (./conclusion.tex) [24
+) [22]
+[23 <./images/matlab/mocapGyro81-eps-converted-to.pdf> <./images/matlab/mocapGy
+ro117-eps-converted-to.pdf>] [24 <./images/matlab/mocapPos81-eps-converted-to.p
+df>] [25 <./images/matlab/mocapPos81_sig4-eps-converted-to.pdf>] [26 <./images/
+matlab/mocapPos81_sig20-eps-converted-to.pdf>] (./conclusion.tex) [27
 
 ]
-(./report.bbl) [25
+(./report.bbl) [28
 
 ] (./report.aux)
 
@@ -1515,10 +1667,10 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 29721 strings out of 493091
- 624259 string characters out of 6138531
- 721337 words of memory out of 5000000
- 32644 multiletter control sequences out of 15000+600000
+ 29762 strings out of 493091
+ 625910 string characters out of 6138531
+ 721506 words of memory out of 5000000
+ 32678 multiletter control sequences out of 15000+600000
  20413 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  63i,15n,101p,10491b,1349s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1538,10 +1690,10 @@ dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2015/texmf-dist/font
 s/type1/public/amsfonts/cm/cmsy8.pfb><c:/texlive/2015/texmf-dist/fonts/type1/pu
 blic/amsfonts/cm/cmti10.pfb><c:/texlive/2015/texmf-dist/fonts/type1/public/amsf
 onts/symbols/msbm10.pfb>
-Output written on report.pdf (29 pages, 6277717 bytes).
+Output written on report.pdf (32 pages, 6385108 bytes).
 PDF statistics:
- 295 PDF objects out of 1000 (max. 8388607)
- 193 compressed objects within 2 object streams
+ 348 PDF objects out of 1000 (max. 8388607)
+ 228 compressed objects within 3 object streams
  0 named destinations out of 1000 (max. 500000)
- 133 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 168 words of extra memory for PDF output out of 10000 (max. 10000000)
 
