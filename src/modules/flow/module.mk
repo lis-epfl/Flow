@@ -18,8 +18,8 @@ INCLUDE_DIRS	 += $(MAVLINK_SRC) \
 
 SRCS = 	$(ST_LIB)startup_stm32f4xx.s \
 					system_stm32f4xx.c \
-					stm32f4xx_it.c 
-					
+					stm32f4xx_it.c
+
 
 SRCS += 		main.c \
           utils.c \
