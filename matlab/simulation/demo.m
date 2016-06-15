@@ -119,7 +119,7 @@ F = normr(F);
 figure;
 hold on
 [x_, y_, z_] = sphere;
-mesh(x_, y_, z_,'Edgecolor', 'k', 'EdgeAlpha', 0.1, 'LineWidth', 2);
+mesh(x_, y_, z_, 'Edgecolor', 'k', 'EdgeAlpha', 0.1, 'LineWidth', 2);
 xlabel('X');
 ylabel('Y');
 zlabel('Z');
@@ -138,8 +138,11 @@ for i=2:3:8,
     h(i) = plot3(v(:,1), v(:,2), v(:,3), 'LineWidth', 2);
 end
 h4 = quiver3(1, 0, 0, 1, 0, 0, 'LineWidth', 2);
+h5 = quiver3(P(2,1), P(2,2), P(2,3), F(2,1), F(2,2), F(2,3), 'LineWidth', 2, 'Color', [0 0.4470 0.7410]);
+h6 = quiver3(P(5,1), P(5,2), P(5,3), F(5,1), F(5,2), F(5,3), 'LineWidth', 2, 'Color', [0.8500 0.3250 0.0980]);
+h7 = quiver3(P(8,1), P(8,2), P(8,3), F(8,1), F(8,2), F(8,3), 'LineWidth', 2, 'Color', [0.9290 0.6940 0.1250]);
 set(gca, 'FontSize', 12)
-legend([h(2), h(5), h(8), h4], 'Great circle n°1', 'Great circle n°2', 'Great circle n°3', 'Direction of motion');
+legend([h5, h(2), h6, h(5), h7, h(8), h4], 'Optic-flow n°1', 'Great circle n°1', 'Optic-flow n°2', 'Great circle n°2', 'Optic-flow n°3', 'Great circle n°3', 'Direction of motion');
 
 %% Coarse voting bins
 option = 1; % 1=raw / 2=averaged
