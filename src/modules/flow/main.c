@@ -117,7 +117,7 @@ volatile uint32_t boot_time10_us = 0;
 static volatile unsigned timer[NTIMERS];
 static volatile unsigned timer_ms = MS_TIMER_COUNT;
 
-static uint32_t N_points = 60;
+static const uint32_t N_points = 60;
 /* timer/system booleans */
 bool send_system_state_now = true;
 bool receive_now = true;
@@ -134,6 +134,14 @@ bool send_lpos_now = true;
 // 	float vy;
 // 	float vz;
 // } lpos;
+
+
+// For back camera
+static uint32_t pixel_location [] = {3, 16, 29, 41, 54, 66, 78, 89,101,112,123,134,144,155,165,174,184,194,203,213,222,231,240,249,258,267,276,285,294,303,313,322,331,340,349,358,367,376,385,394,403,413,422,432,442,451,461,472,482,493,504,515,527,538,550,562,575,587,600,608};
+
+
+// For front camera
+//static uint32_t pixel_location [] = {21, 33, 45, 57, 68, 80, 91,102,113,124,135,146,156,166,176,186,196,206,215,224,234,243,252,261,270,279,287,296,305,314,322,331,340,349,358,366,375,384,393,402,412,421,431,440,450,460,470,480,491,501,512,523,534,545,557,568,580,591,603,615};
 
 /**
   * @brief  Increment boot_time_ms variable and decrement timer array.
@@ -340,6 +348,7 @@ int main(void)
 
 
 	float optic_flow_big_debug[N_points];
+	float filter_constant = 0.095;
 	// int16_t flow_lk.x[100];
 	// int16_t flow_lk.y[100];
 
@@ -365,7 +374,7 @@ int main(void)
 	// static uint16_t accumulated_framecount = 0;
 	// static uint16_t accumulated_quality = 0;
 	// static uint32_t integration_timespan = 0;
-	// static uint32_t lasttime = 0;
+	static uint32_t lasttime = 0;
 	// uint32_t time_since_last_sonar_update= 0;
 
 	uavcan_start();
@@ -449,7 +458,7 @@ int main(void)
 			sonar_distance_raw = 0.0f;
 		}
 
-		// static float DT;
+		static float DT;
 
 		// static float denzominateur[70];
 
@@ -479,27 +488,30 @@ int main(void)
 						image_height, //int dsy, 
 						roi_sx, //int roi_sx, 
 						roi_sy, //int roi_sy, 
-						20 + 10*i, //int const roi_x, 
-						(image_height - roi_sy) / 2, // int const roi_y, 
+						pixel_location[i], //int const roi_x, 
+						18,//for back 
+						//20,//for front//(image_height - roi_sy) / 2, // int const roi_y, 
 						&num_x, //dat_t & num_x, 
 						&num_y, //dat_t & num_y, 
 						&den); //dat_t & den );
 				
 				// denominateur[i] = den;
-				if(den > 100000)
+				if(den > 10000)
 				{
-				optic_flow_big_debug[i] = num_x / den;
+				optic_flow_big_debug[i] = filter_constant*(num_x / den) + (1-filter_constant)*optic_flow_big_debug[i];
 				// flow_lk.x[i] = num_x / den;
 				// flow_lk.y[i] = num_y / den;
 				}
 				else
 				{
-				optic_flow_big_debug[i] = 0;
+				optic_flow_big_debug[i] = (1-filter_constant)*optic_flow_big_debug[i];
 				// flow_lk.x[i] = 0;
 				// flow_lk.y[i] = 0;
 				}
 
+
 			}
+
 
 			// pixel_flow_x = num_x / den; 
 			// pixel_flow_y = num_y / den;			
@@ -557,10 +569,11 @@ int main(void)
 			// 	velocity_y_lp = (1.0f - global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW]) * velocity_y_lp;
 			// }
 			
-			// DT = get_boot_time_us() - lasttime;
+			DT = (get_boot_time_us() - lasttime)/1000;
+			filter_constant = DT/(40 + DT/2);
 
 			//update lasttime
-			// lasttime = get_boot_time_us();
+			lasttime = get_boot_time_us();
 
 			// pixel_flow_x_sum += pixel_flow_x;
 			// pixel_flow_y_sum += pixel_flow_y;
@@ -701,10 +714,10 @@ int main(void)
 				{
 					// float dt = get_time_between_images();
 
-					// mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-					// 		flow_lk.x[30], flow_lk.x[50],
-					// 		flow_lk.x[70], flow_lk.x[20], qual,
-					// 		DT);
+					mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
+							optic_flow_big_debug[20], optic_flow_big_debug[30],
+							optic_flow_big_debug[1], optic_flow_big_debug[59], 0,
+							DT);
 
 					// mavlink_msg_data_transmission_handshake_send(
 					// 		MAVLINK_COMM_2,
