@@ -64,12 +64,17 @@ static char offset = 0;
 uint8_t dataRX = 0;
 uint8_t txDataFrame1[2][I2C_FRAME_SIZE];
 uint8_t txDataFrame2[2][I2C_INTEGRAL_FRAME_SIZE];
+uint8_t txDataFrame3[2][I2C_FLOW_STAT_FRAME_SIZE];
+uint8_t txDataFrame4[I2C_FLOW_STAT_FRAME_SIZE];
 uint8_t publishedIndexFrame1 = 0;
 uint8_t publishedIndexFrame2 = 0;
+uint8_t publishedIndexFrame3 = 0;
 uint8_t notpublishedIndexFrame1 = 1;
 uint8_t notpublishedIndexFrame2 = 1;
+uint8_t notpublishedIndexFrame3 = 1;
 uint8_t readout_done_frame1 = 1;
 uint8_t readout_done_frame2 = 1;
+uint8_t readout_done_frame3 = 1;
 uint8_t stop_accumulation = 0;
 
 void i2c_init() {
@@ -140,6 +145,7 @@ void I2C1_EV_IRQHandler(void) {
 	//uint8_t dataRX;
 	static uint8_t txDataIndex1 = 0x00;
 	static uint8_t txDataIndex2 = 0x00;
+	static uint8_t txDataIndex3 = 0x00;
 	static uint8_t rxDataIndex = 0x00;
 	switch (I2C_GetLastEvent(I2C1 )) {
 
@@ -160,15 +166,21 @@ void I2C1_EV_IRQHandler(void) {
 		rxDataIndex++;
 		//set Index
 		txDataIndex1 = dataRX;
-		if (dataRX > I2C_FRAME_SIZE) {
+		if(dataRX > I2C_FRAME_SIZE + I2C_FLOW_STAT_FRAME_SIZE){
+			txDataIndex2 = I2C_INTEGRAL_FRAME_SIZE;
+			txDataIndex3 = dataRX - I2C_FRAME_SIZE - I2C_FLOW_STAT_FRAME_SIZE;
+		} else if (dataRX > I2C_FRAME_SIZE) {
 			txDataIndex2 = dataRX - I2C_FRAME_SIZE;
+			txDataIndex3 = 0;
 		}
 		else {
 			txDataIndex2 = 0;
+			txDataIndex3 = 0;
 		}
 			//indicate sending
 		readout_done_frame1 = 0;
 		readout_done_frame2 = 0;
+		readout_done_frame3 = 0;
 		break;
 	}
 	case I2C_EVENT_SLAVE_BYTE_TRANSMITTING :
@@ -178,13 +190,17 @@ void I2C1_EV_IRQHandler(void) {
 			I2C_SendData(I2C1,
 					txDataFrame1[publishedIndexFrame1][txDataIndex1]);
 			txDataIndex1++;
-		} else {
+		} else if(txDataIndex2 < I2C_INTEGRAL_FRAME_SIZE){
 			I2C_SendData(I2C1,
 					txDataFrame2[publishedIndexFrame2][txDataIndex2]);
-			if (txDataIndex2 < I2C_INTEGRAL_FRAME_SIZE) {
-				txDataIndex2++;
+			txDataIndex2++;
+		}
+		else{
+			I2C_SendData(I2C1,
+					txDataFrame3[publishedIndexFrame3][txDataIndex3]);
+			if(txDataIndex3 < I2C_FLOW_STAT_FRAME_SIZE){
+				txDataIndex3++;
 			}
-
 		}
 
 		//check whether last byte is read frame1
@@ -196,6 +212,11 @@ void I2C1_EV_IRQHandler(void) {
 		if (txDataIndex2 >= (I2C_INTEGRAL_FRAME_SIZE-1)) {
 			readout_done_frame2 = 1;
 			stop_accumulation = 1;
+		}
+
+		//check whether last byte is read frame3
+		if (txDataIndex3 >= (I2C_FLOW_STAT_FRAME_SIZE-1)) {
+			readout_done_frame3 = 1;
 		}
 
 		break;
@@ -222,6 +243,31 @@ void I2C1_ER_IRQHandler(void) {
 		I2C1 ->SR1 &= 0x00FF;
 	}
 }
+
+
+void update_TX_buffer_flow_stat( int16_t maxima[SECTOR_COUNT], uint8_t max_pos[SECTOR_COUNT], int16_t minima[SECTOR_COUNT],
+								uint8_t min_pos[SECTOR_COUNT], int16_t stddev[SECTOR_COUNT], int16_t avg[SECTOR_COUNT]) {
+
+	notpublishedIndexFrame1 = 1 - publishedIndexFrame1; // choose not the current published 1 buffer
+	notpublishedIndexFrame2 = 1 - publishedIndexFrame2; // choose not the current published 2 buffer
+	notpublishedIndexFrame3 = 1 - publishedIndexFrame3; // choose not the current published 3 buffer
+
+    // fill I2C transmitbuffer3 with frame3 values
+    i2c_flow_stat_frame* f = (i2c_flow_stat_frame*)&(txDataFrame3[notpublishedIndexFrame3]);
+	memcpy(f->maxima, maxima, sizeof(f->maxima));
+	memcpy(f->max_pos, max_pos, sizeof(f->max_pos));
+	memcpy(f->minima, minima, sizeof(f->minima));
+	memcpy(f->min_pos, min_pos, sizeof(f->min_pos));
+	memcpy(f->stddev, stddev, sizeof(f->stddev));
+	memcpy(f->avg, avg, sizeof(f->avg));
+	
+	//swap buffers frame3 if I2C bus is idle
+	if (readout_done_frame3) {
+		publishedIndexFrame3 = 1 - publishedIndexFrame3;
+	}
+}
+
+
 
 void update_TX_buffer(float pixel_flow_x, float pixel_flow_y,
 		float flow_comp_m_x, float flow_comp_m_y, uint8_t qual,

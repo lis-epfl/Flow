@@ -79,4 +79,18 @@ typedef struct i2c_integral_frame
 
 #define I2C_INTEGRAL_FRAME_SIZE (sizeof(i2c_integral_frame))
 
+#define SECTOR_COUNT 6
+
+typedef struct i2c_flow_stat_frame
+{
+    int16_t maxima[SECTOR_COUNT];
+    uint8_t max_pos[SECTOR_COUNT];
+    int16_t minima[SECTOR_COUNT];
+    uint8_t min_pos[SECTOR_COUNT];
+    int16_t stddev[SECTOR_COUNT];
+    int16_t avg[SECTOR_COUNT];
+} i2c_flow_stat_frame;
+
+#define I2C_FLOW_STAT_FRAME_SIZE (sizeof(i2c_flow_stat_frame))
+
 #endif /* I2C_FRAME_H_ */
