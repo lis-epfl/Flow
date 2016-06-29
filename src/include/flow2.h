@@ -11,6 +11,7 @@
 #define _FLOW2_H_
 
 #include <math.h>
+#include <float.h>
 #include "maths.h"
 #include "quick_trig.h"
 
@@ -22,6 +23,7 @@
 #define REFINED_PREC_2	0.09901f	// refined precision (sin(4.4 degrees/2))
 #define REFINED_PREC_3	0.02967f	// refined precision (sin(4.4 degrees/2))
 #define REFINED_PREC_4	0.01396f	// refined precision (sin(4.4 degrees/2))
+
 /**
  * @brief Voting bins structure
  */
@@ -176,5 +178,95 @@ void find_best(voting_bins *bins, float *best_x, float *best_y, float *best_z);
 */
 void rotate_bins(voting_bins *bins, float best_x, float best_y, float best_z, float *r_dir_x, float *r_dir_y, float *r_dir_z);
 
+
+/**
+* @brief calculates sector wise statistics (max, max_pos, min, min_pos, stddev, avg)
+*
+*	@param pixel_count 					total number of pixels (sampling points)
+*   @param sector_count    				number of sectors
+*	@param theta_start 					angle at beginning of field of view
+*	@param theta_end 					angle at end of field of view
+*	@param flow_x 						flow in x direction
+*	@param flow_y 						flow in y direction
+*	@param flow_z 						flow in z direction
+*	@param flow_z 						angle at each sampling point
+*	@param maxima 						address to write maximal values to [millirad/frame]
+*	@param max_pos 						address to write position of maximum to [centirad]
+*	@param minima 						address to write minimal values to [millirad/frame]
+*	@param min_pos 						address to write position of minimum to [centirad]
+*	@param stddev 						address to write standard deviation to values to [millirad/frame]
+*	@param avg 	 						address to write average values to [millirad/frame]
+*
+* @return Rotated voting bins
+*/
+static inline void calc_flow_stats(uint16_t pixel_count,
+									uint8_t sector_count,
+									float theta_start,
+									float theta_end,
+									float flow_x[],
+									float flow_y[],
+									float flow_z[],
+									float theta[],
+									uint16_t maxima[],
+									uint8_t max_pos[],
+									int16_t minima[],
+									uint8_t min_pos[],
+									int16_t stddev[],
+									int16_t avg[])
+{
+	// iterate over all sectors
+	uint16_t i_pix = 0;
+	float dTheta = (theta_end-theta_start)/sector_count;
+	float theta0 = theta_start;												// angle at beginning of the sector
+	float theta1 = theta0 + dTheta;											// angle at end of the sector
+	for(uint8_t i_sec = 0; i_pix < pixel_count && i_sec < sector_count; i_sec++)
+	{
+		float maximum =  FLT_MIN;
+		float minimum =  FLT_MAX;
+		float sum = 0;
+		float sum2 = 0;
+		uint8_t max_ind = 0;
+		uint8_t min_ind = 0;
+		uint16_t sec_start_ind = i_pix;
+		while(i_pix < pixel_count && theta[i_pix] < theta1)
+		{
+			float flow2 = SQR(*(flow_x++)) + SQR(*(flow_y++)) + SQR(*(flow_z++));	// norm of flow squared
+			float flow = maths_fast_sqrt(flow2);									// norm of flow
+			sum += flow;															// sum of flow for sector
+			sum2 += flow2;															// sum of flow squared for sector
+
+			if(flow > maximum){
+				maximum = flow;
+				max_ind = i_pix;
+			}else if(flow < minimum)
+			{
+				minimum = flow;
+				min_ind = i_pix;
+			}
+			i_pix++;
+		}
+		uint16_t sector_size = i_pix - sec_start_ind;
+		if(sector_size > 0)
+		{
+			*(maxima++) = (uint16_t)(1000*maximum);										// [millirad]
+			*(minima++) = (uint16_t)(1000*minimum);										// [millirad]
+			*(stddev++) = (uint16_t)(1000*maths_fast_sqrt((sum2 - SQR(sum))/sector_size)); // standard deviation of flow of sector [millirad]
+			*(avg++) = (uint16_t)(1000*sum/sector_size);								// average of flow of sector [millirad]
+			*(min_pos++) = (uint8_t)(100*(theta[min_ind]-theta0));	// transform index to relative azimuth [centirad]
+			*(max_pos++) = (uint8_t)(100*(theta[max_ind]-theta0));	// transform index to relative azimuth [centirad]
+		}else
+		{
+			*(maxima++) = 0;
+			*(minima++) = 0;
+			*(stddev++) = 0;
+			*(avg++) = 0;
+			*(min_pos++) = 0;
+			*(max_pos++) = 0;
+		}	
+
+		theta0 += dTheta;
+		theta1 += dTheta;
+	}
+}
 
 #endif /* _FLOW2_H_ */

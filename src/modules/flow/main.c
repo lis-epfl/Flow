@@ -416,12 +416,21 @@ int main(void)
 	} s_dir_2d ={ 	{6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114}, 
 			{8, 8, 8, 8, 8, 8, 8, 8, 8, 26, 26, 26, 26, 26, 26, 26, 26, 26, 44, 44, 44, 44, 44, 44, 44, 44, 44, 62, 62, 62, 62, 62, 62, 62, 62, 62, 80, 80, 80, 80, 80, 80, 80, 80, 80, 98, 98, 98, 98, 98, 98, 98, 98, 98, 116, 116, 116, 116, 116, 116, 116, 116, 116, 134, 134, 134, 134, 134, 134, 134, 134, 134, 152, 152, 152, 152, 152, 152, 152, 152, 152}};
 	
+	for(uint16_t i = 0; i < NB_SAMPLES; i++)
+	{
+	 	s_dir_2d.x[i] = 1 + (uint16_t)(((100.0f*i)/NB_SAMPLES));
+	 	s_dir_2d.y[i] = 80;
+	}
+	
 	/* sampling directions on unit sphere */
 	struct s_dir_3d {
 		float x[NB_SAMPLES];
 		float y[NB_SAMPLES];
 		float z[NB_SAMPLES];
 	} s_dir_3d;
+
+	/* polar angle (inclination) angle between point on sphere and z-axis */
+	float s_dir_theta[NB_SAMPLES];
 
 	/* great circle normal vectors */
 	struct n_dir_3d {
@@ -438,6 +447,7 @@ int main(void)
 	for (int i = 0; i < NB_SAMPLES; ++i){
 		cam2world(&s_dir_3d.x[i], &s_dir_3d.y[i], &s_dir_3d.z[i], (float)s_dir_2d.x[i], (float)s_dir_2d.y[i], &px4_model);
 		normalize(&s_dir_3d.x[i], &s_dir_3d.y[i], &s_dir_3d.z[i]); // used for fast_flow2world
+		s_dir_theta[i] = quick_trig_asin(s_dir_3d.x[i]);
 	}
 
 	// int16_t flow_lk.x[100];
@@ -521,6 +531,13 @@ int main(void)
 			dcmi_restart_calibration_routine();
 			LEDOff(LED_COM);
 		}
+
+		int16_t maxima[6];
+		uint8_t max_pos[6];
+		int16_t minima[6];
+		uint8_t min_pos[6];
+		int16_t stddev[6];
+		int16_t avg[6];
 
 		uint16_t image_size   = global_data.param[PARAM_IMAGE_WIDTH] * global_data.param[PARAM_IMAGE_HEIGHT];
 		uint16_t image_width  = global_data.param[PARAM_IMAGE_WIDTH];
@@ -610,7 +627,24 @@ int main(void)
 				/* Vote on the sphere */
 				voting(&c_bins, n_dir_3d.x[i], n_dir_3d.y[i], n_dir_3d.z[i]);
 			}
+
+			calc_flow_stats(NB_SAMPLES,
+							SECTOR_COUNT,
+							-PI/2,
+							PI/2,
+							bp_flow_lk.x,
+							bp_flow_lk.y,
+							bp_flow_lk.z,
+							s_dir_theta,
+							maxima,
+							max_pos,
+							minima,
+							min_pos,
+							stddev,
+							avg);
 			
+			update_TX_buffer_flow_stat(maxima, max_pos, minima, min_pos, stddev, avg);
+
 			/* get coarse estimate */
 			find_best(&c_bins, &best_x, &best_y, &best_z);
 			for(uint8_t i=0; i<COARSE_BINS; i++) c_bins.acc[i]=0; // reset coarse accumulator
