@@ -73,16 +73,20 @@ void mt9v034_context_configuration(void)
 		new_control = 0x0188; // Context A
 
 	/* image dimentions */
-	uint16_t new_width_context_a  = global_data.param[PARAM_IMAGE_WIDTH] * 4; // windowing off, row + col bin reduce size
+	// uint16_t new_width_context_a  = global_data.param[PARAM_IMAGE_WIDTH] * 4; // windowing off, row + col bin reduce size
+	uint16_t new_width_context_a  = global_data.param[PARAM_IMAGE_WIDTH] * 1; // windowing off, row + col bin reduce size
 	uint16_t new_height_context_a = global_data.param[PARAM_IMAGE_HEIGHT] * 4;
 	uint16_t new_width_context_b  = FULL_IMAGE_ROW_SIZE * 4; // windowing off, row + col bin reduce size
 	uint16_t new_height_context_b = FULL_IMAGE_COLUMN_SIZE * 4;
 
 	/* blanking settings */
 	// uint16_t new_hor_blanking_context_a = 350 + MINIMUM_HORIZONTAL_BLANKING;// 350 is minimum value without distortions
-	uint16_t new_hor_blanking_context_a = MAX_IMAGE_WIDTH - new_width_context_a + MINIMUM_HORIZONTAL_BLANKING;	
+	uint16_t new_hor_blanking_context_a = MAX_IMAGE_WIDTH - new_width_context_a + MINIMUM_HORIZONTAL_BLANKING;
 	uint16_t new_ver_blanking_context_a = 10; // this value is the first without image errors (dark lines)
 	uint16_t new_hor_blanking_context_b = MAX_IMAGE_WIDTH - new_width_context_b + MINIMUM_HORIZONTAL_BLANKING;
+	if (new_hor_blanking_context_b < 800) {
+		new_hor_blanking_context_b = 800;
+	}
 	uint16_t new_ver_blanking_context_b = 10;
 
 
@@ -97,8 +101,10 @@ void mt9v034_context_configuration(void)
 	 * (9:8) Reserved
 	 *
 	 */
-	uint16_t new_readmode_context_a = 0x30A ; // row + col bin 4 enable, (9:8) default
-	uint16_t new_readmode_context_b = 0x305 ; // row bin 2 col bin 4 enable, (9:8) default
+	// uint16_t new_readmode_context_a = 0x30A ; // row bin 4 , col bin 4 (default)
+	uint16_t new_readmode_context_a = 0x302 ; // row bin 4 + col bin 0
+	// uint16_t new_readmode_context_a = 0x301 ; // row bin 1 + col bin 0
+	uint16_t new_readmode_context_b = 0x305 ; // row bin 2 , col bin 2, (default)
 
 	/*
 	 * Settings for both context:
@@ -110,7 +116,8 @@ void mt9v034_context_configuration(void)
 	uint16_t max_exposure = 0x01E0; // default
 	uint16_t new_max_gain = 64; // VALID RANGE: 16-64 (default)
 	// uint16_t pixel_count = 4096; //64x64 take all pixels to estimate exposure time // VALID RANGE: 1-65535
-	uint16_t pixel_count = BOTTOM_FLOW_IMAGE_HEIGHT * BOTTOM_FLOW_IMAGE_WIDTH; //64x64 take all pixels to estimate exposure time // VALID RANGE: 1-65535
+	uint16_t pixel_count = 5580; //36x620/4 take all pixels to estimate exposure time // VALID RANGE: 1-65535
+	// uint16_t pixel_count = BOTTOM_FLOW_IMAGE_HEIGHT * BOTTOM_FLOW_IMAGE_WIDTH; //64x64 take all pixels to estimate exposure time // VALID RANGE: 1-65535
 
 	uint16_t desired_brightness = 58; // default
 	uint16_t resolution_ctrl = 0x0203; // default
@@ -142,7 +149,7 @@ void mt9v034_context_configuration(void)
 	else
 	{
 		min_exposure = 0x0001;
-		max_exposure = 0x0040;
+		max_exposure = 0x0080;
 		desired_brightness = 16; // VALID RANGE: 8-64
 		resolution_ctrl = 0x0202;//10bit linear
 		hdr_enabled = 0x0000; // off
@@ -172,6 +179,16 @@ void mt9v034_context_configuration(void)
 	{
 		mt9v034_WriteReg16(MTV_CHIP_CONTROL_REG, new_control);
 
+		// Initialize frame control reg
+		mt9v034_WriteReg(0x72, 0x0000);
+
+		// Write reserved registers per Rev G datasheet table 8 recommendations
+		mt9v034_WriteReg16(0x13, 0x2D2E);
+		mt9v034_WriteReg16(0x20, 0x03C7);
+		mt9v034_WriteReg16(0x24, 0x001B);
+		mt9v034_WriteReg16(0x2B, 0x0003);
+		mt9v034_WriteReg16(0x2F, 0x0003);
+
 		/* Context A */
 		mt9v034_WriteReg16(MTV_WINDOW_WIDTH_REG_A, new_width_context_a);
 		mt9v034_WriteReg16(MTV_WINDOW_HEIGHT_REG_A, new_height_context_a);
@@ -179,12 +196,14 @@ void mt9v034_context_configuration(void)
 		mt9v034_WriteReg16(MTV_VER_BLANKING_REG_A, new_ver_blanking_context_a);
 		mt9v034_WriteReg16(MTV_READ_MODE_REG_A, new_readmode_context_a);
 		// mt9v034_WriteReg16(MTV_COLUMN_START_REG_A, (MAX_IMAGE_WIDTH - new_width_context_a) / 2 + MINIMUM_COLUMN_START); // Set column/row start point for lower resolutions (center window)
-		mt9v034_WriteReg16(MTV_COLUMN_START_REG_A, 9*4 + MINIMUM_COLUMN_START); // Set column/row start point for lower resolutions (center window)
-		mt9v034_WriteReg16(MTV_ROW_START_REG_A, (MAX_IMAGE_HEIGHT - new_height_context_a) / 2 + MINIMUM_ROW_START);
+		// mt9v034_WriteReg16(MTV_COLUMN_START_REG_A, 9*4 + MINIMUM_COLUMN_START); // Set column/row start point for lower resolutions (center window)
+		mt9v034_WriteReg16(MTV_COLUMN_START_REG_A, 36 + MINIMUM_COLUMN_START); // Set column/row start point for lower resolutions (center window)
+		// mt9v034_WriteReg16(MTV_ROW_START_REG_A, (MAX_IMAGE_HEIGHT - new_height_context_a) / 2 + MINIMUM_ROW_START);
+		mt9v034_WriteReg16(MTV_ROW_START_REG_A, 152 + MINIMUM_ROW_START);
 		mt9v034_WriteReg16(MTV_COARSE_SW_1_REG_A, coarse_sw1);
 		mt9v034_WriteReg16(MTV_COARSE_SW_2_REG_A, coarse_sw2);
 		mt9v034_WriteReg16(MTV_COARSE_SW_CTRL_REG_A, shutter_width_ctrl);
-		mt9v034_WriteReg16(MTV_V2_CTRL_REG_A, total_shutter_width);
+		mt9v034_WriteReg16(MTV_COARSE_SW_TOTAL_REG_A, total_shutter_width);
 
 
 		/* Context B */
@@ -203,7 +222,7 @@ void mt9v034_context_configuration(void)
 		mt9v034_WriteReg16(MTV_COARSE_SW_1_REG_B, coarse_sw1);
 		mt9v034_WriteReg16(MTV_COARSE_SW_2_REG_B, coarse_sw2);
 		mt9v034_WriteReg16(MTV_COARSE_SW_CTRL_REG_B, shutter_width_ctrl);
-		mt9v034_WriteReg16(MTV_V2_CTRL_REG_B, total_shutter_width);
+		mt9v034_WriteReg16(MTV_COARSE_SW_TOTAL_REG_B, total_shutter_width);
 
 		/* General Settings */
 		mt9v034_WriteReg16(MTV_ROW_NOISE_CORR_CTRL_REG, row_noise_correction);
