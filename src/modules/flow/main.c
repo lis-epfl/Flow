@@ -76,6 +76,7 @@
 #include "maths.h"
 #include "cam.h"
 #include "flow2.h"
+#include "../calib/calib_cam3.h"
 
 
 /* coprocessor control register (fpu) */
@@ -111,7 +112,7 @@ volatile uint32_t boot_time10_us = 0;
 #define TIMER_RECEIVE		5
 #define TIMER_PARAMS		6
 #define TIMER_IMAGE			7
-#define TIMER_LPOS		8
+#define TIMER_LPOS			8
 #define MS_TIMER_COUNT		100 /* steps in 10 microseconds ticks */
 #define LED_TIMER_COUNT		500 /* steps in milliseconds ticks */
 #define SONAR_TIMER_COUNT 	100	/* steps in milliseconds ticks */
@@ -326,21 +327,6 @@ int main(void)
 	uint32_t counter = 0;
 	uint8_t qual = 0;
 
-	/* camera model */
-	cam_model px4_model= 
-	{	{6.660506e+01f, 0.0f, -6.426152e-03f, 2.306550e-05f, -2.726345e-07f}, 
-		5, 
-		{98.889649f, 60.099030f, 3.523247f, 11.584154f, 10.704617f, 4.911849f, 0.899849f},
-		7,
-		56.232012f,
-		77.63939272f,
-		1.001183f,
-		0.001337f,
-		0.002268f,
-		160,
-		120
-	};
-
 	/* coarse voting bins */
 	uint8_t c_acc[COARSE_BINS];
 	for(uint8_t i=0; i<COARSE_BINS; i++) c_acc[i]=0;
@@ -409,28 +395,6 @@ int main(void)
 		float z[NB_SAMPLES];
 	} bp_flow_lk;
 
-	/* sampling pixels on camera image */
-	struct s_dir_2d {
-		int16_t x[NB_SAMPLES];
-		int16_t y[NB_SAMPLES];
-	} s_dir_2d ={ 	{6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114, 6, 20, 33, 46, 60, 73, 87, 100, 114}, 
-			{8, 8, 8, 8, 8, 8, 8, 8, 8, 26, 26, 26, 26, 26, 26, 26, 26, 26, 44, 44, 44, 44, 44, 44, 44, 44, 44, 62, 62, 62, 62, 62, 62, 62, 62, 62, 80, 80, 80, 80, 80, 80, 80, 80, 80, 98, 98, 98, 98, 98, 98, 98, 98, 98, 116, 116, 116, 116, 116, 116, 116, 116, 116, 134, 134, 134, 134, 134, 134, 134, 134, 134, 152, 152, 152, 152, 152, 152, 152, 152, 152}};
-	
-	for(uint16_t i = 0; i < NB_SAMPLES; i++)
-	{
-	 	s_dir_2d.x[i] = 1 + (uint16_t)(((100.0f*i)/NB_SAMPLES));
-	 	s_dir_2d.y[i] = 80;
-	}
-	
-	/* sampling directions on unit sphere */
-	struct s_dir_3d {
-		float x[NB_SAMPLES];
-		float y[NB_SAMPLES];
-		float z[NB_SAMPLES];
-	} s_dir_3d;
-
-	/* polar angle (inclination) angle between point on sphere and z-axis */
-	float s_dir_theta[NB_SAMPLES];
 
 	/* great circle normal vectors */
 	struct n_dir_3d {
@@ -442,14 +406,6 @@ int main(void)
 	/* define best estimate */
 	float best_x, best_y, best_z;
 	
-
-	/* backproject pixels on 3D scene */
-	for (int i = 0; i < NB_SAMPLES; ++i){
-		cam2world(&s_dir_3d.x[i], &s_dir_3d.y[i], &s_dir_3d.z[i], (float)s_dir_2d.x[i], (float)s_dir_2d.y[i], &px4_model);
-		normalize(&s_dir_3d.x[i], &s_dir_3d.y[i], &s_dir_3d.z[i]); // used for fast_flow2world
-		s_dir_theta[i] = quick_trig_asin(s_dir_3d.x[i]);
-	}
-
 	// int16_t flow_lk.x[100];
 	// int16_t flow_lk.y[100];
 
@@ -600,8 +556,8 @@ int main(void)
 				/* code */
 				lucas_kanade( 	current_image, //dat_t * data, 
 						previous_image, //dat_t * data_old, 
-						image_width, //int dsy, 
-						image_height, //int dsx, 
+						image_height,//image_width, //int dsy, 
+						image_width,//image_height, //int dsx, 
 						roi_sy, //int roi_sy, 
 						roi_sx, //int roi_sx, 
 						s_dir_2d.y[i], //int const roi_y,
