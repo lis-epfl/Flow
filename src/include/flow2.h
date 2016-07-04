@@ -238,7 +238,7 @@ static inline void calc_flow_stats(uint16_t pixel_count,
 			if(flow > maximum){
 				maximum = flow;
 				max_ind = i_pix;
-			}else if(flow < minimum)
+			}if(flow < minimum)
 			{
 				minimum = flow;
 				min_ind = i_pix;
