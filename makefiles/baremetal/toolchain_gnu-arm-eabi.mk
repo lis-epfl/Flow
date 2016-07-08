@@ -135,8 +135,8 @@ ARCHWARNINGS		 = -Wall \
 			   -Werror=array-bounds \
 			   -Wfatal-errors \
 			   -Wformat=1 \
-			   -Werror=unused-but-set-variable \
-			   -Werror=unused-variable \
+			   #-Werror=unused-but-set-variable \
+			   #-Werror=unused-variable \
 			   -Werror=double-promotion \
 			   -Werror=reorder \
 			   -Werror=uninitialized \
