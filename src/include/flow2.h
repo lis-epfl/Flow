@@ -207,7 +207,7 @@ static inline void calc_flow_stats(uint16_t pixel_count,
 									float flow_y[],
 									float flow_z[],
 									float theta[],
-									uint16_t maxima[],
+									int16_t maxima[],
 									uint8_t max_pos[],
 									int16_t minima[],
 									uint8_t min_pos[],
@@ -228,12 +228,12 @@ static inline void calc_flow_stats(uint16_t pixel_count,
 		uint8_t max_ind = 0;
 		uint8_t min_ind = 0;
 		uint16_t sec_start_ind = i_pix;
-		while(i_pix < pixel_count && theta[i_pix] < theta1)
+		for(;i_pix < pixel_count && theta[i_pix] < theta1; flow_x++, flow_y++, flow_z++, i_pix++)
 		{
-			float flow2 = SQR(*(flow_x++)) + SQR(*(flow_y++)) + SQR(*(flow_z++));	// norm of flow squared
-			float flow = maths_fast_sqrt(flow2);									// norm of flow
-			sum += flow;															// sum of flow for sector
-			sum2 += flow2;															// sum of flow squared for sector
+			float flow2 = SQR(*flow_x) + SQR(*flow_y) + SQR(*flow_z);	// norm of flow squared
+			float flow = maths_fast_sqrt(flow2);						// norm of flow
+			sum += *flow_x;//flow;												// sum of flow for sector
+			sum2 += flow2;												// sum of flow squared for sector
 
 			if(flow > maximum){
 				maximum = flow;
@@ -243,17 +243,17 @@ static inline void calc_flow_stats(uint16_t pixel_count,
 				minimum = flow;
 				min_ind = i_pix;
 			}
-			i_pix++;
 		}
 		uint16_t sector_size = i_pix - sec_start_ind;
 		if(sector_size > 0)
 		{
-			*(maxima++) = (uint16_t)(1000*maximum);										// [millirad]
-			*(minima++) = (uint16_t)(1000*minimum);										// [millirad]
-			*(stddev++) = (uint16_t)(1000*maths_fast_sqrt((sum2 - SQR(sum))/sector_size)); // standard deviation of flow of sector [millirad]
-			*(avg++) = (uint16_t)(1000*sum/sector_size);								// average of flow of sector [millirad]
-			*(min_pos++) = (uint8_t)(100*(theta[min_ind]-theta0));	// transform index to relative azimuth [centirad]
-			*(max_pos++) = (uint8_t)(100*(theta[max_ind]-theta0));	// transform index to relative azimuth [centirad]
+			float avg_i = sum/sector_size;
+			*(maxima++)  = (int16_t)(1000*maximum);								// maxima of sector [millirad]
+			*(minima++)  = (int16_t)(1000*minimum);								// maxima of sector [millirad]
+			*(avg++) 	 = (int16_t)(1000*avg_i);								// average of flow of sector [millirad]
+			*(stddev++)  = (int16_t)(1000*maths_fast_sqrt((sum2 - SQR(sum)/sector_size)/(sector_size-1))); // standard deviation of flow of sector [millirad]
+			*(min_pos++) = (uint8_t)(1000*(theta[min_ind]-theta0));	// transform index to relative azimuth [centirad]
+			*(max_pos++) = (uint8_t)(1000*(theta[max_ind]-theta0));	// transform index to relative azimuth [centirad]
 		}else
 		{
 			*(maxima++) = 0;
