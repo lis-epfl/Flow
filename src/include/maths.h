@@ -83,7 +83,7 @@ extern "C"
  * \param   i   Value in degrees
  * \return      Value in radians
  */
-float static inline maths_deg_to_rad(float i)
+static inline float maths_deg_to_rad(float i)
 {
     return MATH_DEG_TO_RAD * i;
 }
@@ -95,7 +95,7 @@ float static inline maths_deg_to_rad(float i)
  * \param   i   Value in radians
  * \return      Value in degrees
  */
-float static inline maths_rad_to_deg(float i)
+static inline float maths_rad_to_deg(float i)
 {
     return MATH_RAD_TO_DEG * i;
 }
@@ -108,7 +108,7 @@ float static inline maths_rad_to_deg(float i)
  *
  * \return          Output angle
  */
-float static inline maths_calc_smaller_angle(float angle)
+static inline float maths_calc_smaller_angle(float angle)
 {
     float out = angle;
     while (out < -PI) out += 2.0f * PI;
@@ -126,7 +126,7 @@ float static inline maths_calc_smaller_angle(float angle)
  *
  * \return          Output value
  */
-float static inline maths_fast_inv_sqrt(float number)
+static inline float maths_fast_inv_sqrt(float number)
 {
     union
     {
@@ -153,7 +153,7 @@ float static inline maths_fast_inv_sqrt(float number)
  *
  * \return          Output value
  */
-float static inline maths_fast_sqrt(float number)
+static inline float maths_fast_sqrt(float number)
 {
     union
     {
@@ -181,7 +181,7 @@ float static inline maths_fast_sqrt(float number)
  *
  * \return          Output value
  */
-float static inline maths_fast_sqrt_1(float input)
+static inline float maths_fast_sqrt_1(float input)
 {
     if (input < 0)
     {
@@ -269,7 +269,7 @@ static inline float maths_f_max(const float a, const float b)
  *
  * \return                  Clipped value
  */
-static float inline maths_clip(float input_value, float clip_value)
+static inline float maths_clip(float input_value, float clip_value)
 {
     if (input_value > clip_value)  return clip_value;
     if (input_value < -clip_value) return -clip_value;
@@ -285,7 +285,7 @@ static float inline maths_clip(float input_value, float clip_value)
  *
  * \return                  Output value
  */
-static float inline maths_soft_zone(float x, float soft_zone_width)
+static inline float maths_soft_zone(float x, float soft_zone_width)
 {
     if (soft_zone_width < 0.0000001f)
     {
@@ -304,7 +304,7 @@ static float inline maths_soft_zone(float x, float soft_zone_width)
  * \param   x   Input value
  * \return      Output value
  */
-static float inline maths_sigmoid(float x)
+static inline float maths_sigmoid(float x)
 {
     return (x / maths_fast_sqrt(1 + SQR(x)));
 };
@@ -316,7 +316,7 @@ static float inline maths_sigmoid(float x)
  * \param   x   Input value
  * \return      Output value
  */
-static float inline maths_center_window_2(float x)
+static inline float maths_center_window_2(float x)
 {
     return 1.0f / (1 + SQR(x));
 }
@@ -328,7 +328,7 @@ static float inline maths_center_window_2(float x)
  * \param   x   Input value
  * \return      Output value
  */
-static float inline maths_center_window_4(float x)
+static inline float maths_center_window_4(float x)
 {
     return 1.0f / (1 + SQR(SQR(x)));
 }
@@ -345,7 +345,7 @@ static float inline maths_center_window_4(float x)
  *
  * \return      Output value
  */
-static float inline maths_median_filter_3x(float a, float b, float c)
+static inline float maths_median_filter_3x(float a, float b, float c)
 {
     float middle;
 

@@ -328,48 +328,49 @@ int main(void)
 	uint8_t qual = 0;
 
 	/* coarse voting bins */
-	uint8_t c_acc[COARSE_BINS];
-	for(uint8_t i=0; i<COARSE_BINS; i++) c_acc[i]=0;
-	float cx[COARSE_BINS] = {0.850651f, 0.850651f, 0.525731f, 0.0f, 0.0f, -0.525731f, -0.850651f, -0.850651f};
-	float cy[COARSE_BINS] = {0.525731f, -0.525731f, 0.0f, 0.850651f, -0.850651f, 0.0f, 0.525731f, -0.525731f};
-	float cz[COARSE_BINS] = {0.0f, 0.0f, -0.850651f, -0.525731f, -0.525731f, -0.850651f, 0.0f, 0.0f};
-	voting_bins c_bins = {cx,cy,cz,COARSE_PREC,COARSE_BINS, c_acc};
+	// uint8_t c_acc[COARSE_BINS];
+	// for(uint8_t i=0; i<COARSE_BINS; i++) c_acc[i]=0;
+	// float cx[COARSE_BINS] = {0.850651f, 0.850651f, 0.525731f, 0.0f, 0.0f, -0.525731f, -0.850651f, -0.850651f};
+	// float cy[COARSE_BINS] = {0.525731f, -0.525731f, 0.0f, 0.850651f, -0.850651f, 0.0f, 0.525731f, -0.525731f};
+	// float cz[COARSE_BINS] = {0.0f, 0.0f, -0.850651f, -0.525731f, -0.525731f, -0.850651f, 0.0f, 0.0f};
+	// voting_bins c_bins = {cx,cy,cz,COARSE_PREC,COARSE_BINS, c_acc};
 
-	/* refined voting directions (stored before rotation)*/
-	r_dir_3d r_grid_1 ={{0.525731f, -0.525731f, 0.309017f, 0.309017f, 0.0f, -0.309017f, -0.309017f},
-				{0.0f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, -0.5f},
-				{-0.850651f, -0.850651f, -0.809017f, -0.809017f, -1.0f, -0.809017f, -0.809017f}
-				};
-
-	/* refined voting directions (stored before rotation)*/
-	r_dir_3d r_grid_2 ={{0.525731f, -0.525731f, 0.309017f, 0.309017f, 0.0f, -0.309017f, -0.309017f},
-				{0.0f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, -0.5f},
-				{-0.850651f, -0.850651f, -0.809017f, -0.809017f, -1.0f, -0.809017f, -0.809017f}	
-				};
-
-	/* refined voting directions (stored before rotation)*/
-	r_dir_3d r_grid_3 = {{0.0616857f, 0.0f, -0.0616857f, 0.031447f, -0.031447f, 0.031447f, -0.031447f},
-				{0.0f, 0.0f, 0.0f, -0.0508822f, -0.0508822f, 0.0508822f, 0.0508822f},
-				{-0.998096f, -1.0f, -0.998096f, -0.998209f, -0.998209f, -0.998209f, -0.998209f}
-				};
-
-	/* refined voting directions (stored before rotation)*/
-	r_dir_3d r_grid_4 = {{0.0294175f, 0.0f, -0.0294175f, 0.0148442f, -0.0148442f, 0.0148442f, -0.0148442f},
-				{0.0f, 0.0f, 0.0f, -0.0240185f, -0.0240185f, 0.0240185f, 0.0240185f},
-				{-0.999567f, -1.0f, -0.999567f, -0.999601f, -0.999601f, -0.999601f, -0.999601f}
-				};
+	// /* refined voting directions (stored before rotation)*/
+	// r_dir_3d r_grid_1 ={{0.525731f, -0.525731f, 0.309017f, 0.309017f, 0.0f, -0.309017f, -0.309017f},
+	// 			{0.0f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, -0.5f},
+	// 			{-0.850651f, -0.850651f, -0.809017f, -0.809017f, -1.0f, -0.809017f, -0.809017f}
+	// 			};
+	//
+	// /* refined voting directions (stored before rotation)*/
+	// r_dir_3d r_grid_2 ={{0.525731f, -0.525731f, 0.309017f, 0.309017f, 0.0f, -0.309017f, -0.309017f},
+	// 			{0.0f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, -0.5f},
+	// 			{-0.850651f, -0.850651f, -0.809017f, -0.809017f, -1.0f, -0.809017f, -0.809017f}
+	// 			};
+	//
+	// /* refined voting directions (stored before rotation)*/
+	// r_dir_3d r_grid_3 = {{0.0616857f, 0.0f, -0.0616857f, 0.031447f, -0.031447f, 0.031447f, -0.031447f},
+	// 			{0.0f, 0.0f, 0.0f, -0.0508822f, -0.0508822f, 0.0508822f, 0.0508822f},
+	// 			{-0.998096f, -1.0f, -0.998096f, -0.998209f, -0.998209f, -0.998209f, -0.998209f}
+	// 			};
+	//
+	// /* refined voting directions (stored before rotation)*/
+	// r_dir_3d r_grid_4 = {{0.0294175f, 0.0f, -0.0294175f, 0.0148442f, -0.0148442f, 0.0148442f, -0.0148442f},
+	// 			{0.0f, 0.0f, 0.0f, -0.0240185f, -0.0240185f, 0.0240185f, 0.0240185f},
+	// 			{-0.999567f, -1.0f, -0.999567f, -0.999601f, -0.999601f, -0.999601f, -0.999601f}
+	// 			};
 
 	/* define refined precision and array*/
-	r_dir_3d *r_grids[NB_ITERATIONS] = {&r_grid_1, &r_grid_2, &r_grid_3, &r_grid_4};
-	float v_prec[NB_ITERATIONS+1] = {COARSE_PREC, REFINED_PREC_1, REFINED_PREC_2, REFINED_PREC_3, REFINED_PREC_4};
+	// r_dir_3d *r_grids[NB_ITERATIONS] = {&r_grid_1, &r_grid_2, &r_grid_3, &r_grid_4};
+	// float v_prec[NB_ITERATIONS+1] = {COARSE_PREC, REFINED_PREC_1, REFINED_PREC_2, REFINED_PREC_3, REFINED_PREC_4};
+
 
 	/* refined voting bins (used after rotation)*/
-	uint8_t r_acc[REFINED_BINS];
-	for(uint8_t i=0; i<REFINED_BINS; i++) r_acc[i]=0;
-	float rx[REFINED_BINS]; 
-	float ry[REFINED_BINS];
-	float rz[REFINED_BINS];
-	voting_bins r_bins = {rx,ry,rz, 0.0f, REFINED_BINS, r_acc};
+	// uint8_t r_acc[REFINED_BINS];
+	// for(uint8_t i=0; i<REFINED_BINS; i++) r_acc[i]=0;
+	// float rx[REFINED_BINS];
+	// float ry[REFINED_BINS];
+	// float rz[REFINED_BINS];
+	// voting_bins r_bins = {rx,ry,rz, 0.0f, REFINED_BINS, r_acc};
 
 	/* Lucas Kanade flow */
 	// float flow_lk.x[100];
@@ -396,16 +397,16 @@ int main(void)
 	} bp_flow_lk;
 
 
-	/* great circle normal vectors */
-	struct n_dir_3d {
-		float x[NB_SAMPLES]; 
-		float y[NB_SAMPLES];
-		float z[NB_SAMPLES];
-	} n_dir_3d;
+	// /* great circle normal vectors */
+	// struct n_dir_3d {
+	// 	float x[NB_SAMPLES];
+	// 	float y[NB_SAMPLES];
+	// 	float z[NB_SAMPLES];
+	// } n_dir_3d;
 
 	/* define best estimate */
-	float best_x, best_y, best_z;
-	
+	// float best_x, best_y, best_z;
+
 	// int16_t flow_lk.x[100];
 	// int16_t flow_lk.y[100];
 
@@ -515,7 +516,7 @@ int main(void)
 		distance_valid = sonar_read(&sonar_distance_filtered, &sonar_distance_raw);
 
 		/* reset to zero for invalid distances */
-		if (!distance_valid) 
+		if (!distance_valid)
 		{
 			sonar_distance_filtered = 0.0f;
 			sonar_distance_raw = 0.0f;
@@ -524,8 +525,8 @@ int main(void)
 		static float DT;
 
 		/* DEBUG */
-		uint8_t best_acc = 0;
-		uint8_t best_acc_index = 0;
+		// uint8_t best_acc = 0;
+		// uint8_t best_acc_index = 0;
 
 		/* compute optical flow */
 		if (FLOAT_EQ_INT(global_data.param[PARAM_SENSOR_POSITION], BOTTOM))
@@ -542,7 +543,7 @@ int main(void)
 			float den   = 0;
 
 			float num_x40 = 0, num_y40 = 0;
-			
+
 			int32_t roi_sx = 10;
 			int32_t roi_sy = 10;
 
@@ -552,24 +553,24 @@ int main(void)
 			for (int i = 0; i < NB_SAMPLES; ++i)
 			{
 				/* code */
-				lucas_kanade( 	current_image, //dat_t * data, 
-						previous_image, //dat_t * data_old, 
+				lucas_kanade( 	current_image, //dat_t * data,
+						previous_image, //dat_t * data_old,
 						image_width,  //image_width
-						image_height, //int dsy, 
-						roi_sx, //int roi_sx, 
-						roi_sy, //int roi_sy, 
+						image_height, //int dsy,
+						roi_sx, //int roi_sx,
+						roi_sy, //int roi_sy,
 						s_dir_2d.x[i], //int const roi_x,
-						s_dir_2d.y[i], // int const roi_y, 
-						&num_x, //dat_t & num_x, 
-						&num_y, //dat_t & num_y, 
+						s_dir_2d.y[i], // int const roi_y,
+						&num_x, //dat_t & num_x,
+						&num_y, //dat_t & num_y,
 						&den); //dat_t & den );
-				
+
 				//num_x *= 2;	// compensate for horizontal binning
 				num_y *= 4;	// compensate for vertical binning
 				/* reproject optical flow on unit sphere */
 				fast_flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], s_dir_2d.x[i], s_dir_2d.y[i]*4, 0, 0, &px4_model);
 				// fast_flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], s_dir_2d.x[i], s_dir_2d.y[i]*4, num_x/den, num_y/den, &px4_model);
-				
+
 				/* convert from rad/frame to rad/s */
 				DT = 1;
 				//bp_flow_lk.x[i] /= DT/1e6;
@@ -607,7 +608,7 @@ int main(void)
 							min_pos,
 							stddev,
 							avg);
-			
+
 			update_TX_buffer_flow_stat(maxima, max_pos, minima, min_pos, stddev, avg);
 
 			flow_lk.x[40] = 1000*num_x40;
@@ -616,7 +617,7 @@ int main(void)
 			bp_flow_lk.y[40] = 000*bp_flow_lk.y[iii];
 			//bp_flow_lk.x[40] = avg[4];
 			//bp_flow_lk.y[40] = avg[6];
-			
+
 			DT = get_boot_time_us() - lasttime;
 
 			//update lasttime
@@ -698,7 +699,7 @@ int main(void)
 				// send flow
 				// mavlink_msg_optical_flow_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
 				// 		pixel_flow_x_sum * 10.0f, pixel_flow_y_sum * 10.0f,
-				// 		flow_comp_m_x, flow_comp_m_y, qual, 
+				// 		flow_comp_m_x, flow_comp_m_y, qual,
 				// 		// ground_distance);
 				// 		DT);
 
@@ -711,7 +712,7 @@ int main(void)
 						MAVLINK_COMM_0,
 						MAVLINK_TYPE_INT16_T,
 						NB_SAMPLES*2,
-						NB_SAMPLES, 
+						NB_SAMPLES,
 						2,
 						NB_SAMPLES*2 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
 						MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
@@ -734,7 +735,7 @@ int main(void)
 				// 	lpos.x += ground_distance*accumulated_flow_x;
 				// 	lpos.y += ground_distance*accumulated_flow_y;
 				// 	lpos.z = -ground_distance;
- 			// 		 velocity not directly measured and not important for testing 
+ 			// 		 velocity not directly measured and not important for testing
 				// 	lpos.vx = 0;
 				// 	lpos.vy = 0;
 				// 	lpos.vz = 0;
@@ -763,7 +764,7 @@ int main(void)
 					// 		// MAVLINK_TYPE_INT16_T,
 					// 		MAVLINK_DATA_STREAM_IMG_RAW8U,
 					// 		500,
-					// 		250, 
+					// 		250,
 					// 		2,
 					// 		500 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
 					// 		MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
