@@ -55,8 +55,8 @@ void cam2world(float *xp, float *yp, float *zp, float u, float v, cam_model *cam
 	 float invdet  = 1/(c-d*e); // 1/det(A), where A = [c,d;e,1] as in the Matlab file
 
 	 // back-projection of u and v 
-	 *yp = invdet*(    (u - xc) - d*(v - yc) ); // x and y were swapped
-	 *xp = invdet*( -e*(u - xc) + c*(v - yc) ); // x and y were swapped
+	 *xp = invdet*(    (u - xc) - d*(v - yc) );
+	 *yp = invdet*( -e*(u - xc) + c*(v - yc) );
 	  
 	 float r   = maths_fast_sqrt(SQR((*xp)) + SQR((*yp))); //distance [pixels] of  the point from the image center
 	 *zp  = pol[0];
@@ -112,7 +112,17 @@ void flow2world(float *flow_x, float *flow_y, float *flow_z, float xp, float yp,
 	 *flow_z = -quick_trig_sin(phi)*flow_phi;
 }
 
-void fast_flow2world(float *flow_x, float *flow_y, float *flow_z, float xp1, float yp1, float zp1, float u1, float v1, float flow_u, float flow_v, cam_model *cam)
+void fast_flow2world(float *flow_x,
+						float *flow_y,
+						float *flow_z,
+						float xp1,
+						float yp1,
+						float zp1,
+						float u1,
+						float v1,
+						float flow_u,
+						float flow_v,
+						cam_model *cam)
 {
 	 // add optic-flow to pixel coordinates (u1, v1)
 	 float u2 = u1 + flow_u;
@@ -130,7 +140,7 @@ void fast_flow2world(float *flow_x, float *flow_y, float *flow_z, float xp1, flo
 	 normalize(&xp2, &yp2, &zp2);
 
 	 // compute optic-flow considering small angles
-	 *flow_x = xp2 - xp1;
-	 *flow_y = yp2 - yp1;
-	 *flow_z = zp2 - zp1;
+	 *flow_x = xp2;// - xp1;
+	 *flow_y = yp2;// - yp1;
+	 *flow_z = zp2;// - zp1;
 }

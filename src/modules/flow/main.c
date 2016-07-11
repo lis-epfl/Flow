@@ -488,12 +488,7 @@ int main(void)
 			LEDOff(LED_COM);
 		}
 
-		int16_t maxima[6];
-		uint8_t max_pos[6];
-		int16_t minima[6];
-		uint8_t min_pos[6];
-		int16_t stddev[6];
-		int16_t avg[6];
+
 
 		uint16_t image_size   = global_data.param[PARAM_IMAGE_WIDTH] * global_data.param[PARAM_IMAGE_HEIGHT];
 		uint16_t image_width  = global_data.param[PARAM_IMAGE_WIDTH];
@@ -505,9 +500,9 @@ int main(void)
 		gyro_read(&x_rate_sensor, &y_rate_sensor, &z_rate_sensor,&gyro_temp);
 
 		/* gyroscope coordinate transformation */
-		float x_rate = y_rate_sensor*SCALING_FLOW_FACTOR; // change x and y rates
-		float y_rate = - x_rate_sensor*SCALING_FLOW_FACTOR;
-		float z_rate = z_rate_sensor*SCALING_FLOW_FACTOR; // z is correct
+		float x_rate = y_rate_sensor; // change x and y rates
+		float y_rate = - x_rate_sensor;
+		float z_rate = z_rate_sensor; // z is correct
 
 		/* used to scale angular rates and scaling */
 		//float norm_w = maths_fast_sqrt(x_rate*x_rate + y_rate*y_rate + z_rate*z_rate)*SCALING_FLOW_FACTOR;
@@ -545,44 +540,58 @@ int main(void)
 			float num_x = 0;
 			float num_y = 0;
 			float den   = 0;
+
+			float num_x40 = 0, num_y40 = 0;
 			
 			int32_t roi_sx = 10;
 			int32_t roi_sy = 10;
 
 			//float tmp;
+			uint16_t iii = 0;
 
 			for (int i = 0; i < NB_SAMPLES; ++i)
 			{
 				/* code */
 				lucas_kanade( 	current_image, //dat_t * data, 
 						previous_image, //dat_t * data_old, 
-						image_height,//image_width, //int dsy, 
-						image_width,//image_height, //int dsx, 
-						roi_sy, //int roi_sy, 
+						image_width,  //image_width
+						image_height, //int dsy, 
 						roi_sx, //int roi_sx, 
-						s_dir_2d.y[i], //int const roi_y,
-						s_dir_2d.x[i], // int const roi_x, 
-						&num_y, //dat_t & num_y, 
+						roi_sy, //int roi_sy, 
+						s_dir_2d.x[i], //int const roi_x,
+						s_dir_2d.y[i], // int const roi_y, 
 						&num_x, //dat_t & num_x, 
+						&num_y, //dat_t & num_y, 
 						&den); //dat_t & den );
 				
+				//num_x *= 2;	// compensate for horizontal binning
+				num_y *= 4;	// compensate for vertical binning
 				/* reproject optical flow on unit sphere */
-				//flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.y[i], s_dir_3d.x[i], s_dir_3d.z[i], num_x/den, num_y/den, &px4_model);
-				fast_flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], s_dir_2d.x[i], s_dir_2d.y[i], num_x/den, num_y/den, &px4_model);
+				fast_flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], s_dir_2d.x[i], s_dir_2d.y[i]*4, 0, 0, &px4_model);
+				// fast_flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], s_dir_2d.x[i], s_dir_2d.y[i]*4, num_x/den, num_y/den, &px4_model);
+				
+				/* convert from rad/frame to rad/s */
+				DT = 1;
+				//bp_flow_lk.x[i] /= DT/1e6;
+				//bp_flow_lk.y[i] /= DT/1e6;
+				//bp_flow_lk.z[i] /= DT/1e6;
+
+				if(i == iii && den != 0)
+				{
+					num_x40 = bp_flow_lk.x[i];
+					num_y40 = bp_flow_lk.y[i];
+				}
 
 				/* derotate optical flow */
-				derotate_flow(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], x_rate, y_rate, z_rate);
-
-				/* DEBUG */
-				flow_lk.x[i] = 1000*bp_flow_lk.x[i];
-				flow_lk.y[i] = 1000*bp_flow_lk.y[i];
-
-				/* Compute normal vector */
-				great_circle_vector(&n_dir_3d.x[i], &n_dir_3d.y[i], &n_dir_3d.z[i], bp_flow_lk.x[i], bp_flow_lk.y[i], bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i]);
-				
-				/* Vote on the sphere */
-				voting(&c_bins, n_dir_3d.x[i], n_dir_3d.y[i], n_dir_3d.z[i]);
+				//derotate_flow(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], -x_rate, -y_rate, -z_rate);
 			}
+
+			int16_t maxima[SECTOR_COUNT];
+			uint8_t max_pos[SECTOR_COUNT];
+			int16_t minima[SECTOR_COUNT];
+			uint8_t min_pos[SECTOR_COUNT];
+			int16_t stddev[SECTOR_COUNT];
+			int16_t avg[SECTOR_COUNT];
 
 			calc_flow_stats(NB_SAMPLES,
 							SECTOR_COUNT,
@@ -601,93 +610,12 @@ int main(void)
 			
 			update_TX_buffer_flow_stat(maxima, max_pos, minima, min_pos, stddev, avg);
 
-			/* get coarse estimate */
-			find_best(&c_bins, &best_x, &best_y, &best_z);
-			for(uint8_t i=0; i<COARSE_BINS; i++) c_bins.acc[i]=0; // reset coarse accumulator
-
-			for (int k = 0; k < NB_ITERATIONS; k++)
-			{
-				/* rotate refined bins */
-				rotate_bins(&r_bins, best_x, best_y, best_z, r_grids[k]->x, r_grids[k]->y, r_grids[k]->z);
-
-				/* proceed to refined voting */
-				r_bins.prec = v_prec[k+1];
-				
-				for (int i = 0; i < NB_SAMPLES; i++)
-				{	
-					refined_voting(&r_bins, v_prec[k], n_dir_3d.x[i], n_dir_3d.y[i], n_dir_3d.z[i], best_x, best_y, best_z);
-				}
-	
-				/* get refined estimate */
-				find_best(&r_bins, &best_x, &best_y, &best_z);
-				for(uint8_t i=0; i<REFINED_BINS; i++) r_bins.acc[i]=0; // reset refined accumulator
-			}
-
-			//acc_flow_x /= 125.0f;
-			//acc_flow_y /= 125.0f;
-			//acc_flow_z /= 125.0f;
-
-			/* used to scale angular rates */
-			//norm_flow = maths_fast_sqrt(bp_flow_lk.x[0]*bp_flow_lk.x[0] + bp_flow_lk.y[0]*bp_flow_lk.y[0] + bp_flow_lk.z[0]*bp_flow_lk.z[0]);
-
-			//flow_lk.x[30] = 1000*v_dir.x[43];
-			//flow_lk.y[30] = 1000*v_dir.z[43];
-			
-			// pixel_flow_x = num_x / den; 
-			// pixel_flow_y = num_y / den;			
-
-			/*
-			 * real point P (X,Y,Z), image plane projection p (x,y,z), focal-length f, distance-to-scene Z
-			 * x / f = X / Z
-			 * y / f = Y / Z
-			 */
-			// float flow_compx = pixel_flow_x / focal_length_px / (get_time_between_images() / 1000000.0f);
-			// float flow_compy = pixel_flow_y / focal_length_px / (get_time_between_images() / 1000000.0f);
-
-			/* integrate velocity and output values only if distance is valid */
-			// if (distance_valid)
-			// {
-			// 	/* calc velocity (negative of flow values scaled with distance) */
-			// 	float new_velocity_x = - flow_compx * sonar_distance_filtered;
-			// 	float new_velocity_y = - flow_compy * sonar_distance_filtered;
-
-			// 	time_since_last_sonar_update = (get_boot_time_us()- get_sonar_measure_time());
-
-			// 	if (qual > 0)
-			// 	{
-			// 		velocity_x_sum += new_velocity_x;
-			// 		velocity_y_sum += new_velocity_y;
-			// 		valid_frame_count++;
-
-			// 		uint32_t deltatime = (get_boot_time_us() - lasttime);
-			// 		integration_timespan += deltatime;
-			// 		accumulated_flow_x += pixel_flow_y  / focal_length_px * 1.0f; //rad axis swapped to align x flow around y axis
-			// 		accumulated_flow_y += pixel_flow_x  / focal_length_px * -1.0f;//rad
-			// 		accumulated_gyro_x += x_rate * deltatime / 1000000.0f;	//rad
-			// 		accumulated_gyro_y += y_rate * deltatime / 1000000.0f;	//rad
-			// 		accumulated_gyro_z += z_rate * deltatime / 1000000.0f;	//rad
-			// 		accumulated_framecount++;
-			// 		accumulated_quality += qual;
-
-			// 		/* lowpass velocity output */
-			// 		velocity_x_lp = global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW] * new_velocity_x +
-			// 				(1.0f - global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW]) * velocity_x_lp;
-			// 		velocity_y_lp = global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW] * new_velocity_y +
-			// 				(1.0f - global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW]) * velocity_y_lp;
-			// 	}
-			// 	else
-			// 	{
-			// 		/* taking flow as zero */
-			// 		velocity_x_lp = (1.0f - global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW]) * velocity_x_lp;
-			// 		velocity_y_lp = (1.0f - global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW]) * velocity_y_lp;
-			// 	}
-			// }
-			// else
-			// {
-			// 	/* taking flow as zero */
-			// 	velocity_x_lp = (1.0f - global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW]) * velocity_x_lp;
-			// 	velocity_y_lp = (1.0f - global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW]) * velocity_y_lp;
-			// }
+			flow_lk.x[40] = 1000*num_x40;
+			flow_lk.y[40] = 1000*num_y40;
+			bp_flow_lk.x[40] = 1000*bp_flow_lk.z[iii];
+			bp_flow_lk.y[40] = 000*bp_flow_lk.y[iii];
+			//bp_flow_lk.x[40] = avg[4];
+			//bp_flow_lk.y[40] = avg[6];
 			
 			DT = get_boot_time_us() - lasttime;
 
@@ -697,7 +625,6 @@ int main(void)
 			// pixel_flow_x_sum += pixel_flow_x;
 			// pixel_flow_y_sum += pixel_flow_y;
 			pixel_flow_count++;
-
 
 		}
 		counter++;
@@ -775,10 +702,10 @@ int main(void)
 				// 		// ground_distance);
 				// 		DT);
 
-				mavlink_msg_optical_flow_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-						flow_lk.x[3], flow_lk.x[3],
-						flow_lk.x[3], flow_lk.x[3], qual,
-						DT);
+				// mavlink_msg_optical_flow_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
+				// 		flow_lk.x[3], flow_lk.x[3],
+				// 		flow_lk.x[3], flow_lk.x[3], qual,
+				// 		DT);
 
 				mavlink_msg_data_transmission_handshake_send(
 						MAVLINK_COMM_0,
@@ -827,8 +754,8 @@ int main(void)
 					// float dt = get_time_between_images();
 
 					mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-							best_acc_index, best_acc,
-							bp_flow_lk.x[4], bp_flow_lk.y[4], qual,
+							bp_flow_lk.x[40], bp_flow_lk.y[40],
+							flow_lk.x[40], flow_lk.y[40], qual,
 							DT);
 
 					// mavlink_msg_data_transmission_handshake_send(
@@ -850,7 +777,7 @@ int main(void)
 
 				if(FLOAT_AS_BOOL(global_data.param[PARAM_USB_SEND_GYRO]))
 				{
-					mavlink_msg_debug_vect_send(MAVLINK_COMM_2, "GYRO", get_boot_time_us(), x_rate, y_rate, z_rate);
+					mavlink_msg_debug_vect_send(MAVLINK_COMM_2, "GYRO", get_boot_time_us(), 1000*x_rate, 1000*y_rate, 1000*z_rate);
 				}
 
 				// integration_timespan = 0;
