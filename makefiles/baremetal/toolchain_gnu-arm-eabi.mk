@@ -50,7 +50,7 @@ OBJDUMP			 = $(CROSSDEV)objdump
 
 # Check if the right version of the toolchain is available
 #
-CROSSDEV_VER_SUPPORTED	 = 4.7.4 4.7.5 4.7.6 4.8.4 4.9.3
+CROSSDEV_VER_SUPPORTED	 = 4.7.4 4.7.5 4.7.6 4.8.4 4.9.3 6.1.1
 CROSSDEV_VER_FOUND	 = $(shell $(CC) -dumpversion)
 
 ifeq (,$(findstring $(CROSSDEV_VER_FOUND), $(CROSSDEV_VER_SUPPORTED)))
@@ -111,7 +111,7 @@ LIBC	 := $(shell ${CC} ${ARCHCPUFLAGS} -print-file-name=libc.a)
 # Language-specific flags
 #
 ARCHCFLAGS		 = -std=gnu99
-ARCHCXXFLAGS		 = -fno-exceptions -fno-rtti -std=gnu++0x -fno-threadsafe-statics 
+ARCHCXXFLAGS		 = -fno-exceptions -fno-rtti -std=gnu++0x -fno-threadsafe-statics
 
 # Provide defaults, but allow for module override
 WUSEPACKED ?= -Wpacked
