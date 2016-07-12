@@ -65,7 +65,6 @@ uint8_t dataRX = 0;
 uint8_t txDataFrame1[2][I2C_FRAME_SIZE];
 uint8_t txDataFrame2[2][I2C_INTEGRAL_FRAME_SIZE];
 uint8_t txDataFrame3[2][I2C_FLOW_STAT_FRAME_SIZE];
-uint8_t txDataFrame4[I2C_FLOW_STAT_FRAME_SIZE];
 uint8_t publishedIndexFrame1 = 0;
 uint8_t publishedIndexFrame2 = 0;
 uint8_t publishedIndexFrame3 = 0;
@@ -143,83 +142,115 @@ void i2c_init() {
 void I2C1_EV_IRQHandler(void) {
 
 	//uint8_t dataRX;
-	static uint8_t txDataIndex1 = 0x00;
-	static uint8_t txDataIndex2 = 0x00;
-	static uint8_t txDataIndex3 = 0x00;
+	static uint8_t txDataIndex1 = I2C_FRAME_SIZE;
+	static uint8_t txDataIndex2 = I2C_INTEGRAL_FRAME_SIZE;
+	static uint8_t txDataIndex3 = I2C_FLOW_STAT_FRAME_SIZE;
 	static uint8_t rxDataIndex = 0x00;
 	switch (I2C_GetLastEvent(I2C1 )) {
 
-	case I2C_EVENT_SLAVE_RECEIVER_ADDRESS_MATCHED : {
-		I2C1 ->SR1;
-		I2C1 ->SR2;
-		rxDataIndex = 0;
-		break;
+	case I2C_EVENT_SLAVE_RECEIVER_ADDRESS_MATCHED :
+	{
+			I2C1 ->SR1;
+			I2C1 ->SR2;
+			rxDataIndex = 0;
+			break;
 	}
-	case I2C_EVENT_SLAVE_TRANSMITTER_ADDRESS_MATCHED : {
-		I2C1 ->SR1;
-		I2C1 ->SR2;
-		break;
+	case I2C_EVENT_SLAVE_TRANSMITTER_ADDRESS_MATCHED :
+	{
+			I2C1 ->SR1;
+			I2C1 ->SR2;
+			break;
 	}
-	case I2C_EVENT_SLAVE_BYTE_RECEIVED : {
-		//receive address offset
-		dataRX = I2C_ReceiveData(I2C1 );
-		rxDataIndex++;
-		//set Index
-		txDataIndex1 = dataRX;
-		if(dataRX > I2C_FRAME_SIZE + I2C_FLOW_STAT_FRAME_SIZE){
-			txDataIndex2 = I2C_INTEGRAL_FRAME_SIZE;
-			txDataIndex3 = dataRX - I2C_FRAME_SIZE - I2C_FLOW_STAT_FRAME_SIZE;
-		} else if (dataRX > I2C_FRAME_SIZE) {
-			txDataIndex2 = dataRX - I2C_FRAME_SIZE;
-			txDataIndex3 = 0;
-		}
-		else {
-			txDataIndex2 = 0;
-			txDataIndex3 = 0;
-		}
-			//indicate sending
-		readout_done_frame1 = 0;
-		readout_done_frame2 = 0;
-		readout_done_frame3 = 0;
-		break;
-	}
-	case I2C_EVENT_SLAVE_BYTE_TRANSMITTING :
-	case I2C_EVENT_SLAVE_BYTE_TRANSMITTED : {
+	case I2C_EVENT_SLAVE_BYTE_RECEIVED :
+	{
+			//receive address offset
+			dataRX = I2C_ReceiveData(I2C1 );
+			rxDataIndex++;
 
-		if (txDataIndex1 < (I2C_FRAME_SIZE)) {
-			I2C_SendData(I2C1,
-					txDataFrame1[publishedIndexFrame1][txDataIndex1]);
-			txDataIndex1++;
-		} else if(txDataIndex2 < I2C_INTEGRAL_FRAME_SIZE){
-			I2C_SendData(I2C1,
-					txDataFrame2[publishedIndexFrame2][txDataIndex2]);
-			txDataIndex2++;
-		}
-		else{
-			I2C_SendData(I2C1,
-					txDataFrame3[publishedIndexFrame3][txDataIndex3]);
-			if(txDataIndex3 < I2C_FLOW_STAT_FRAME_SIZE){
-				txDataIndex3++;
+			//set Index
+			txDataIndex1 = dataRX;
+
+			if (dataRX >= (I2C_FRAME_SIZE + I2C_INTEGRAL_FRAME_SIZE + I2C_FLOW_STAT_FRAME_SIZE))
+			{
+					// address is too high
+					txDataIndex1 = I2C_FRAME_SIZE;
+					txDataIndex2 = I2C_INTEGRAL_FRAME_SIZE;
+					txDataIndex3 = I2C_FLOW_STAT_FRAME_SIZE;
 			}
-		}
+			else if (dataRX >= (I2C_FRAME_SIZE + I2C_INTEGRAL_FRAME_SIZE))
+			{
+					// 3rd frame type
+					txDataIndex1 = I2C_FRAME_SIZE;
+					txDataIndex2 = I2C_INTEGRAL_FRAME_SIZE;
+					txDataIndex3 = dataRX - I2C_FRAME_SIZE - I2C_INTEGRAL_FRAME_SIZE;
+			}
+			else if (dataRX >= (I2C_FRAME_SIZE))
+			{
+					// 2nd frame type
+					txDataIndex1 = I2C_FRAME_SIZE;
+					txDataIndex2 = dataRX - I2C_FRAME_SIZE;
+					txDataIndex3 = I2C_FLOW_STAT_FRAME_SIZE;
+			}
+			else
+			{
+					// 1st frame type
+					txDataIndex1 = dataRX;
+					txDataIndex2 = I2C_INTEGRAL_FRAME_SIZE;
+					txDataIndex3 = I2C_FLOW_STAT_FRAME_SIZE;
+			}
 
-		//check whether last byte is read frame1
-		if (txDataIndex1 >= (I2C_FRAME_SIZE-1)) {
-			readout_done_frame1 = 1;
-		}
+			//indicate sending
+			readout_done_frame1 = 0;
+			readout_done_frame2 = 0;
+			readout_done_frame3 = 0;
 
-		//check whether last byte is read fram2 and reset accumulation
-		if (txDataIndex2 >= (I2C_INTEGRAL_FRAME_SIZE-1)) {
-			readout_done_frame2 = 1;
-			stop_accumulation = 1;
-		}
+			break;
+	}
 
-		//check whether last byte is read frame3
-		if (txDataIndex3 >= (I2C_FLOW_STAT_FRAME_SIZE-1)) {
-			readout_done_frame3 = 1;
-		}
+	case I2C_EVENT_SLAVE_BYTE_TRANSMITTING :
+	case I2C_EVENT_SLAVE_BYTE_TRANSMITTED :
+	{
+			if (txDataIndex1 < (I2C_FRAME_SIZE))
+			{
+					I2C_SendData(I2C1, txDataFrame1[publishedIndexFrame1][txDataIndex1]);
+					txDataIndex1++;
+			}
+			else if (txDataIndex2 < (I2C_INTEGRAL_FRAME_SIZE))
+			{
+					I2C_SendData(I2C1, txDataFrame2[publishedIndexFrame2][txDataIndex2]);
+					txDataIndex2++;
+			}
+			else if (txDataIndex3 < (I2C_FLOW_STAT_FRAME_SIZE))
+			{
+					I2C_SendData(I2C1, txDataFrame3[publishedIndexFrame3][txDataIndex3]);
+					txDataIndex3++;
+			}
+			else
+			{
+					// send BS
+					I2C_SendData(I2C1, 8);
+			}
 
-		break;
+			//check whether last byte is read frame1
+			if (txDataIndex1 >= (I2C_FRAME_SIZE-1))
+			{
+					readout_done_frame1 = 1;
+			}
+
+			//check whether last byte is read fram2 and reset accumulation
+			if (txDataIndex2 >= (I2C_INTEGRAL_FRAME_SIZE-1))
+			{
+					readout_done_frame2 = 1;
+					stop_accumulation = 1;
+			}
+
+			//check whether last byte is read frame3
+			if (txDataIndex3 >= (I2C_FLOW_STAT_FRAME_SIZE-1))
+			{
+					readout_done_frame3 = 1;
+			}
+
+			break;
 	}
 
 	case I2C_EVENT_SLAVE_ACK_FAILURE : {
@@ -245,28 +276,90 @@ void I2C1_ER_IRQHandler(void) {
 }
 
 
-void update_TX_buffer_flow_stat( int16_t maxima[SECTOR_COUNT], uint8_t max_pos[SECTOR_COUNT], int16_t minima[SECTOR_COUNT],
-								uint8_t min_pos[SECTOR_COUNT], int16_t stddev[SECTOR_COUNT], int16_t avg[SECTOR_COUNT]) {
+void update_TX_buffer_flow_stat( uint8_t sector_count, int16_t maxima[SECTOR_COUNT], int16_t max_pos[SECTOR_COUNT], int16_t minima[SECTOR_COUNT],
+								int16_t min_pos[SECTOR_COUNT], int16_t stddev[SECTOR_COUNT], int16_t avg[SECTOR_COUNT])
+{
+	i2c_flow_stat_frame f;
+	for (size_t i = 0; i < sector_count; i++)
+	{
+			f.maxima[i] 	= maxima[i];
+			f.max_pos[i] 	= max_pos[i];
+			f.minima[i] 	= minima[i];
+			f.min_pos[i] 	= min_pos[i];
+			f.stddev[i] 	= stddev[i];
+			f.avg[i] 			= avg[i];
+	}
 
-	notpublishedIndexFrame1 = 1 - publishedIndexFrame1; // choose not the current published 1 buffer
-	notpublishedIndexFrame2 = 1 - publishedIndexFrame2; // choose not the current published 2 buffer
-	notpublishedIndexFrame3 = 1 - publishedIndexFrame3; // choose not the current published 3 buffer
+	// choose not the current published 3 buffer
+	notpublishedIndexFrame3 = 1 - publishedIndexFrame3;
 
-    // fill I2C transmitbuffer3 with frame3 values
-    i2c_flow_stat_frame* f = (i2c_flow_stat_frame*)&(txDataFrame3[notpublishedIndexFrame3]);
-	memcpy(f->maxima, maxima, sizeof(f->maxima));
-	memcpy(f->max_pos, max_pos, sizeof(f->max_pos));
-	memcpy(f->minima, minima, sizeof(f->minima));
-	memcpy(f->min_pos, min_pos, sizeof(f->min_pos));
-	memcpy(f->stddev, stddev, sizeof(f->stddev));
-	memcpy(f->avg, avg, sizeof(f->avg));
-	
-	//swap buffers frame3 if I2C bus is idle
-	if (readout_done_frame3) {
-		publishedIndexFrame3 = 1 - publishedIndexFrame3;
+	// fill I2C transmitbuffer3 with frame3 values
+	memcpy(&(txDataFrame3[notpublishedIndexFrame3]), &f, I2C_FLOW_STAT_FRAME_SIZE);
+
+	// swap buffers frame3 if I2C bus is idle
+	if (readout_done_frame3)
+	{
+			publishedIndexFrame3 = 1 - publishedIndexFrame3;
 	}
 }
 
+void update_TX_buffer_tmp(void)
+{
+	static uint16_t frame_count = 0;
+
+	i2c_frame f;
+	i2c_integral_frame f_integral;
+
+	f.frame_count 			= 1;
+	f.pixel_flow_x_sum 	= 2;
+	f.pixel_flow_y_sum 	= 3;
+	f.flow_comp_m_x 		= 4;
+	f.flow_comp_m_y 		= 5;
+	f.qual 							= 6;
+	f.gyro_x_rate 			= 7;
+	f.gyro_y_rate 			= 8;
+	f.gyro_z_rate 			= 9;
+	f.gyro_range 				= 10;
+	f.sonar_timestamp 	= 11;
+	f.ground_distance 	= 12;
+
+
+	f_integral.frame_count_since_last_readout = 1;
+	f_integral.pixel_flow_x_integral 					= 2;
+	f_integral.pixel_flow_y_integral 					= 3;
+	f_integral.gyro_x_rate_integral 					= 4;
+	f_integral.gyro_y_rate_integral 					= 5;
+	f_integral.gyro_z_rate_integral 					= 6;
+	f_integral.integration_timespan 					= 7;
+	f_integral.sonar_timestamp 				= 8;
+	f_integral.ground_distance 				= 9;
+	f_integral.gyro_temperature 			= 10;
+	f_integral.qual 									= 11;
+
+	notpublishedIndexFrame1 = 1 - publishedIndexFrame1; // choose not the current published 1 buffer
+	notpublishedIndexFrame2 = 1 - publishedIndexFrame2; // choose not the current published 2 buffer
+
+  // fill I2C transmitbuffer1 with frame1 values
+	memcpy(&(txDataFrame1[notpublishedIndexFrame1]),
+		&f, I2C_FRAME_SIZE);
+
+	// fill I2C transmitbuffer2 with frame2 values
+	memcpy(&(txDataFrame2[notpublishedIndexFrame2]),
+		&f_integral, I2C_INTEGRAL_FRAME_SIZE);
+
+	//swap buffers frame1 if I2C bus is idle
+	if (readout_done_frame1) {
+		publishedIndexFrame1 = 1 - publishedIndexFrame1;
+	}
+
+	//swap buffers frame2 if I2C bus is idle
+	if (readout_done_frame2) {
+		publishedIndexFrame2 = 1 - publishedIndexFrame2;
+	}
+
+	frame_count++;
+
+}
 
 
 void update_TX_buffer(float pixel_flow_x, float pixel_flow_y,

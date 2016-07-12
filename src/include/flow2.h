@@ -93,7 +93,7 @@ static inline void aa2mat(float R[9], float u_x, float u_y, float u_z, float c, 
 * @return substitutes the initial flow with derotated one
 */
 static inline void derotate_flow(float *flow_x, float *flow_y, float *flow_z, float d_x, float d_y, float d_z, float x_rate, float y_rate, float z_rate)
-{	
+{
 	// normalize direction
 	normalize(&d_x, &d_y, &d_z);
 
@@ -124,7 +124,7 @@ static inline void great_circle_vector(float *n_x, float *n_y, float *n_z, float
 /**
 * @brief Proceeds to coarse voting on the unit sphere
 *
-*   @param *bins     					pointer to the voting bins structure 
+*   @param *bins     					pointer to the voting bins structure
 *   @param [n_x, n_y, n_z]     			cartesian coordinates of great circle normal vector
 *
 * @return incremented accumulator for voting
@@ -208,64 +208,81 @@ static inline void calc_flow_stats(uint16_t pixel_count,
 									float flow_z[],
 									float theta[],
 									int16_t maxima[],
-									uint8_t max_pos[],
+									int16_t max_pos[],
 									int16_t minima[],
-									uint8_t min_pos[],
+									int16_t min_pos[],
 									int16_t stddev[],
 									int16_t avg[])
 {
-	// iterate over all sectors
-	uint16_t i_pix = 0;
-	float dTheta = (theta_end-theta_start)/sector_count;
-	float theta0 = theta_start;												// angle at beginning of the sector
-	float theta1 = theta0 + dTheta;											// angle at end of the sector
-	for(uint8_t i_sec = 0; i_pix < pixel_count && i_sec < sector_count; i_sec++)
+	// // iterate over all sectors
+	// uint16_t i_pix = 0;
+	//
+	// float dTheta = (theta_end-theta_start)/sector_count;
+	// float theta0 = theta_start;												// angle at beginning of the sector
+	// float theta1 = theta0 + dTheta;											// angle at end of the sector
+	//
+	// for(uint8_t i_sec = 0; i_pix < pixel_count && i_sec < sector_count; i_sec++)
+	// {
+	// 	float maximum =  FLT_MIN;
+	// 	float minimum =  FLT_MAX;
+	// 	float sum = 0;
+	// 	float sum2 = 0;
+	// 	uint8_t max_ind = 0;
+	// 	uint8_t min_ind = 0;
+	// 	uint16_t sec_start_ind = i_pix;
+	// 	for(;i_pix < pixel_count && theta[i_pix] < theta1; flow_x++, flow_y++, flow_z++, i_pix++)
+	// 	{
+	// 		float flow2 = SQR(*flow_x) + SQR(*flow_y) + SQR(*flow_z);	// norm of flow squared
+	// 		float flow = maths_fast_sqrt(flow2);						// norm of flow
+	// 		sum += *flow_x;//flow;												// sum of flow for sector
+	// 		sum2 += flow2;												// sum of flow squared for sector
+	//
+	// 		if (flow > maximum)
+	// 		{
+	// 			maximum = flow;
+	// 			max_ind = i_pix;
+	// 		}
+	//
+	// 		if (flow < minimum)
+	// 		{
+	// 			minimum = flow;
+	// 			min_ind = i_pix;
+	// 		}
+	//
+	// 	}
+	// 	uint16_t sector_size = i_pix - sec_start_ind;
+	// 	if(sector_size > 0)
+	// 	{
+	// 		float avg_i = sum/sector_size;
+	// 		*(maxima++)  = (int16_t)(1000*maximum);								// maxima of sector [millirad]
+	// 		*(minima++)  = (int16_t)(1000*minimum);								// maxima of sector [millirad]
+	// 		*(avg++) 	 = (int16_t)(1000*avg_i);								// average of flow of sector [millirad]
+	// 		*(stddev++)  = (int16_t)(1000*maths_fast_sqrt((sum2 - SQR(sum)/sector_size)/(sector_size-1))); // standard deviation of flow of sector [millirad]
+	// 		*(min_pos++) = (uint8_t)(1000*(theta[min_ind]-theta0));	// transform index to relative azimuth [centirad]
+	// 		*(max_pos++) = (uint8_t)(1000*(theta[max_ind]-theta0));	// transform index to relative azimuth [centirad]
+	// 	}else
+	// 	{
+	// 		*(maxima++) = 0;
+	// 		*(minima++) = 0;
+	// 		*(stddev++) = 0;
+	// 		*(avg++) = 0;
+	// 		*(min_pos++) = 0;
+	// 		*(max_pos++) = 0;
+	// 	}
+	//
+	// 	theta0 += dTheta;
+	// 	theta1 += dTheta;
+	// }
+
+
+	for (uint8_t i = 0; i < sector_count; i++)
 	{
-		float maximum =  FLT_MIN;
-		float minimum =  FLT_MAX;
-		float sum = 0;
-		float sum2 = 0;
-		uint8_t max_ind = 0;
-		uint8_t min_ind = 0;
-		uint16_t sec_start_ind = i_pix;
-		for(;i_pix < pixel_count && theta[i_pix] < theta1; flow_x++, flow_y++, flow_z++, i_pix++)
-		{
-			float flow2 = SQR(*flow_x) + SQR(*flow_y) + SQR(*flow_z);	// norm of flow squared
-			float flow = maths_fast_sqrt(flow2);						// norm of flow
-			sum += *flow_x;//flow;												// sum of flow for sector
-			sum2 += flow2;												// sum of flow squared for sector
-
-			if(flow > maximum){
-				maximum = flow;
-				max_ind = i_pix;
-			}if(flow < minimum)
-			{
-				minimum = flow;
-				min_ind = i_pix;
-			}
-		}
-		uint16_t sector_size = i_pix - sec_start_ind;
-		if(sector_size > 0)
-		{
-			float avg_i = sum/sector_size;
-			*(maxima++)  = (int16_t)(1000*maximum);								// maxima of sector [millirad]
-			*(minima++)  = (int16_t)(1000*minimum);								// maxima of sector [millirad]
-			*(avg++) 	 = (int16_t)(1000*avg_i);								// average of flow of sector [millirad]
-			*(stddev++)  = (int16_t)(1000*maths_fast_sqrt((sum2 - SQR(sum)/sector_size)/(sector_size-1))); // standard deviation of flow of sector [millirad]
-			*(min_pos++) = (uint8_t)(1000*(theta[min_ind]-theta0));	// transform index to relative azimuth [centirad]
-			*(max_pos++) = (uint8_t)(1000*(theta[max_ind]-theta0));	// transform index to relative azimuth [centirad]
-		}else
-		{
-			*(maxima++) = 0;
-			*(minima++) = 0;
-			*(stddev++) = 0;
-			*(avg++) = 0;
-			*(min_pos++) = 0;
-			*(max_pos++) = 0;
-		}	
-
-		theta0 += dTheta;
-		theta1 += dTheta;
+			maxima[i]		= 10*i + 1;
+			max_pos[i]	= 10*i + 2;
+			minima[i]		= 10*i + 3;
+			min_pos[i]	= 10*i + 4;
+			stddev[i]		= 10*i + 5;
+			avg[i]			= 10*i + 6;
 	}
 }
 

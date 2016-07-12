@@ -568,11 +568,11 @@ int main(void)
 				//num_x *= 2;	// compensate for horizontal binning
 				num_y *= 4;	// compensate for vertical binning
 				/* reproject optical flow on unit sphere */
-				fast_flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], s_dir_2d.x[i], s_dir_2d.y[i]*4, 0, 0, &px4_model);
-				// fast_flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], s_dir_2d.x[i], s_dir_2d.y[i]*4, num_x/den, num_y/den, &px4_model);
+				// fast_flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], s_dir_2d.x[i], s_dir_2d.y[i]*4, 0, 0, &px4_model);
+				fast_flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], s_dir_2d.x[i], s_dir_2d.y[i]*4, DT*num_x/den, DT*num_y/den, &px4_model);
 
 				/* convert from rad/frame to rad/s */
-				DT = 1;
+				// DT = 1;
 				//bp_flow_lk.x[i] /= DT/1e6;
 				//bp_flow_lk.y[i] /= DT/1e6;
 				//bp_flow_lk.z[i] /= DT/1e6;
@@ -588,16 +588,16 @@ int main(void)
 			}
 
 			int16_t maxima[SECTOR_COUNT];
-			uint8_t max_pos[SECTOR_COUNT];
+			int16_t max_pos[SECTOR_COUNT];
 			int16_t minima[SECTOR_COUNT];
-			uint8_t min_pos[SECTOR_COUNT];
+			int16_t min_pos[SECTOR_COUNT];
 			int16_t stddev[SECTOR_COUNT];
 			int16_t avg[SECTOR_COUNT];
 
 			calc_flow_stats(NB_SAMPLES,
 							SECTOR_COUNT,
-							-PI/2,
-							PI/2,
+							s_dir_theta[0],
+							s_dir_theta[NB_SAMPLES-1],
 							bp_flow_lk.x,
 							bp_flow_lk.y,
 							bp_flow_lk.z,
@@ -609,7 +609,8 @@ int main(void)
 							stddev,
 							avg);
 
-			update_TX_buffer_flow_stat(maxima, max_pos, minima, min_pos, stddev, avg);
+			update_TX_buffer_tmp();
+			update_TX_buffer_flow_stat(SECTOR_COUNT, maxima, max_pos, minima, min_pos, stddev, avg);
 
 			flow_lk.x[40] = 1000*num_x40;
 			flow_lk.y[40] = 1000*num_y40;

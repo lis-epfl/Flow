@@ -46,7 +46,7 @@ void cam2world(float *xp, float *yp, float *zp, float u, float v, cam_model *cam
 {
 	 float *pol    = cam->pol;
 	 float xc      = cam->xc;
-	 float yc      = cam->yc; 
+	 float yc      = cam->yc;
 	 float c       = cam->c;
 	 float d       = cam->d;
 	 float e       = cam->e;
@@ -54,15 +54,15 @@ void cam2world(float *xp, float *yp, float *zp, float u, float v, cam_model *cam
 
 	 float invdet  = 1/(c-d*e); // 1/det(A), where A = [c,d;e,1] as in the Matlab file
 
-	 // back-projection of u and v 
+	 // back-projection of u and v
 	 *xp = invdet*(    (u - xc) - d*(v - yc) );
 	 *yp = invdet*( -e*(u - xc) + c*(v - yc) );
-	  
+
 	 float r   = maths_fast_sqrt(SQR((*xp)) + SQR((*yp))); //distance [pixels] of  the point from the image center
 	 *zp  = pol[0];
-	 
+
 	 float r_i = 1;
-	 
+
 	 // compute z from polynomial model
 	 for (uint8_t i = 1; i < length_pol; i++)
 	 {
@@ -80,32 +80,32 @@ void flow2world(float *flow_x, float *flow_y, float *flow_z, float xp, float yp,
 	 uint8_t length_pol = cam->length_pol;
 
 	 float invdet  = 1/(c-d*e); // 1/det(A), where A = [c,d;e,1] as in the Matlab file
-	 
+
 	 // transformation from rectangular to spherical coordinates
 	 float r   = maths_fast_sqrt(SQR(xp) + SQR(yp));
 	 float theta = quick_trig_atan2(yp,xp);
-	 float phi = quick_trig_atan2(r, zp); 
-	 
+	 float phi = quick_trig_atan2(r, zp);
+
 	 float r_i = 1;
 	 float dzp = pol[1];
-	 
+
 	 // compute polynomial model derivative
 	 for (uint8_t i=2; i < length_pol; i++)
 	 {
 	   r_i *=r;
 	   dzp += i*pol[i]*r_i;
 	 }
-	 
+
 	 // project optic-flow on unit sphere (in spherical coordinates)
 	 float d_thetau = invdet*(-yp/SQR(r) - e*xp/SQR(r));
 	 float d_thetav = invdet*(d*yp/SQR(r) + c*xp/SQR(r));
 	 float d_phir = (zp - r*dzp)/(SQR(zp) + SQR(r));
 	 float d_phiu = d_phir*invdet*(xp/r - e*yp/r);
 	 float d_phiv = d_phir*invdet*(-d*xp/r + c*yp/r);
-	 
+
 	 float flow_theta = d_thetau*flow_u + d_thetav*flow_v;
 	 float flow_phi = d_phiu*flow_u + d_phiv*flow_v;
-	 
+
 	 // transformation from spherical to cartesian coordinates (for derotation)
 	 *flow_y = -quick_trig_sin(theta)*quick_trig_sin(phi)*flow_theta + quick_trig_cos(theta)*quick_trig_cos(phi)*flow_phi; // x and y were swapped
 	 *flow_x = quick_trig_cos(theta)*quick_trig_sin(phi)*flow_theta + quick_trig_sin(theta)*quick_trig_cos(phi)*flow_phi; // x and y were swapped
@@ -140,7 +140,7 @@ void fast_flow2world(float *flow_x,
 	 normalize(&xp2, &yp2, &zp2);
 
 	 // compute optic-flow considering small angles
-	 *flow_x = xp2;// - xp1;
-	 *flow_y = yp2;// - yp1;
-	 *flow_z = zp2;// - zp1;
+	 *flow_x = xp2 - xp1;
+	 *flow_y = yp2 - yp1;
+	 *flow_z = zp2 - zp1;
 }
