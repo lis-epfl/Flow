@@ -327,65 +327,12 @@ int main(void)
 	uint32_t counter = 0;
 	uint8_t qual = 0;
 
-	/* coarse voting bins */
-	// uint8_t c_acc[COARSE_BINS];
-	// for(uint8_t i=0; i<COARSE_BINS; i++) c_acc[i]=0;
-	// float cx[COARSE_BINS] = {0.850651f, 0.850651f, 0.525731f, 0.0f, 0.0f, -0.525731f, -0.850651f, -0.850651f};
-	// float cy[COARSE_BINS] = {0.525731f, -0.525731f, 0.0f, 0.850651f, -0.850651f, 0.0f, 0.525731f, -0.525731f};
-	// float cz[COARSE_BINS] = {0.0f, 0.0f, -0.850651f, -0.525731f, -0.525731f, -0.850651f, 0.0f, 0.0f};
-	// voting_bins c_bins = {cx,cy,cz,COARSE_PREC,COARSE_BINS, c_acc};
-
-	// /* refined voting directions (stored before rotation)*/
-	// r_dir_3d r_grid_1 ={{0.525731f, -0.525731f, 0.309017f, 0.309017f, 0.0f, -0.309017f, -0.309017f},
-	// 			{0.0f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, -0.5f},
-	// 			{-0.850651f, -0.850651f, -0.809017f, -0.809017f, -1.0f, -0.809017f, -0.809017f}
-	// 			};
-	//
-	// /* refined voting directions (stored before rotation)*/
-	// r_dir_3d r_grid_2 ={{0.525731f, -0.525731f, 0.309017f, 0.309017f, 0.0f, -0.309017f, -0.309017f},
-	// 			{0.0f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, -0.5f},
-	// 			{-0.850651f, -0.850651f, -0.809017f, -0.809017f, -1.0f, -0.809017f, -0.809017f}
-	// 			};
-	//
-	// /* refined voting directions (stored before rotation)*/
-	// r_dir_3d r_grid_3 = {{0.0616857f, 0.0f, -0.0616857f, 0.031447f, -0.031447f, 0.031447f, -0.031447f},
-	// 			{0.0f, 0.0f, 0.0f, -0.0508822f, -0.0508822f, 0.0508822f, 0.0508822f},
-	// 			{-0.998096f, -1.0f, -0.998096f, -0.998209f, -0.998209f, -0.998209f, -0.998209f}
-	// 			};
-	//
-	// /* refined voting directions (stored before rotation)*/
-	// r_dir_3d r_grid_4 = {{0.0294175f, 0.0f, -0.0294175f, 0.0148442f, -0.0148442f, 0.0148442f, -0.0148442f},
-	// 			{0.0f, 0.0f, 0.0f, -0.0240185f, -0.0240185f, 0.0240185f, 0.0240185f},
-	// 			{-0.999567f, -1.0f, -0.999567f, -0.999601f, -0.999601f, -0.999601f, -0.999601f}
-	// 			};
-
-	/* define refined precision and array*/
-	// r_dir_3d *r_grids[NB_ITERATIONS] = {&r_grid_1, &r_grid_2, &r_grid_3, &r_grid_4};
-	// float v_prec[NB_ITERATIONS+1] = {COARSE_PREC, REFINED_PREC_1, REFINED_PREC_2, REFINED_PREC_3, REFINED_PREC_4};
-
-
-	/* refined voting bins (used after rotation)*/
-	// uint8_t r_acc[REFINED_BINS];
-	// for(uint8_t i=0; i<REFINED_BINS; i++) r_acc[i]=0;
-	// float rx[REFINED_BINS];
-	// float ry[REFINED_BINS];
-	// float rz[REFINED_BINS];
-	// voting_bins r_bins = {rx,ry,rz, 0.0f, REFINED_BINS, r_acc};
-
-	/* Lucas Kanade flow */
-	// float flow_lk.x[100];
-	// float flow_lk.y[100];
-
 	/* 2d flow on camera image */
 	union flow_lk {
 		struct {
 			int16_t x[NB_SAMPLES];
 			int16_t y[NB_SAMPLES];
 		};
-		// struct {
-		// 	uint8_t data_x[250];
-		// 	uint8_t data_y[250];
-		// };
 		uint8_t data[NB_SAMPLES*2];
 	} flow_lk;
 
@@ -396,52 +343,19 @@ int main(void)
 		float z[NB_SAMPLES];
 	} bp_flow_lk;
 
-
-	// /* great circle normal vectors */
-	// struct n_dir_3d {
-	// 	float x[NB_SAMPLES];
-	// 	float y[NB_SAMPLES];
-	// 	float z[NB_SAMPLES];
-	// } n_dir_3d;
-
-	/* define best estimate */
-	// float best_x, best_y, best_z;
-
-	// int16_t flow_lk.x[100];
-	// int16_t flow_lk.y[100];
-
-
-
-	/* bottom flow variables */
-	// float pixel_flow_x = 0.0f;
-	// float pixel_flow_y = 0.0f;
-	// float pixel_flow_x_sum = 0.0f;
-	// float pixel_flow_y_sum = 0.0f;
-	// float velocity_x_sum = 0.0f;
-	// float velocity_y_sum = 0.0f;
-	// float velocity_x_lp = 0.0f;
-	// float velocity_y_lp = 0.0f;
-	// int valid_frame_count = 0;
 	int pixel_flow_count = 0;
 
-	// static float accumulated_flow_x = 0;
-	// static float accumulated_flow_y = 0;
-	// static float accumulated_gyro_x = 0;
-	// static float accumulated_gyro_y = 0;
-	// static float accumulated_gyro_z = 0;
-	// static uint16_t accumulated_framecount = 0;
-	// static uint16_t accumulated_quality = 0;
-	// static uint32_t integration_timespan = 0;
 	static uint32_t lasttime = 0;
-	// uint32_t time_since_last_sonar_update= 0;
 
 	uavcan_start();
+
 	/* main loop */
 	while (1)
 	{
-                PROBE_1(false);
-                uavcan_run();
-                PROBE_1(true);
+        PROBE_1(false);
+        uavcan_run();
+        PROBE_1(true);
+
 		/* reset flow buffers if needed */
 		if(buffer_reset_needed)
 		{
@@ -476,7 +390,9 @@ int main(void)
 				send_calibration_image(&previous_image, &current_image);
 
 				if (FLOAT_AS_BOOL(global_data.param[PARAM_SYSTEM_SEND_STATE]))
+                {
 					communication_system_state_send();
+                }
 
 				communication_receive_usb();
 				debug_message_send_one();
@@ -505,13 +421,6 @@ int main(void)
 		float y_rate = - x_rate_sensor;
 		float z_rate = z_rate_sensor; // z is correct
 
-		/* used to scale angular rates and scaling */
-		//float norm_w = maths_fast_sqrt(x_rate*x_rate + y_rate*y_rate + z_rate*z_rate)*SCALING_FLOW_FACTOR;
-		//float norm_flow = 0;
-
-		/* calculate focal_length in pixel */
-		// const float focal_length_px = (global_data.param[PARAM_FOCAL_LENGTH_MM]) / (4.0f * 6.0f) * 1000.0f; //original focal lenght: 12mm pixelsize: 6um, binning 4 enabled
-
 		/* get sonar data */
 		distance_valid = sonar_read(&sonar_distance_filtered, &sonar_distance_raw);
 
@@ -524,67 +433,57 @@ int main(void)
 
 		static float DT;
 
-		/* DEBUG */
-		// uint8_t best_acc = 0;
-		// uint8_t best_acc_index = 0;
-
 		/* compute optical flow */
 		if (FLOAT_EQ_INT(global_data.param[PARAM_SENSOR_POSITION], BOTTOM))
 		{
+			// update timing
+			DT = get_boot_time_us() - lasttime;
+			lasttime = get_boot_time_us();
+
 			/* copy recent image to faster ram */
 			dma_copy_image_buffers(&current_image, &previous_image, image_size, 1);
-
-			/* compute optical flow */
-			// qual = compute_flow(previous_image, current_image, x_rate, y_rate, z_rate, &pixel_flow_x, &pixel_flow_y);
-			// qual = 0;
 
 			float num_x = 0;
 			float num_y = 0;
 			float den   = 0;
 
-			float num_x40 = 0, num_y40 = 0;
-
-			int32_t roi_sx = 10;
-			int32_t roi_sy = 10;
-
-			//float tmp;
-			uint16_t iii = 0;
+			int32_t roi_sx = 20;
+			int32_t roi_sy = 20;
 
 			for (int i = 0; i < NB_SAMPLES; ++i)
 			{
-				/* code */
-				lucas_kanade( 	current_image, //dat_t * data,
-						previous_image, //dat_t * data_old,
-						image_width,  //image_width
-						image_height, //int dsy,
-						roi_sx, //int roi_sx,
-						roi_sy, //int roi_sy,
-						s_dir_2d.x[i], //int const roi_x,
-						s_dir_2d.y[i], // int const roi_y,
-						&num_x, //dat_t & num_x,
-						&num_y, //dat_t & num_y,
-						&den); //dat_t & den );
+				// Compute 2D optic flow
+				lucas_kanade( 	current_image, 	// dat_t * data,
+								previous_image, // dat_t * data_old,
+								image_width,  	// image_width,
+								image_height, 	// image height,
+								roi_sx, 		// int roi_sx,
+								roi_sy, 		// int roi_sy,
+								s_dir_2d.x[i] - roi_sx / 2, 	// int const roi_x,
+								s_dir_2d.y[i] - roi_sy / 2,     // int const roi_y,
+								&num_x, 		// dat_t & num_x,
+								&num_y, 		// dat_t & num_y,
+								&den); 			// dat_t & den );
 
-				//num_x *= 2;	// compensate for horizontal binning
-				num_y *= 4;	// compensate for vertical binning
-				/* reproject optical flow on unit sphere */
-				// fast_flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], s_dir_2d.x[i], s_dir_2d.y[i]*4, 0, 0, &px4_model);
-				fast_flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], s_dir_2d.x[i], s_dir_2d.y[i]*4, DT*num_x/den, DT*num_y/den, &px4_model);
+				// Reproject optic flow on unit sphere
+				fast_flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i],
+								s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i],
+								s_dir_2d.x[i], 4.0f * s_dir_2d.y[i],
+								num_x / den, 4.0f * num_y / den,
+								&px4_model);
 
-				/* convert from rad/frame to rad/s */
-				// DT = 1;
-				//bp_flow_lk.x[i] /= DT/1e6;
-				//bp_flow_lk.y[i] /= DT/1e6;
-				//bp_flow_lk.z[i] /= DT/1e6;
+                // Convert into rad/s
+                float dt_s = 1e-6f * DT;
+                bp_flow_lk.x[i] /= dt_s;
+                bp_flow_lk.y[i] /= dt_s;
+                bp_flow_lk.z[i] /= dt_s;
 
-				if(i == iii && den != 0)
-				{
-					num_x40 = bp_flow_lk.x[i];
-					num_y40 = bp_flow_lk.y[i];
-				}
+				// TMP store 2D flow
+				flow_lk.x[i] = 1000 * num_x / den;
+				flow_lk.y[i] = 4000 * num_y / den;
 
 				/* derotate optical flow */
-				//derotate_flow(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], -x_rate, -y_rate, -z_rate);
+				// derotate_flow(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], -x_rate, -y_rate, -z_rate);
 			}
 
 			int16_t maxima[SECTOR_COUNT];
@@ -595,37 +494,23 @@ int main(void)
 			int16_t avg[SECTOR_COUNT];
 
 			calc_flow_stats(NB_SAMPLES,
-							SECTOR_COUNT,
-							s_dir_theta[0],
-							s_dir_theta[NB_SAMPLES-1],
-							bp_flow_lk.x,
-							bp_flow_lk.y,
-							bp_flow_lk.z,
-							s_dir_theta,
-							maxima,
-							max_pos,
-							minima,
-							min_pos,
-							stddev,
-							avg);
+    						SECTOR_COUNT,
+    						s_dir_theta[0],
+    						s_dir_theta[NB_SAMPLES-1],
+    						bp_flow_lk.x,
+    						bp_flow_lk.y,
+    						bp_flow_lk.z,
+    						s_dir_theta,
+    						maxima,
+    						max_pos,
+    						minima,
+    						min_pos,
+    						stddev,
+    						avg);
 
 			update_TX_buffer_tmp();
 			update_TX_buffer_flow_stat(SECTOR_COUNT, maxima, max_pos, minima, min_pos, stddev, avg);
 
-			flow_lk.x[40] = 1000*num_x40;
-			flow_lk.y[40] = 1000*num_y40;
-			bp_flow_lk.x[40] = 1000*bp_flow_lk.z[iii];
-			bp_flow_lk.y[40] = 000*bp_flow_lk.y[iii];
-			//bp_flow_lk.x[40] = avg[4];
-			//bp_flow_lk.y[40] = avg[6];
-
-			DT = get_boot_time_us() - lasttime;
-
-			//update lasttime
-			lasttime = get_boot_time_us();
-
-			// pixel_flow_x_sum += pixel_flow_x;
-			// pixel_flow_y_sum += pixel_flow_y;
 			pixel_flow_count++;
 
 		}
@@ -633,131 +518,40 @@ int main(void)
 
 		if (FLOAT_EQ_INT(global_data.param[PARAM_SENSOR_POSITION], BOTTOM))
 		{
-		// 	/* send bottom flow if activated */
-
-		// 	float ground_distance = 0.0f;
-
-
-		// 	if(FLOAT_AS_BOOL(global_data.param[PARAM_SONAR_FILTERED]))
-		// 	{
-		// 		ground_distance = sonar_distance_filtered;
-		// 	}
-		// 	else
-		// 	{
-		// 		ground_distance = sonar_distance_raw;
-		// 	}
-
-  //                       uavcan_define_export(i2c_data, legacy_12c_data_t, ccm);
-  //                       uavcan_define_export(range_data, range_data_t, ccm);
-		// 	uavcan_timestamp_export(i2c_data);
-  //                       uavcan_assign(range_data.time_stamp_utc, i2c_data.time_stamp_utc);
-		// 	//update I2C transmitbuffer
-		// 	if(valid_frame_count>0)
-		// 	{
-		// 		update_TX_buffer(pixel_flow_x, pixel_flow_y, velocity_x_sum/valid_frame_count, velocity_y_sum/valid_frame_count, qual,
-		// 				ground_distance, x_rate, y_rate, z_rate, gyro_temp, uavcan_use_export(i2c_data));
-		// 	}
-		// 	else
-		// 	{
-		// 		update_TX_buffer(pixel_flow_x, pixel_flow_y, 0.0f, 0.0f, qual,
-		// 				ground_distance, x_rate, y_rate, z_rate, gyro_temp, uavcan_use_export(i2c_data));
-		// 	}
-	 //                PROBE_2(false);
-  //                       uavcan_publish(range, 40, range_data);
-	 //                PROBE_2(true);
-
-  //                       PROBE_3(false);
-  //                       uavcan_publish(flow, 40, i2c_data);
-  //                       PROBE_3(true);
-
-            //serial mavlink  + usb mavlink output throttled
-			if (counter % (uint32_t)global_data.param[PARAM_BOTTOM_FLOW_SERIAL_THROTTLE_FACTOR] == 0)//throttling factor
+    	    // serial mavlink  + usb mavlink output throttled
+			if (counter % (uint32_t)global_data.param[PARAM_BOTTOM_FLOW_SERIAL_THROTTLE_FACTOR] == 0)
 			{
+				// Send flow on UART
 
-				// float flow_comp_m_x = 0.0f;
-				// float flow_comp_m_y = 0.0f;
-
-				// if(FLOAT_AS_BOOL(global_data.param[PARAM_BOTTOM_FLOW_LP_FILTERED]))
-				// {
-				// 	flow_comp_m_x = velocity_x_lp;
-				// 	flow_comp_m_y = velocity_y_lp;
-				// }
-				// else
-				// {
-				// 	if(valid_frame_count>0)
-				// 	{
-				// 		flow_comp_m_x = velocity_x_sum/valid_frame_count;
-				// 		flow_comp_m_y = velocity_y_sum/valid_frame_count;
-				// 	}
-				// 	else
-				// 	{
-				// 		flow_comp_m_x = 0.0f;
-				// 		flow_comp_m_y = 0.0f;
-				// 	}
-				// }
-
-
-				// send flow
 				// mavlink_msg_optical_flow_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
 				// 		pixel_flow_x_sum * 10.0f, pixel_flow_y_sum * 10.0f,
 				// 		flow_comp_m_x, flow_comp_m_y, qual,
 				// 		// ground_distance);
 				// 		DT);
 
-				// mavlink_msg_optical_flow_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-				// 		flow_lk.x[3], flow_lk.x[3],
-				// 		flow_lk.x[3], flow_lk.x[3], qual,
-				// 		DT);
-
-				mavlink_msg_data_transmission_handshake_send(
-						MAVLINK_COMM_0,
-						MAVLINK_TYPE_INT16_T,
-						NB_SAMPLES*2,
-						NB_SAMPLES,
-						2,
-						NB_SAMPLES*2 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
-						MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
-						100);
-				for (int frame = 0; frame < NB_SAMPLES*2 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1; ++frame)
-				{
-					mavlink_msg_encapsulated_data_send(MAVLINK_COMM_0, frame, &(flow_lk.data[frame * MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN]));
-				}
-
-				// mavlink_msg_optical_flow_rad_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-				// 		integration_timespan, accumulated_flow_x, accumulated_flow_y,
-				// 		accumulated_gyro_x, accumulated_gyro_y, accumulated_gyro_z,
-				// 		gyro_temp, accumulated_quality/accumulated_framecount,
-				// 		time_since_last_sonar_update,ground_distance);
-
-				/* send approximate local position estimate without heading */
-				// if (FLOAT_AS_BOOL(global_data.param[PARAM_SYSTEM_SEND_LPOS]))
+				// mavlink_msg_data_transmission_handshake_send(   MAVLINK_COMM_0,
+                //                         						MAVLINK_TYPE_INT16_T,
+                //                         						NB_SAMPLES*2,
+                //                         						NB_SAMPLES,
+                //                         						2,
+                //                         						NB_SAMPLES*2 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
+                //                         						MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
+                //                         						100);
+                //
+				// for (int frame = 0; frame < NB_SAMPLES*2 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1; ++frame)
 				// {
-				// 	/* rough local position estimate for unit testing */
-				// 	lpos.x += ground_distance*accumulated_flow_x;
-				// 	lpos.y += ground_distance*accumulated_flow_y;
-				// 	lpos.z = -ground_distance;
- 			// 		 velocity not directly measured and not important for testing
-				// 	lpos.vx = 0;
-				// 	lpos.vy = 0;
-				// 	lpos.vz = 0;
-
-				// } else {
-				// 	/* toggling param allows user reset */
-				// 	lpos.x = 0;
-				// 	lpos.y = 0;
-				// 	lpos.z = 0;
-				// 	lpos.vx = 0;
-				// 	lpos.vy = 0;
-				// 	lpos.vz = 0;
+				// 	mavlink_msg_encapsulated_data_send(MAVLINK_COMM_0, frame, &(flow_lk.data[frame * MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN]));
 				// }
+
 
 				if (FLOAT_AS_BOOL(global_data.param[PARAM_USB_SEND_FLOW]))
 				{
-					// float dt = get_time_between_images();
+                    // Send flow on USB
 
 					mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
+                            flow_lk.x[40], flow_lk.y[40],
 							bp_flow_lk.x[40], bp_flow_lk.y[40],
-							flow_lk.x[40], flow_lk.y[40], qual,
+                            qual,
 							DT);
 
 					// mavlink_msg_data_transmission_handshake_send(
@@ -781,22 +575,6 @@ int main(void)
 				{
 					mavlink_msg_debug_vect_send(MAVLINK_COMM_2, "GYRO", get_boot_time_us(), 1000*x_rate, 1000*y_rate, 1000*z_rate);
 				}
-
-				// integration_timespan = 0;
-				// accumulated_flow_x = 0;
-				// accumulated_flow_y = 0;
-				// accumulated_framecount = 0;
-				// accumulated_quality = 0;
-				// accumulated_gyro_x = 0;
-				// accumulated_gyro_y = 0;
-				// accumulated_gyro_z = 0;
-
-				// velocity_x_sum = 0.0f;
-				// velocity_y_sum = 0.0f;
-				// pixel_flow_x_sum = 0.0f;
-				// pixel_flow_y_sum = 0.0f;
-				// valid_frame_count = 0;
-				// pixel_flow_count = 0;
 			}
 		}
 
@@ -812,7 +590,7 @@ int main(void)
 			/* every second */
 			if (FLOAT_AS_BOOL(global_data.param[PARAM_SYSTEM_SEND_STATE]))
 			{
-				communication_system_state_send();
+					communication_system_state_send();
 			}
 			send_system_state_now = false;
 		}
@@ -834,18 +612,8 @@ int main(void)
 			send_params_now = false;
 		}
 
-		/* send local position estimate, for testing only, doesn't account for heading */
-		// if (send_lpos_now)
-		// {
-		// 	if (FLOAT_AS_BOOL(global_data.param[PARAM_SYSTEM_SEND_LPOS]))
-		// 	{
-		// 		mavlink_msg_local_position_ned_send(MAVLINK_COMM_2, timer_ms, lpos.x, lpos.y, lpos.z, lpos.vx, lpos.vy, lpos.vz);
-		// 	}
-		// 	send_lpos_now = false;
-		// }
-
 		/*  transmit raw 8-bit image */
-		if (FLOAT_AS_BOOL(global_data.param[PARAM_USB_SEND_VIDEO])&& send_image_now)
+		if (FLOAT_AS_BOOL(global_data.param[PARAM_USB_SEND_VIDEO]) && send_image_now)
 		{
 			/* get size of image to send */
 			uint16_t image_size_send;
@@ -865,8 +633,10 @@ int main(void)
 					image_size_send / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
 					MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
 					100);
+
 			LEDToggle(LED_COM);
 			uint16_t frame = 0;
+
 			for (frame = 0; frame < image_size_send / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1; frame++)
 			{
 				mavlink_msg_encapsulated_data_send(MAVLINK_COMM_2, frame, &((uint8_t *) current_image)[frame * MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN]);
