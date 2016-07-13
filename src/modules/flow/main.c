@@ -495,8 +495,8 @@ int main(void)
 
 			calc_flow_stats(NB_SAMPLES,
     						SECTOR_COUNT,
-    						s_dir_theta[0],
-    						s_dir_theta[NB_SAMPLES-1],
+    						-PI/2, //s_dir_theta[0],
+    						PI/2, //s_dir_theta[NB_SAMPLES-1],
     						bp_flow_lk.x,
     						bp_flow_lk.y,
     						bp_flow_lk.z,

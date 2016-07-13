@@ -258,19 +258,19 @@ static inline void calc_flow_stats(uint16_t pixel_count,
 		{
 			float avg_i  = sum / sector_size;
 
-			*(maxima++)  = (int16_t)(1000*maximum);								// maxima of sector [millirad/s]
-			*(minima++)  = (int16_t)(1000*minimum);								// maxima of sector [millirad/s]
-			*(avg++) 	 = (int16_t)(1000*avg_i);								// average of flow of sector [millirad/s]
-			*(stddev++)  = (int16_t)(1000*maths_fast_sqrt((sum2 - SQR(sum)/sector_size) / sector_size)); // standard deviation of flow of sector [millirad/s]
-			*(min_pos++) = (int16_t)(1000*(theta[min_ind]));	// azimuth position of minimum in sector [millirad]
-			*(max_pos++) = (int16_t)(1000*(theta[max_ind]));	// azimuth position of maximum in sector [millirad]
+			*(maxima++)  = 1000 * maximum;           // maximum of sector [millirad/s]
+            *(max_pos++) = 1000 * theta[max_ind];    // azimuth position of maximum in sector [millirad]
+            *(minima++)  = 1000 * minimum;			 // minimum of sector [millirad/s]
+            *(min_pos++) = 1000 * theta[min_ind];	 // azimuth position of minimum in sector [millirad]
+            *(avg++) 	 = 1000 * avg_i;		     // average of flow of sector [millirad/s]
+            *(stddev++)  = 1000 * maths_fast_sqrt((sum2 - SQR(sum)/sector_size) / sector_size));    // standard deviation of flow of sector [millirad/s]
 		}
         else
 		{
 			*(maxima++) = 0;
 			*(minima++) = 0;
 			*(stddev++) = 0;
-			*(avg++) = 0;
+			*(avg++)     = 0;
 			*(min_pos++) = 0;
 			*(max_pos++) = 0;
 		}
