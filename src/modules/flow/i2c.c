@@ -150,107 +150,105 @@ void I2C1_EV_IRQHandler(void) {
 
 	case I2C_EVENT_SLAVE_RECEIVER_ADDRESS_MATCHED :
 	{
-			I2C1 ->SR1;
-			I2C1 ->SR2;
-			rxDataIndex = 0;
-			break;
+		I2C1 ->SR1;
+		I2C1 ->SR2;
+		rxDataIndex = 0;
+		break;
 	}
 	case I2C_EVENT_SLAVE_TRANSMITTER_ADDRESS_MATCHED :
 	{
-			I2C1 ->SR1;
-			I2C1 ->SR2;
-			break;
+		I2C1 ->SR1;
+		I2C1 ->SR2;
+		break;
 	}
 	case I2C_EVENT_SLAVE_BYTE_RECEIVED :
 	{
-			//receive address offset
-			dataRX = I2C_ReceiveData(I2C1 );
-			rxDataIndex++;
+		//receive address offset
+		dataRX = I2C_ReceiveData(I2C1 );
+		rxDataIndex++;
 
-			//set Index
-			txDataIndex1 = dataRX;
+		//set Index
+		txDataIndex1 = dataRX;
 
-			if (dataRX >= (I2C_FRAME_SIZE + I2C_INTEGRAL_FRAME_SIZE + I2C_FLOW_STAT_FRAME_SIZE))
-			{
-					// address is too high
-					txDataIndex1 = I2C_FRAME_SIZE;
-					txDataIndex2 = I2C_INTEGRAL_FRAME_SIZE;
-					txDataIndex3 = I2C_FLOW_STAT_FRAME_SIZE;
-			}
-			else if (dataRX >= (I2C_FRAME_SIZE + I2C_INTEGRAL_FRAME_SIZE))
-			{
-					// 3rd frame type
-					txDataIndex1 = I2C_FRAME_SIZE;
-					txDataIndex2 = I2C_INTEGRAL_FRAME_SIZE;
-					txDataIndex3 = dataRX - I2C_FRAME_SIZE - I2C_INTEGRAL_FRAME_SIZE;
-			}
-			else if (dataRX >= (I2C_FRAME_SIZE))
-			{
-					// 2nd frame type
-					txDataIndex1 = I2C_FRAME_SIZE;
-					txDataIndex2 = dataRX - I2C_FRAME_SIZE;
-					txDataIndex3 = I2C_FLOW_STAT_FRAME_SIZE;
-			}
-			else
-			{
-					// 1st frame type
-					txDataIndex1 = dataRX;
-					txDataIndex2 = I2C_INTEGRAL_FRAME_SIZE;
-					txDataIndex3 = I2C_FLOW_STAT_FRAME_SIZE;
-			}
+		if (dataRX >= (I2C_FRAME_SIZE + I2C_INTEGRAL_FRAME_SIZE + I2C_FLOW_STAT_FRAME_SIZE))
+		{
+				// address is too high
+				txDataIndex1 = I2C_FRAME_SIZE;
+				txDataIndex2 = I2C_INTEGRAL_FRAME_SIZE;
+				txDataIndex3 = I2C_FLOW_STAT_FRAME_SIZE;
+		}
+		else if (dataRX >= (I2C_FRAME_SIZE + I2C_INTEGRAL_FRAME_SIZE))
+		{
+				// 3rd frame type
+                readout_done_frame3 = 0;
+				txDataIndex1 = I2C_FRAME_SIZE;
+				txDataIndex2 = I2C_INTEGRAL_FRAME_SIZE;
+				txDataIndex3 = dataRX - I2C_FRAME_SIZE - I2C_INTEGRAL_FRAME_SIZE;
+		}
+		else if (dataRX >= (I2C_FRAME_SIZE))
+		{
+				// 2nd frame type
+                readout_done_frame2 = 0;
+				txDataIndex1 = I2C_FRAME_SIZE;
+				txDataIndex2 = dataRX - I2C_FRAME_SIZE;
+				txDataIndex3 = I2C_FLOW_STAT_FRAME_SIZE;
+		}
+		else
+		{
+				// 1st frame type
+                readout_done_frame1 = 0;
+				txDataIndex1 = dataRX;
+				txDataIndex2 = I2C_INTEGRAL_FRAME_SIZE;
+				txDataIndex3 = I2C_FLOW_STAT_FRAME_SIZE;
+		}
 
-			//indicate sending
-			readout_done_frame1 = 0;
-			readout_done_frame2 = 0;
-			readout_done_frame3 = 0;
-
-			break;
+		break;
 	}
 
 	case I2C_EVENT_SLAVE_BYTE_TRANSMITTING :
 	case I2C_EVENT_SLAVE_BYTE_TRANSMITTED :
 	{
-			if (txDataIndex1 < (I2C_FRAME_SIZE))
-			{
-					I2C_SendData(I2C1, txDataFrame1[publishedIndexFrame1][txDataIndex1]);
-					txDataIndex1++;
-			}
-			else if (txDataIndex2 < (I2C_INTEGRAL_FRAME_SIZE))
-			{
-					I2C_SendData(I2C1, txDataFrame2[publishedIndexFrame2][txDataIndex2]);
-					txDataIndex2++;
-			}
-			else if (txDataIndex3 < (I2C_FLOW_STAT_FRAME_SIZE))
-			{
-					I2C_SendData(I2C1, txDataFrame3[publishedIndexFrame3][txDataIndex3]);
-					txDataIndex3++;
-			}
-			else
-			{
-					// send BS
-					I2C_SendData(I2C1, 8);
-			}
+		if (txDataIndex1 < (I2C_FRAME_SIZE))
+		{
+			I2C_SendData(I2C1, txDataFrame1[publishedIndexFrame1][txDataIndex1]);
+			txDataIndex1++;
+		}
+		else if (txDataIndex2 < (I2C_INTEGRAL_FRAME_SIZE))
+		{
+			I2C_SendData(I2C1, txDataFrame2[publishedIndexFrame2][txDataIndex2]);
+			txDataIndex2++;
+		}
+		else if (txDataIndex3 < (I2C_FLOW_STAT_FRAME_SIZE))
+		{
+			I2C_SendData(I2C1, txDataFrame3[publishedIndexFrame3][txDataIndex3]);
+			txDataIndex3++;
+		}
+		else
+		{
+			// send BS
+			I2C_SendData(I2C1, 8);
+		}
 
-			//check whether last byte is read frame1
-			if (txDataIndex1 >= (I2C_FRAME_SIZE-1))
-			{
-					readout_done_frame1 = 1;
-			}
+		//check whether last byte is read frame1
+		if (txDataIndex1 >= (I2C_FRAME_SIZE-1))
+		{
+			readout_done_frame1 = 1;
+		}
 
-			//check whether last byte is read fram2 and reset accumulation
-			if (txDataIndex2 >= (I2C_INTEGRAL_FRAME_SIZE-1))
-			{
-					readout_done_frame2 = 1;
-					stop_accumulation = 1;
-			}
+		//check whether last byte is read fram2 and reset accumulation
+		if (txDataIndex2 >= (I2C_INTEGRAL_FRAME_SIZE-1))
+		{
+			readout_done_frame2 = 1;
+			stop_accumulation = 1;
+		}
 
-			//check whether last byte is read frame3
-			if (txDataIndex3 >= (I2C_FLOW_STAT_FRAME_SIZE-1))
-			{
-					readout_done_frame3 = 1;
-			}
+		//check whether last byte is read frame3
+		if (txDataIndex3 >= (I2C_FLOW_STAT_FRAME_SIZE-1))
+		{
+			readout_done_frame3 = 1;
+    	}
 
-			break;
+		break;
 	}
 
 	case I2C_EVENT_SLAVE_ACK_FAILURE : {
