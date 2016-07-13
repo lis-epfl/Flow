@@ -116,8 +116,8 @@ void mt9v034_context_configuration(void)
 	uint16_t max_exposure = 0x01E0; // default
 	uint16_t new_max_gain = 64; // VALID RANGE: 16-64 (default)
 	// uint16_t pixel_count = 4096; //64x64 take all pixels to estimate exposure time // VALID RANGE: 1-65535
-	uint16_t pixel_count = 5580; //36x620/4 take all pixels to estimate exposure time // VALID RANGE: 1-65535
-	// uint16_t pixel_count = BOTTOM_FLOW_IMAGE_HEIGHT * BOTTOM_FLOW_IMAGE_WIDTH; //64x64 take all pixels to estimate exposure time // VALID RANGE: 1-65535
+	// uint16_t pixel_count = 5580; //36x620/4 take all pixels to estimate exposure time // VALID RANGE: 1-65535
+	uint16_t pixel_count = BOTTOM_FLOW_IMAGE_HEIGHT * BOTTOM_FLOW_IMAGE_WIDTH / 2; //64x64 take all pixels to estimate exposure time // VALID RANGE: 1-65535
 
 	uint16_t desired_brightness = 58; // default
 	uint16_t resolution_ctrl = 0x0203; // default
