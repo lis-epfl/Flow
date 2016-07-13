@@ -21,7 +21,7 @@ Mc = cam2world(mc, ocam);
 
 m1 = [round(m0(1,:)); round(m0(2,:)/4)*4];
 M1 = cam2world(m1,ocam);
-theta1 = acos(-M1(1,:));
+theta1 = atan2(M1(1,:), M1(3,:))
 %i = theta0 > 0;
 %theta1(i) = -theta1(i)-2*pi;
 %theta2 = asin(M1(3,:));
@@ -93,10 +93,10 @@ invdet  = 1/(ocam.c-ocam.d*ocam.e);
 
 xp = invdet*(    (u - ocam.xc) - ocam.d*(v - ocam.yc) );
 yp = invdet*( -ocam.e*(u - ocam.xc) + ocam.c*(v - ocam.yc) );
-	  
+
 r   = sqrt(xp.^2 + yp.^2);
 zp  = ocam.ss(1);
-	 
+
 r_i = 1;
 
 for j = 2:numel(ocam.ss)
