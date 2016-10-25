@@ -263,7 +263,7 @@ static inline void calc_flow_stats(uint16_t pixel_count,
             *(minima++)  = 1000 * minimum;			 // minimum of sector [millirad/s]
             *(min_pos++) = 1000 * theta[min_ind];	 // azimuth position of minimum in sector [millirad]
             *(avg++) 	 = 1000 * avg_i;		     // average of flow of sector [millirad/s]
-            *(stddev++)  = 1000 * maths_fast_sqrt((sum2 - SQR(sum)/sector_size) / sector_size));    // standard deviation of flow of sector [millirad/s]
+            *(stddev++)  = 1000 * maths_fast_sqrt((sum2 - SQR(sum)/sector_size) / sector_size);    // standard deviation of flow of sector [millirad/s]
 		}
         else
 		{
