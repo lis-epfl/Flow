@@ -35,6 +35,7 @@
  *
  ****************************************************************************/
 
+
 #include <px4_config.h>
 #include <bsp/board.h>
 
@@ -49,6 +50,7 @@
 #include "no_warnings.h"
 #include "mavlink_bridge_header.h"
 #include <mavlink.h>
+// #include "mavlink/v1.0/mavric/mavlink.h"
 #include "settings.h"
 #include "utils.h"
 #include "led.h"
@@ -77,7 +79,7 @@
 #include "cam.h"
 #include "flow2.h"
 #include "../calib/calib_cam3.h"
-
+#include "emd.h"
 
 /* coprocessor control register (fpu) */
 #ifndef SCB_CPACR
@@ -240,6 +242,8 @@ void buffer_reset(void) {
 	buffer_reset_needed = 1;
 }
 
+#define EMD_COUNT NB_SAMPLES
+
 /**
   * @brief  Main function.
   */
@@ -327,21 +331,36 @@ int main(void)
 	uint32_t counter = 0;
 	uint8_t qual = 0;
 
-	/* 2d flow on camera image */
-	union flow_lk {
-		struct {
-			int16_t x[NB_SAMPLES];
-			int16_t y[NB_SAMPLES];
-		};
-		uint8_t data[NB_SAMPLES*2];
-	} flow_lk;
+	// /* 2d flow on camera image */
+	// union flow_lk {
+	// 	struct {
+	// 		int16_t x[NB_SAMPLES];
+	// 		int16_t y[NB_SAMPLES];
+	// 	};
+	// 	uint8_t data[NB_SAMPLES*2];
+	// } flow_lk;
 
-	/* backprojected flow */
-	struct bp_flow_lk {
-		float x[NB_SAMPLES];
-		float y[NB_SAMPLES];
-		float z[NB_SAMPLES];
-	} bp_flow_lk;
+	// /* backprojected flow */
+	// struct bp_flow_lk {
+	// 	float x[NB_SAMPLES];
+	// 	float y[NB_SAMPLES];
+	// 	float z[NB_SAMPLES];
+	// } bp_flow_lk;
+
+    float emd_output[EMD_COUNT];
+    float emd_smooth[EMD_COUNT];
+
+    // Array of EMD detectors
+    EMD emd[EMD_COUNT];
+    float dt = 0.0018;
+    float tau = 0.02f;
+    // float tau = 0.005f;
+    float lpf_alpha = dt    / (tau + dt);
+    float hpf_alpha = tau / (tau + dt);
+    for (size_t i = 0; i < EMD_COUNT; i++)
+    {
+        EMD_init(&emd[i], lpf_alpha, hpf_alpha);
+    }
 
 	int pixel_flow_count = 0;
 
@@ -450,6 +469,7 @@ int main(void)
 			int32_t roi_sx = 20;
 			int32_t roi_sy = 20;
 
+            /*
 			for (int i = 0; i < NB_SAMPLES; ++i)
 			{
 				// Compute 2D optic flow
@@ -482,34 +502,88 @@ int main(void)
 				flow_lk.x[i] = 1000 * num_x / den;
 				flow_lk.y[i] = 4000 * num_y / den;
 
-				/* derotate optical flow */
+				// derotate optical flow
 				// derotate_flow(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], -x_rate, -y_rate, -z_rate);
 			}
+            */
 
-			int16_t maxima[SECTOR_COUNT];
-			int16_t max_pos[SECTOR_COUNT];
-			int16_t minima[SECTOR_COUNT];
-			int16_t min_pos[SECTOR_COUNT];
-			int16_t stddev[SECTOR_COUNT];
-			int16_t avg[SECTOR_COUNT];
+            for (size_t i = 0; i < EMD_COUNT; i++)
+            {
+                uint32_t index = i;
+                uint32_t index_a = image_width * s_dir_2d.y[index] + s_dir_2d.x[index];
+                uint32_t index_b = image_width * s_dir_2d.y[index] + s_dir_2d.x[index] + 1;
+                emd_output[index] = EMD_update(&emd[i], current_image[index_a], current_image[index_b]);
+            }
 
-			calc_flow_stats(NB_SAMPLES,
-    						SECTOR_COUNT,
-    						-PI/2, //s_dir_theta[0],
-    						PI/2, //s_dir_theta[NB_SAMPLES-1],
-    						bp_flow_lk.x,
-    						bp_flow_lk.y,
-    						bp_flow_lk.z,
-    						s_dir_theta,
-    						maxima,
-    						max_pos,
-    						minima,
-    						min_pos,
-    						stddev,
-    						avg);
+            // Gaussian blur with sigma=2 (4degrees)
+            #define GAUSS_WINDOW_SIZE 15
+            float gauss_window[GAUSS_WINDOW_SIZE] = {   0.00218749,  0.011109  ,  0.04393693,  0.13533528,  0.32465247,
+                                                        0.60653066,  0.8824969 ,  1.        ,  0.8824969 ,  0.60653066,
+                                                        0.32465247,  0.13533528,  0.04393693,  0.011109  ,  0.00218749 };
 
-			update_TX_buffer_tmp();
-			update_TX_buffer_flow_stat(SECTOR_COUNT, maxima, max_pos, minima, min_pos, stddev, avg);
+            // Gaussian blur with sigma=5 (10degrees)
+            // #define GAUSS_WINDOW_SIZE 21
+            // float gauss_window[GAUSS_WINDOW_SIZE] = {   0.13533528,  0.1978987 ,  0.2780373 ,  0.3753111 ,  0.48675226,
+            //                                             0.60653066,  0.72614904,  0.83527021,  0.92311635,  0.98019867,
+            //                                             1.        ,  0.98019867,  0.92311635,  0.83527021,  0.72614904,
+            //                                             0.60653066,  0.48675226,  0.3753111 ,  0.2780373 ,  0.1978987 ,
+            //                                             0.13533528 };
+
+            // Gaussian blur with sigma=10 (20degrees)
+            // #define GAUSS_WINDOW_SIZE 41
+            // float gauss_window[GAUSS_WINDOW_SIZE] = {   0.13533528,  0.16447446,  0.1978987 ,  0.23574608,  0.2780373 ,
+            //                                             0.32465247,  0.3753111 ,  0.42955736,  0.48675226,  0.54607443,
+            //                                             0.60653066,  0.66697681,  0.72614904,  0.78270454,  0.83527021,
+            //                                             0.8824969 ,  0.92311635,  0.95599748,  0.98019867,  0.99501248,
+            //                                             1.        ,  0.99501248,  0.98019867,  0.95599748,  0.92311635,
+            //                                             0.8824969 ,  0.83527021,  0.78270454,  0.72614904,  0.66697681,
+            //                                             0.60653066,  0.54607443,  0.48675226,  0.42955736,  0.3753111 ,
+            //                                             0.32465247,  0.2780373 ,  0.23574608,  0.1978987 ,  0.16447446,
+            //                                             0.13533528  };
+
+
+            for (int32_t i = 0; i < EMD_COUNT; i++)
+            {
+                emd_smooth[i] = 0.0f;
+                float sum_weights = 0.0f;
+                for (int32_t j = 0; j < GAUSS_WINDOW_SIZE; j++)
+                {
+                    int32_t index = i + (j - GAUSS_WINDOW_SIZE / 2);
+                    if ((index>=0) && (index<EMD_COUNT))
+                    {
+                        emd_smooth[i]  += gauss_window[j] * emd_output[index];
+                        sum_weights += gauss_window[j];
+                    }
+                }
+                if (sum_weights != 0.0f)
+                {
+                    emd_smooth[i] = emd_smooth[i] / sum_weights;
+                }
+            }
+
+			// int16_t maxima[SECTOR_COUNT];
+			// int16_t max_pos[SECTOR_COUNT];
+			// int16_t minima[SECTOR_COUNT];
+			// int16_t min_pos[SECTOR_COUNT];
+			// int16_t stddev[SECTOR_COUNT];
+			// int16_t avg[SECTOR_COUNT];
+			// calc_flow_stats(NB_SAMPLES,
+    		// 				SECTOR_COUNT,
+    		// 				-PI/2, //s_dir_theta[0],
+    		// 				PI/2, //s_dir_theta[NB_SAMPLES-1],
+    		// 				bp_flow_lk.x,
+    		// 				bp_flow_lk.y,
+    		// 				bp_flow_lk.z,
+    		// 				s_dir_theta,
+    		// 				maxima,
+    		// 				max_pos,
+    		// 				minima,
+    		// 				min_pos,
+    		// 				stddev,
+    		// 				avg);
+            //
+			// update_TX_buffer_tmp();
+			// update_TX_buffer_flow_stat(SECTOR_COUNT, maxima, max_pos, minima, min_pos, stddev, avg);
 
 			pixel_flow_count++;
 
@@ -548,11 +622,16 @@ int main(void)
 				{
                     // Send flow on USB
 
-					mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-                            flow_lk.x[40], flow_lk.y[40],
-							bp_flow_lk.x[40], bp_flow_lk.y[40],
+					// mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
+                    //         flow_lk.x[40], flow_lk.y[40],
+					// 		bp_flow_lk.x[40], bp_flow_lk.y[40],
+                    //         qual,
+					// 		DT);
+
+                    mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
+                            emd_smooth[20], emd_smooth[30], emd_smooth[50], emd_smooth[60],
                             qual,
-							DT);
+                            DT);
 
 					// mavlink_msg_data_transmission_handshake_send(
 					// 		MAVLINK_COMM_2,
@@ -568,6 +647,9 @@ int main(void)
 					// {
 					// 	mavlink_msg_encapsulated_data_send(MAVLINK_COMM_2, frame, &((uint8_t *) flow_lk.data)[frame * MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN]);
 					// }
+                    // mavlink_msg_big_debug_vect_send
+                    mavlink_msg_big_debug_vect_send(MAVLINK_COMM_2, "EMD_RAW", get_boot_time_us(), &emd_output[10]);
+                    mavlink_msg_big_debug_vect_send(MAVLINK_COMM_2, "EMD_SMOOTH", get_boot_time_us(), &emd_smooth[10]);
 				}
 
 

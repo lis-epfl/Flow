@@ -27,9 +27,9 @@ enable_testing()
 #-----------------------------------------------------
 set(CPACK_PACKAGE_CONTACT "px4users@googlegroups.com")
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
-set(CPACK_PACKAGE_VERSION_MAJOR "0") 
-set(CPACK_PACKAGE_VERSION_MINOR "0") 
-set(CPACK_PACKAGE_VERSION_PATCH "0") 
+set(CPACK_PACKAGE_VERSION_MAJOR "0")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
 include(CPack)
 
 # functions
@@ -154,7 +154,7 @@ include_directories(
     lib/STM32_USB_HOST_Library/Core/inc
     lib/STM32_USB_OTG_Driver/inc
     mavlink/include/mavlink/v1.0
-    mavlink/include/mavlink/v1.0/common
+    mavlink/include/mavlink/v1.0/mavric
     )
 
 # source
