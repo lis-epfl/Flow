@@ -11,6 +11,7 @@
 #define _FLOW2_H_
 
 #include <math.h>
+#include <assert.h>
 #include <float.h>
 #include "maths.h"
 #include "quick_trig.h"
@@ -279,5 +280,20 @@ static inline void calc_flow_stats(uint16_t pixel_count,
 		theta1 += dTheta;
 	}
 }
+
+static inline void  create_gaussian_kernel_1D(float* kernel, float std, unsigned int size)
+{
+	//assert(size%2);	// check that size is odd
+
+	// calculate auxilary values
+	float var = std*std;				// variance
+	unsigned int size2 = (size-1)/2;	// half the size of the kernel
+
+	for(unsigned int i =  - size2; i <= size2; i++)
+	{
+		(*kernel++) = exp(- size2*size2 / (2*var));
+	}
+}
+
 
 #endif /* _FLOW2_H_ */
