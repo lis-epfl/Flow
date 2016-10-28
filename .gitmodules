@@ -1,3 +1,6 @@
 [submodule "src/lib/uavcan"]
 	path = src/lib/uavcan
 	url = https://github.com/UAVCAN/libuavcan.git
+[submodule "mavlink/include/mavlink/v1.0/mavlink_headers"]
+	path = mavlink/include/mavlink/v1.0
+	url = git@github.com:lis-epfl/mavlink_headers.git
