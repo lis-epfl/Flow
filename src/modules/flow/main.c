@@ -125,6 +125,14 @@ volatile uint32_t boot_time10_us = 0;
 static volatile unsigned timer[NTIMERS];
 static volatile unsigned timer_ms = MS_TIMER_COUNT;
 
+
+#define EMD_COUNT (NB_SAMPLES-1)
+#define BLUR_INPUT_SIZE_X 3
+#define BLUR_INPUT_SIZE_Y 1
+const float BLUR_INPUT_KERNEL_X[] = {0.07538726f,  0.84922547f,  0.07538726f};
+const float BLUR_INPUT_KERNEL_Y[] = {1.0f};
+
+
 /* timer/system booleans */
 bool send_system_state_now = true;
 bool receive_now = true;
@@ -242,7 +250,7 @@ void buffer_reset(void) {
 	buffer_reset_needed = 1;
 }
 
-#define EMD_COUNT NB_SAMPLES
+
 
 /**
   * @brief  Main function.
@@ -368,6 +376,7 @@ int main(void)
 
 	uavcan_start();
 
+
 	/* main loop */
 	while (1)
 	{
@@ -462,12 +471,12 @@ int main(void)
 			/* copy recent image to faster ram */
 			dma_copy_image_buffers(&current_image, &previous_image, image_size, 1);
 
-			float num_x = 0;
-			float num_y = 0;
-			float den   = 0;
+			// float num_x = 0;
+			// float num_y = 0;
+			// float den   = 0;
 
-			int32_t roi_sx = 20;
-			int32_t roi_sy = 20;
+			// int32_t roi_sx = 20;
+			// int32_t roi_sy = 20;
 
             /*
 			for (int i = 0; i < NB_SAMPLES; ++i)
@@ -507,12 +516,23 @@ int main(void)
 			}
             */
 
+			float emd_input[NB_SAMPLES];
+			filter_2D(current_image,
+						image_width,
+						image_height,
+						BLUR_INPUT_KERNEL_X,
+						BLUR_INPUT_SIZE_X,
+						BLUR_INPUT_KERNEL_Y,
+						BLUR_INPUT_SIZE_Y,
+						s_dir_2d.x,
+						s_dir_2d.y,
+						NB_SAMPLES,
+						emd_input);
+
+
             for (size_t i = 0; i < EMD_COUNT; i++)
             {
-                uint32_t index = i;
-                uint32_t index_a = image_width * s_dir_2d.y[index] + s_dir_2d.x[index];
-                uint32_t index_b = image_width * s_dir_2d.y[index] + s_dir_2d.x[index] + 1;
-                emd_output[index] = EMD_update(&emd[i], current_image[index_a], current_image[index_b]);
+                emd_output[i] = EMD_update(&emd[i], emd_input[i], emd_input[i+1]);
             }
 
             // Gaussian blur with sigma=2 (4degrees)
@@ -520,6 +540,8 @@ int main(void)
             float gauss_window[GAUSS_WINDOW_SIZE] = {   0.00218749,  0.011109  ,  0.04393693,  0.13533528,  0.32465247,
                                                         0.60653066,  0.8824969 ,  1.        ,  0.8824969 ,  0.60653066,
                                                         0.32465247,  0.13533528,  0.04393693,  0.011109  ,  0.00218749 };
+
+            filter_1D(emd_output, EMD_COUNT, gauss_window, GAUSS_WINDOW_SIZE, emd_smooth);
 
             // Gaussian blur with sigma=5 (10degrees)
             // #define GAUSS_WINDOW_SIZE 21
@@ -542,50 +564,69 @@ int main(void)
             //                                             0.13533528  };
 
 
-            for (int32_t i = 0; i < EMD_COUNT; i++)
-            {
-                emd_smooth[i] = 0.0f;
-                float sum_weights = 0.0f;
-                for (int32_t j = 0; j < GAUSS_WINDOW_SIZE; j++)
-                {
-                    int32_t index = i + (j - GAUSS_WINDOW_SIZE / 2);
-                    if ((index>=0) && (index<EMD_COUNT))
-                    {
-                        emd_smooth[i]  += gauss_window[j] * emd_output[index];
-                        sum_weights += gauss_window[j];
-                    }
-                }
-                if (sum_weights != 0.0f)
-                {
-                    emd_smooth[i] = emd_smooth[i] / sum_weights;
-                }
-            }
-
-			// int16_t maxima[SECTOR_COUNT];
-			// int16_t max_pos[SECTOR_COUNT];
-			// int16_t minima[SECTOR_COUNT];
-			// int16_t min_pos[SECTOR_COUNT];
-			// int16_t stddev[SECTOR_COUNT];
-			// int16_t avg[SECTOR_COUNT];
+            // for (int32_t i = 0; i < EMD_COUNT; i++)
+            // {
+            //     emd_smooth[i] = 0.0f;
+            //     float sum_weights = 0.0f;
+            //     for (int32_t j = 0; j < GAUSS_WINDOW_SIZE; j++)
+            //     {
+            //         int32_t index = i + (j - GAUSS_WINDOW_SIZE / 2);
+            //         if ((index>=0) && (index<EMD_COUNT))
+            //         {
+            //             emd_smooth[i]  += gauss_window[j] * emd_output[index];
+            //             sum_weights += gauss_window[j];
+            //         }
+            //     }
+            //     if (sum_weights != 0.0f)
+            //     {
+            //         emd_smooth[i] = emd_smooth[i] / sum_weights;
+            //     }
+            // }
+            float  stats[6*SECTOR_COUNT];
+			float* maxima  	= stats;
+			float* minima 	= stats +   SECTOR_COUNT;
+			float* max_pos  = stats + 2*SECTOR_COUNT;
+			float* min_pos 	= stats + 3*SECTOR_COUNT;
+			float* avg  	= stats + 4*SECTOR_COUNT;
+			float* stddev  	= stats + 5*SECTOR_COUNT;
 			// calc_flow_stats(NB_SAMPLES,
-    		// 				SECTOR_COUNT,
-    		// 				-PI/2, //s_dir_theta[0],
-    		// 				PI/2, //s_dir_theta[NB_SAMPLES-1],
-    		// 				bp_flow_lk.x,
-    		// 				bp_flow_lk.y,
-    		// 				bp_flow_lk.z,
-    		// 				s_dir_theta,
-    		// 				maxima,
-    		// 				max_pos,
-    		// 				minima,
-    		// 				min_pos,
-    		// 				stddev,
-    		// 				avg);
-            //
+   //  						SECTOR_COUNT,
+   //  						-PI/2, //s_dir_theta[0],
+   //  						PI/2, //s_dir_theta[NB_SAMPLES-1],
+   //  						bp_flow_lk.x,
+   //  						bp_flow_lk.y,
+   //  						bp_flow_lk.z,
+   //  						s_dir_theta,
+   //  						maxima,
+   //  						max_pos,
+   //  						minima,
+   //  						min_pos,
+   //  						stddev,
+   //  						avg);
 			// update_TX_buffer_tmp();
 			// update_TX_buffer_flow_stat(SECTOR_COUNT, maxima, max_pos, minima, min_pos, stddev, avg);
 
+			calc_stats_1D(EMD_COUNT,
+							SECTOR_COUNT,
+							-PI/2,
+							 PI/2,
+							emd_smooth,
+							s_dir_theta,
+							maxima,
+							max_pos,
+							minima,
+							min_pos,
+							stddev,
+							avg);
+
+			
+
 			pixel_flow_count++;
+
+			if (counter % (uint32_t)global_data.param[PARAM_BOTTOM_FLOW_SERIAL_THROTTLE_FACTOR] == 0)
+			{
+				mavlink_msg_big_debug_vect_send(MAVLINK_COMM_0, "STATS", get_boot_time_us(), stats);
+			}
 
 		}
 		counter++;
@@ -594,7 +635,8 @@ int main(void)
 		{
     	    // serial mavlink  + usb mavlink output throttled
 			if (counter % (uint32_t)global_data.param[PARAM_BOTTOM_FLOW_SERIAL_THROTTLE_FACTOR] == 0)
-			{
+			{			
+
 				// Send flow on UART
 
 				// mavlink_msg_optical_flow_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
@@ -648,8 +690,8 @@ int main(void)
 					// 	mavlink_msg_encapsulated_data_send(MAVLINK_COMM_2, frame, &((uint8_t *) flow_lk.data)[frame * MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN]);
 					// }
                     // mavlink_msg_big_debug_vect_send
-                    mavlink_msg_big_debug_vect_send(MAVLINK_COMM_2, "EMD_RAW", get_boot_time_us(), &emd_output[10]);
-                    mavlink_msg_big_debug_vect_send(MAVLINK_COMM_2, "EMD_SMOOTH", get_boot_time_us(), &emd_smooth[10]);
+                    //mavlink_msg_big_debug_vect_send(MAVLINK_COMM_2, "EMD_RAW", get_boot_time_us(), &emd_output[10]);
+                    //mavlink_msg_big_debug_vect_send(MAVLINK_COMM_2, "EMD_SMOOTH", get_boot_time_us(), &emd_smooth[10]);
 				}
 
 

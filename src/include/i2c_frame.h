@@ -81,7 +81,7 @@ typedef struct i2c_integral_frame
 #define I2C_INTEGRAL_FRAME_SIZE (sizeof(i2c_integral_frame))
 // #define I2C_INTEGRAL_FRAME_SIZE 25 //(sizeof(i2c_integral_frame))
 
-#define SECTOR_COUNT 6
+#define SECTOR_COUNT 10
 
 typedef struct i2c_flow_stat_frame
 {

@@ -281,19 +281,191 @@ static inline void calc_flow_stats(uint16_t pixel_count,
 	}
 }
 
+
+/**
+* @brief calculates sector wise statistics (max, max_pos, min, min_pos, stddev, avg)
+*
+*	@param pixel_count 					total number of pixels (sampling points)
+*   @param sector_count    				number of sectors
+*	@param theta_start 					angle at beginning of field of view
+*	@param theta_end 					angle at end of field of view
+*	@param flow_x 						flow in x direction
+*	@param flow_y 						flow in y direction
+*	@param flow_z 						flow in z direction
+*	@param flow_z 						angle at each sampling point
+*	@param maxima 						address to write maximal values to [millirad/frame]
+*	@param max_pos 						address to write position of maximum to [centirad]
+*	@param minima 						address to write minimal values to [millirad/frame]
+*	@param min_pos 						address to write position of minimum to [centirad]
+*	@param stddev 						address to write standard deviation to values to [millirad/frame]
+*	@param avg 	 						address to write average values to [millirad/frame]
+*
+* @return Rotated voting bins
+*/
+static inline void calc_stats_1D(uint16_t pixel_count,
+									uint8_t sector_count,
+									float theta_start,
+									float theta_end,
+									float flow[],
+									float theta[],
+									float maxima[],
+									float max_pos[],
+									float minima[],
+									float min_pos[],
+									float stddev[],
+									float avg[])
+{
+	float dTheta = (theta_end-theta_start)/sector_count;
+	float theta0 = theta_start;												// angle at beginning of the sector
+	float theta1 = theta0 + dTheta;											// angle at end of the sector
+
+    // iterate over all sectors
+    uint16_t i_pix = 0;
+	for (uint8_t i_sec = 0; i_pix < pixel_count && i_sec < sector_count; i_sec++)
+	{
+		float maximum =  FLT_MIN;
+		float minimum =  FLT_MAX;
+		float sum = 0;
+		float sum2 = 0;
+		uint8_t max_ind = 0;
+		uint8_t min_ind = 0;
+		uint16_t sec_start_ind = i_pix;
+
+        for (; (i_pix < pixel_count) && (theta[i_pix] < theta1); flow++, i_pix++)
+		{
+			float flow2 = (*flow) * (*flow);	// norm of flow squared
+			sum  += *flow;        				// sum of flow for sector
+			sum2 += flow2;						// sum of flow squared for sector
+
+			if (*flow > maximum)
+			{
+				maximum = *flow;
+				max_ind = i_pix;
+			}
+
+			if (*flow < minimum)
+			{
+				minimum = *flow;
+				min_ind = i_pix;
+			}
+
+		}
+
+		uint16_t sector_size = i_pix - sec_start_ind;
+		if (sector_size > 0)
+		{
+			float avg_i  = sum / sector_size;
+
+			*(maxima++)  = maximum;           // maximum of sector [millirad/s]
+            *(max_pos++) = theta[max_ind];    // azimuth position of maximum in sector [millirad]
+            *(minima++)  = minimum;			 // minimum of sector [millirad/s]
+            *(min_pos++) = theta[min_ind];	 // azimuth position of minimum in sector [millirad]
+            *(avg++) 	 = avg_i;		     // average of flow of sector [millirad/s]
+            *(stddev++)  = maths_fast_sqrt((sum2 - SQR(sum)/sector_size) / sector_size);    // standard deviation of flow of sector [millirad/s]
+		}
+        else
+		{
+			*(maxima++) = 0;
+			*(minima++) = 0;
+			*(stddev++) = 0;
+			*(avg++)     = 0;
+			*(min_pos++) = 0;
+			*(max_pos++) = 0;
+		}
+
+		theta0 += dTheta;
+		theta1 += dTheta;
+	}
+}
+
+// ############## NOT WORKING ######################
 static inline void  create_gaussian_kernel_1D(float* kernel, float std, unsigned int size)
 {
 	//assert(size%2);	// check that size is odd
 
 	// calculate auxilary values
 	float var = std*std;				// variance
-	unsigned int size2 = (size-1)/2;	// half the size of the kernel
+	int size2 = (size-1)/2;	// half the size of the kernel
 
-	for(unsigned int i =  - size2; i <= size2; i++)
+	for(int i = -size2; i <= size2; i++, kernel++)
 	{
-		(*kernel++) = exp(- size2*size2 / (2*var));
+		*kernel = 0*var;//exp(-i*i/(2*var));
 	}
 }
 
 
+static inline void filter_1D(const float* image_in, uint32_t image_size, float* kernel, uint32_t kernel_size, float* image_out)
+{
+
+	for (uint32_t i = 0; i < image_size; i++)
+	{
+	    image_out[i] = 0.0f;
+	    float sum_weights = 0.0f;
+	    for (uint32_t j = 0; j < kernel_size; j++)
+	    {
+	        int32_t index = i + (j - kernel_size / 2);
+	        if ((index>=0) && (index<image_size))
+	        {
+	            image_out[i]  += kernel[j] * image_in[index];
+	            sum_weights += kernel[j];
+	        }
+	    }
+	    if (sum_weights != 0.0f)
+	    {
+	        image_out[i] = image_out[i] / sum_weights;
+	    }
+    }
+}
+
+
+static inline void filter_2D(const uint8_t* image_in, uint32_t image_width, uint32_t image_height, const float* kernel_x, uint32_t kernel_size_x, const float* kernel_y, uint32_t kernel_size_y, const uint16_t* indices_x, const uint16_t* indices_y, uint16_t indices_size, float* image_out)
+{
+    // iterate over all places where we filter
+    for(uint32_t i = 0; i < indices_size; i++)
+    {
+        int32_t xc = indices_x[i];
+
+        // iterate over all concerned rows
+        image_out[i] = 0.0f;
+        float sum_weights_y = 0.0f;
+        for(uint32_t k_y = 0 ; k_y < kernel_size_y; k_y++)
+        {
+            int32_t y = indices_y[i] + k_y - kernel_size_y/2;
+            // avoid out of bounds
+            if(y < 0 || y >= image_height)
+            {
+                continue;
+            }
+            
+            // filter in x
+            float sum_weights_x = 0.0f;
+            float filtered = 0.0f;
+            for (uint32_t k_x = 0; k_x < kernel_size_x; k_x++)
+            {
+                int32_t x = + xc + k_x - kernel_size_x/2;
+                // avoid out of bounds
+                if ( x < 0 || x >= image_width)
+                {                 
+                    continue;
+                }
+                filtered  += kernel_x[k_x] * image_in[ image_width*y + x];
+                sum_weights_x += kernel_x[k_x];
+            }
+            // normalize
+            if(abs(sum_weights_x) > 0.0000001f)
+            {
+                filtered /= sum_weights_x;
+            }
+
+            // filter in y
+            image_out[i] += kernel_y[k_y] * filtered;
+            sum_weights_y += kernel_y[k_y];
+        }
+        // normalize
+        if(abs(sum_weights_y) > 0.0000001f)
+        {
+            image_out[i] /= sum_weights_y;
+        }
+    }
+}
 #endif /* _FLOW2_H_ */
