@@ -303,7 +303,7 @@ static inline void calc_flow_stats(uint16_t pixel_count,
 * @return Rotated voting bins
 */
 static inline void calc_stats_1D(uint16_t pixel_count,
-									uint8_t sector_count,
+									uint16_t sector_count,
 									float theta_start,
 									float theta_end,
 									float flow[],
@@ -321,15 +321,15 @@ static inline void calc_stats_1D(uint16_t pixel_count,
 
     // iterate over all sectors
     uint16_t i_pix = 0;
-	for (uint8_t i_sec = 0; i_pix < pixel_count && i_sec < sector_count; i_sec++)
+	for (uint16_t i_sec = 0; (i_pix < pixel_count) && (i_sec < sector_count); i_sec++)
 	{
 		float maximum =  FLT_MIN;
 		float minimum =  FLT_MAX;
 		float sum = 0;
 		float sum2 = 0;
-		uint8_t max_ind = 0;
-		uint8_t min_ind = 0;
-		uint16_t sec_start_ind = i_pix;
+        uint16_t sec_start_ind = i_pix;
+		uint16_t max_ind       = sec_start_ind;
+		uint16_t min_ind       = sec_start_ind;
 
         for (; (i_pix < pixel_count) && (theta[i_pix] < theta1); flow++, i_pix++)
 		{
@@ -369,8 +369,8 @@ static inline void calc_stats_1D(uint16_t pixel_count,
 			*(minima++) = 0;
 			*(stddev++) = 0;
 			*(avg++)     = 0;
-			*(min_pos++) = 0;
-			*(max_pos++) = 0;
+			*(min_pos++) = theta[min_ind]; //0;
+			*(max_pos++) = theta[max_ind]; //0;
 		}
 
 		theta0 += dTheta;
@@ -436,7 +436,7 @@ static inline void filter_2D(const uint8_t* image_in, uint32_t image_width, uint
             {
                 continue;
             }
-            
+
             // filter in x
             float sum_weights_x = 0.0f;
             float filtered = 0.0f;
@@ -445,7 +445,7 @@ static inline void filter_2D(const uint8_t* image_in, uint32_t image_width, uint
                 int32_t x = + xc + k_x - kernel_size_x/2;
                 // avoid out of bounds
                 if ( x < 0 || x >= image_width)
-                {                 
+                {
                     continue;
                 }
                 filtered  += kernel_x[k_x] * image_in[ image_width*y + x];

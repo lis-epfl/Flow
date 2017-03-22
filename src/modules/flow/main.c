@@ -74,12 +74,13 @@
 //#define CONFIG_USE_PROBES
 #include <bsp/probes.h>
 
-#include "lucaskanade.h"
+// #include "lucaskanade.h"
 #include "maths.h"
-#include "cam.h"
+// #include "cam.h"
 #include "flow2.h"
 #include "../calib/calib_cam3.h"
-#include "emd.h"
+// #include "emd.h"
+#include "emdarray.h"
 
 /* coprocessor control register (fpu) */
 #ifndef SCB_CPACR
@@ -95,8 +96,10 @@ void buffer_reset(void);
 __ALIGN_BEGIN USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
 
 /* fast image buffers for calculations */
-uint8_t image_buffer_8bit_1[FULL_IMAGE_SIZE] __attribute__((section(".ccm")));
-uint8_t image_buffer_8bit_2[FULL_IMAGE_SIZE] __attribute__((section(".ccm")));
+// uint8_t image_buffer_8bit_1[FULL_IMAGE_SIZE] __attribute__((section(".ccm")));
+// uint8_t image_buffer_8bit_2[FULL_IMAGE_SIZE] __attribute__((section(".ccm")));
+uint8_t image_buffer_8bit_1[BOTTOM_FLOW_IMAGE_WIDTH * BOTTOM_FLOW_IMAGE_HEIGHT] __attribute__((section(".ccm")));
+uint8_t image_buffer_8bit_2[BOTTOM_FLOW_IMAGE_WIDTH * BOTTOM_FLOW_IMAGE_HEIGHT] __attribute__((section(".ccm")));
 uint8_t buffer_reset_needed;
 
 /* boot time in milliseconds ticks */
@@ -126,12 +129,25 @@ static volatile unsigned timer[NTIMERS];
 static volatile unsigned timer_ms = MS_TIMER_COUNT;
 
 
-#define EMD_COUNT (NB_SAMPLES-1)
+// #define EMD_COUNT (NB_SAMPLES-1)
+// #define EMD_COUNT ((NB_SAMPLES_ROW)*(NB_SAMPLES_COL-1))
 #define BLUR_INPUT_SIZE_X 3
-#define BLUR_INPUT_SIZE_Y 1
 const float BLUR_INPUT_KERNEL_X[] = {0.07538726f,  0.84922547f,  0.07538726f};
-const float BLUR_INPUT_KERNEL_Y[] = {1.0f};
+// #define BLUR_INPUT_SIZE_Y 1
+// const float BLUR_INPUT_KERNEL_Y[] = {1.0f};
+#define BLUR_INPUT_SIZE_Y 3
+const float BLUR_INPUT_KERNEL_Y[] = {0.07538726f,  0.84922547f,  0.07538726f};
 
+
+float emd_input[NB_EMD_INPUT * NB_SAMPLES_ROW] __attribute__((section(".ccm")));
+float emd_output[NB_EMD_OUTPUT] __attribute__((section(".ccm")));
+float emd_smooth[NB_EMD_OUTPUT] __attribute__((section(".ccm")));
+EMD_array emd[NB_SAMPLES_ROW] __attribute__((section(".ccm")));
+
+struct s_dir_2d {
+    int16_t x[NB_SAMPLES];
+    int16_t y[NB_SAMPLES];
+} s_dir_2d __attribute__((section(".ccm")));
 
 /* timer/system booleans */
 bool send_system_state_now = true;
@@ -339,35 +355,48 @@ int main(void)
 	uint32_t counter = 0;
 	uint8_t qual = 0;
 
-	// /* 2d flow on camera image */
-	// union flow_lk {
-	// 	struct {
-	// 		int16_t x[NB_SAMPLES];
-	// 		int16_t y[NB_SAMPLES];
-	// 	};
-	// 	uint8_t data[NB_SAMPLES*2];
-	// } flow_lk;
-
-	// /* backprojected flow */
-	// struct bp_flow_lk {
-	// 	float x[NB_SAMPLES];
-	// 	float y[NB_SAMPLES];
-	// 	float z[NB_SAMPLES];
-	// } bp_flow_lk;
-
-    float emd_output[EMD_COUNT];
-    float emd_smooth[EMD_COUNT];
+    // float emd_output[EMD_COUNT];
+    // float emd_smooth[EMD_COUNT];
+    // float emd_input[NB_SAMPLES] __attribute__((section(".ccm")));
+    // float emd_output[NB_SAMPLES_COL-1] __attribute__((section(".ccm")));
+    // float emd_smooth[NB_SAMPLES_COL-1] __attribute__((section(".ccm")));
+    // EMD_array emd[NB_SAMPLES_ROW];
 
     // Array of EMD detectors
-    EMD emd[EMD_COUNT];
-    float dt = 0.0018;
-    float tau = 0.02f;
+    // EMD emd[EMD_COUNT];
+    // EMD_array emd;
+
+    // float dt = 0.0018;
+    // float tau = 0.02f;
+    // float dt  = 0.0032;
+    float dt  = 0.0061;
+    // float dt  = 0.0077;
+    // float tau = 0.010f;
+    float tau = 0.010f;
     // float tau = 0.005f;
-    float lpf_alpha = dt    / (tau + dt);
+    float lpf_alpha = dt / (tau + dt);
     float hpf_alpha = tau / (tau + dt);
-    for (size_t i = 0; i < EMD_COUNT; i++)
+    // for (size_t i = 0; i < EMD_COUNT; i++)
+    // {
+    //     EMD_init(&emd[i], lpf_alpha, hpf_alpha);
+    // }
+
+    // EMD_array_init(&emd, lpf_alpha, hpf_alpha);
+
+    for (size_t i = 0; i < NB_SAMPLES_ROW; i++)
     {
-        EMD_init(&emd[i], lpf_alpha, hpf_alpha);
+        EMD_array_init(&emd[i], lpf_alpha, hpf_alpha);
+    }
+
+
+    // Initialise dir2d
+    for (size_t i = 0; i < NB_SAMPLES_ROW; i++)
+    {
+        for (size_t j = 0; j < NB_SAMPLES_COL; j++)
+        {
+            s_dir_2d.x[i*NB_SAMPLES_COL + j] = x_samples_2d[j];
+            s_dir_2d.y[i*NB_SAMPLES_COL + j] = y_samples_2d[i];
+        }
     }
 
 	int pixel_flow_count = 0;
@@ -433,8 +462,6 @@ int main(void)
 			LEDOff(LED_COM);
 		}
 
-
-
 		uint16_t image_size   = global_data.param[PARAM_IMAGE_WIDTH] * global_data.param[PARAM_IMAGE_HEIGHT];
 		uint16_t image_width  = global_data.param[PARAM_IMAGE_WIDTH];
 		uint16_t image_height = global_data.param[PARAM_IMAGE_HEIGHT];
@@ -471,52 +498,7 @@ int main(void)
 			/* copy recent image to faster ram */
 			dma_copy_image_buffers(&current_image, &previous_image, image_size, 1);
 
-			// float num_x = 0;
-			// float num_y = 0;
-			// float den   = 0;
-
-			// int32_t roi_sx = 20;
-			// int32_t roi_sy = 20;
-
-            /*
-			for (int i = 0; i < NB_SAMPLES; ++i)
-			{
-				// Compute 2D optic flow
-				lucas_kanade( 	current_image, 	// dat_t * data,
-								previous_image, // dat_t * data_old,
-								image_width,  	// image_width,
-								image_height, 	// image height,
-								roi_sx, 		// int roi_sx,
-								roi_sy, 		// int roi_sy,
-								s_dir_2d.x[i] - roi_sx / 2, 	// int const roi_x,
-								s_dir_2d.y[i] - roi_sy / 2,     // int const roi_y,
-								&num_x, 		// dat_t & num_x,
-								&num_y, 		// dat_t & num_y,
-								&den); 			// dat_t & den );
-
-				// Reproject optic flow on unit sphere
-				fast_flow2world(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i],
-								s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i],
-								s_dir_2d.x[i], 4.0f * s_dir_2d.y[i],
-								num_x / den, 4.0f * num_y / den,
-								&px4_model);
-
-                // Convert into rad/s
-                float dt_s = 1e-6f * DT;
-                bp_flow_lk.x[i] /= dt_s;
-                bp_flow_lk.y[i] /= dt_s;
-                bp_flow_lk.z[i] /= dt_s;
-
-				// TMP store 2D flow
-				flow_lk.x[i] = 1000 * num_x / den;
-				flow_lk.y[i] = 4000 * num_y / den;
-
-				// derotate optical flow
-				// derotate_flow(&bp_flow_lk.x[i], &bp_flow_lk.y[i], &bp_flow_lk.z[i], s_dir_3d.x[i], s_dir_3d.y[i], s_dir_3d.z[i], -x_rate, -y_rate, -z_rate);
-			}
-            */
-
-			float emd_input[NB_SAMPLES];
+            // Blur image for EMD input
 			filter_2D(current_image,
 						image_width,
 						image_height,
@@ -529,19 +511,44 @@ int main(void)
 						NB_SAMPLES,
 						emd_input);
 
+            // Update EMDs and sum output by columns
+            // for (size_t j = 0; j < NB_SAMPLES_COL-1; j++)
+            // {
+            //     emd_output[j] = 0.0f;
+            //     for (size_t i = 0; i < NB_SAMPLES_ROW; i++)
+            //     {
+            //         emd_output[j] += EMD_update(&emd[i*NB_SAMPLES_COL + j],
+            //                                     emd_input[i*NB_SAMPLES_COL + j],
+            //                                     emd_input[i*NB_SAMPLES_COL + j + 1]);
+            //     }
+            //     emd_output[j] /= NB_SAMPLES_ROW;
+            // }
 
-            for (size_t i = 0; i < EMD_COUNT; i++)
+            // EMD_array_update(&emd[0], &emd_input[0], emd_output);
+
+            for (size_t j = 0; j < NB_EMD_OUTPUT; j++)
             {
-                emd_output[i] = EMD_update(&emd[i], emd_input[i], emd_input[i+1]);
+                emd_output[j] = 0.0f;
+            }
+            for (size_t i = 0; i < NB_SAMPLES_ROW; i++)
+            {
+                float out[NB_EMD_OUTPUT];
+                EMD_array_update(&emd[i], &emd_input[i*NB_SAMPLES_COL], out);
+                for (size_t j = 0; j < NB_EMD_OUTPUT; j++)
+                {
+                    emd_output[j] += out[j];
+                }
+            }
+            for (size_t j = 0; j < NB_EMD_OUTPUT; j++)
+            {
+                emd_output[j] /= NB_SAMPLES_ROW;
             }
 
             // Gaussian blur with sigma=2 (4degrees)
-            #define GAUSS_WINDOW_SIZE 15
-            float gauss_window[GAUSS_WINDOW_SIZE] = {   0.00218749,  0.011109  ,  0.04393693,  0.13533528,  0.32465247,
-                                                        0.60653066,  0.8824969 ,  1.        ,  0.8824969 ,  0.60653066,
-                                                        0.32465247,  0.13533528,  0.04393693,  0.011109  ,  0.00218749 };
-
-            filter_1D(emd_output, EMD_COUNT, gauss_window, GAUSS_WINDOW_SIZE, emd_smooth);
+            // #define GAUSS_WINDOW_SIZE 15
+            // float gauss_window[GAUSS_WINDOW_SIZE] = {   0.00218749,  0.011109  ,  0.04393693,  0.13533528,  0.32465247,
+            //                                             0.60653066,  0.8824969 ,  1.        ,  0.8824969 ,  0.60653066,
+            //                                             0.32465247,  0.13533528,  0.04393693,  0.011109  ,  0.00218749 };
 
             // Gaussian blur with sigma=5 (10degrees)
             // #define GAUSS_WINDOW_SIZE 21
@@ -551,7 +558,7 @@ int main(void)
             //                                             0.60653066,  0.48675226,  0.3753111 ,  0.2780373 ,  0.1978987 ,
             //                                             0.13533528 };
 
-            // Gaussian blur with sigma=10 (20degrees)
+            // Gaussian kernel with sigma=10 (20degrees) with 81 samples
             // #define GAUSS_WINDOW_SIZE 41
             // float gauss_window[GAUSS_WINDOW_SIZE] = {   0.13533528,  0.16447446,  0.1978987 ,  0.23574608,  0.2780373 ,
             //                                             0.32465247,  0.3753111 ,  0.42955736,  0.48675226,  0.54607443,
@@ -563,25 +570,73 @@ int main(void)
             //                                             0.32465247,  0.2780373 ,  0.23574608,  0.1978987 ,  0.16447446,
             //                                             0.13533528  };
 
+            // Gaussian kernel with sigma=20 (20degrees) with 161 samples
+            #define GAUSS_WINDOW_SIZE 81
+            float gauss_window[GAUSS_WINDOW_SIZE] = {   0.13533528,  0.14938178,  0.16447446,  0.18063985,  0.1978987 ,
+                                                        0.21626517,  0.23574608,  0.25634015,  0.2780373 ,  0.30081795,
+                                                        0.32465247,  0.3495006 ,  0.3753111 ,  0.40202138,  0.42955736,
+                                                        0.45783336,  0.48675226,  0.51620567,  0.54607443,  0.57622907,
+                                                        0.60653066,  0.63683161,  0.66697681,  0.69680478,  0.72614904,
+                                                        0.7548396 ,  0.78270454,  0.80957165,  0.83527021,  0.85963276,
+                                                        0.8824969 ,  0.90370708,  0.92311635,  0.94058806,  0.95599748,
+                                                        0.96923323,  0.98019867,  0.98881304,  0.99501248,  0.99875078,
+                                                        1.        ,  0.99875078,  0.99501248,  0.98881304,  0.98019867,
+                                                        0.96923323,  0.95599748,  0.94058806,  0.92311635,  0.90370708,
+                                                        0.8824969 ,  0.85963276,  0.83527021,  0.80957165,  0.78270454,
+                                                        0.7548396 ,  0.72614904,  0.69680478,  0.66697681,  0.63683161,
+                                                        0.60653066,  0.57622907,  0.54607443,  0.51620567,  0.48675226,
+                                                        0.45783336,  0.42955736,  0.40202138,  0.3753111 ,  0.3495006 ,
+                                                        0.32465247,  0.30081795,  0.2780373 ,  0.25634015,  0.23574608,
+                                                        0.21626517,  0.1978987 ,  0.18063985,  0.16447446,  0.14938178,
+                                                        0.13533528  };
 
-            // for (int32_t i = 0; i < EMD_COUNT; i++)
-            // {
-            //     emd_smooth[i] = 0.0f;
-            //     float sum_weights = 0.0f;
-            //     for (int32_t j = 0; j < GAUSS_WINDOW_SIZE; j++)
-            //     {
-            //         int32_t index = i + (j - GAUSS_WINDOW_SIZE / 2);
-            //         if ((index>=0) && (index<EMD_COUNT))
-            //         {
-            //             emd_smooth[i]  += gauss_window[j] * emd_output[index];
-            //             sum_weights += gauss_window[j];
-            //         }
-            //     }
-            //     if (sum_weights != 0.0f)
-            //     {
-            //         emd_smooth[i] = emd_smooth[i] / sum_weights;
-            //     }
-            // }
+            // Gaussian kernel with sigma=50 (35degrees) with 241 samples
+            // #define GAUSS_WINDOW_SIZE 201
+            // float gauss_window[GAUSS_WINDOW_SIZE] = {   0.13533528,  0.14083025,  0.14648972,  0.15231569,  0.15831002,
+            //                                             0.16447446,  0.17081059,  0.17731987,  0.18400359,  0.19086288,
+            //                                             0.1978987 ,  0.20511182,  0.21250282,  0.22007211,  0.22781987,
+            //                                             0.23574608,  0.24385049,  0.25213264,  0.26059182,  0.2692271 ,
+            //                                             0.2780373 ,  0.28702097,  0.29617642,  0.30550168,  0.31499453,
+            //                                             0.32465247,  0.33447271,  0.34445218,  0.35458755,  0.36487516,
+            //                                             0.3753111 ,  0.38589113,  0.39661073,  0.4074651 ,  0.41844911,
+            //                                             0.42955736,  0.44078414,  0.45212346,  0.46356902,  0.47511424,
+            //                                             0.48675226,  0.49847592,  0.5102778 ,  0.5221502 ,  0.53408515,
+            //                                             0.54607443,  0.55810956,  0.57018181,  0.58228224,  0.59440166,
+            //                                             0.60653066,  0.61865965,  0.63077882,  0.6428782 ,  0.65494763,
+            //                                             0.66697681,  0.67895529,  0.69087249,  0.70271772,  0.7144802 ,
+            //                                             0.72614904,  0.73771331,  0.74916202,  0.76048416,  0.77166867,
+            //                                             0.78270454,  0.79358073,  0.80428628,  0.81481026,  0.82514182,
+            //                                             0.83527021,  0.84518478,  0.85487502,  0.86433055,  0.87354119,
+            //                                             0.8824969 ,  0.89118789,  0.89960455,  0.90773754,  0.91557774,
+            //                                             0.92311635,  0.93034481,  0.9372549 ,  0.9438387 ,  0.95008863,
+            //                                             0.95599748,  0.96155838,  0.96676484,  0.97161077,  0.97609047,
+            //                                             0.98019867,  0.98393051,  0.98728157,  0.99024786,  0.99282586,
+            //                                             0.99501248,  0.99680511,  0.99820162,  0.99920032,  0.99980002,
+            //                                             1.        ,  0.99980002,  0.99920032,  0.99820162,  0.99680511,
+            //                                             0.99501248,  0.99282586,  0.99024786,  0.98728157,  0.98393051,
+            //                                             0.98019867,  0.97609047,  0.97161077,  0.96676484,  0.96155838,
+            //                                             0.95599748,  0.95008863,  0.9438387 ,  0.9372549 ,  0.93034481,
+            //                                             0.92311635,  0.91557774,  0.90773754,  0.89960455,  0.89118789,
+            //                                             0.8824969 ,  0.87354119,  0.86433055,  0.85487502,  0.84518478,
+            //                                             0.83527021,  0.82514182,  0.81481026,  0.80428628,  0.79358073,
+            //                                             0.78270454,  0.77166867,  0.76048416,  0.74916202,  0.73771331,
+            //                                             0.72614904,  0.7144802 ,  0.70271772,  0.69087249,  0.67895529,
+            //                                             0.66697681,  0.65494763,  0.6428782 ,  0.63077882,  0.61865965,
+            //                                             0.60653066,  0.59440166,  0.58228224,  0.57018181,  0.55810956,
+            //                                             0.54607443,  0.53408515,  0.5221502 ,  0.5102778 ,  0.49847592,
+            //                                             0.48675226,  0.47511424,  0.46356902,  0.45212346,  0.44078414,
+            //                                             0.42955736,  0.41844911,  0.4074651 ,  0.39661073,  0.38589113,
+            //                                             0.3753111 ,  0.36487516,  0.35458755,  0.34445218,  0.33447271,
+            //                                             0.32465247,  0.31499453,  0.30550168,  0.29617642,  0.28702097,
+            //                                             0.2780373 ,  0.2692271 ,  0.26059182,  0.25213264,  0.24385049,
+            //                                             0.23574608,  0.22781987,  0.22007211,  0.21250282,  0.20511182,
+            //                                             0.1978987 ,  0.19086288,  0.18400359,  0.17731987,  0.17081059,
+            //                                             0.16447446,  0.15831002,  0.15231569,  0.14648972,  0.14083025,
+            //                                             0.13533528 };
+
+            // Apply gaussian kernel
+            filter_1D(emd_output, NB_EMD_OUTPUT, gauss_window, GAUSS_WINDOW_SIZE, emd_smooth);
+
             float  stats[6*SECTOR_COUNT];
 			float* maxima  	= stats;
 			float* minima 	= stats +   SECTOR_COUNT;
@@ -589,24 +644,8 @@ int main(void)
 			float* min_pos 	= stats + 3*SECTOR_COUNT;
 			float* avg  	= stats + 4*SECTOR_COUNT;
 			float* stddev  	= stats + 5*SECTOR_COUNT;
-			// calc_flow_stats(NB_SAMPLES,
-   //  						SECTOR_COUNT,
-   //  						-PI/2, //s_dir_theta[0],
-   //  						PI/2, //s_dir_theta[NB_SAMPLES-1],
-   //  						bp_flow_lk.x,
-   //  						bp_flow_lk.y,
-   //  						bp_flow_lk.z,
-   //  						s_dir_theta,
-   //  						maxima,
-   //  						max_pos,
-   //  						minima,
-   //  						min_pos,
-   //  						stddev,
-   //  						avg);
-			// update_TX_buffer_tmp();
-			// update_TX_buffer_flow_stat(SECTOR_COUNT, maxima, max_pos, minima, min_pos, stddev, avg);
 
-			calc_stats_1D(EMD_COUNT,
+			calc_stats_1D(  NB_EMD_OUTPUT,
 							SECTOR_COUNT,
 							-PI/2,
 							 PI/2,
@@ -619,79 +658,65 @@ int main(void)
 							stddev,
 							avg);
 
-			
+            // Compute psi
+            float psi = 0.0f;
+            float loc_max_front = 0.0f;
+            float loc_max_rear = 0.0f;
+            {
+                float max_rear = 0.0f;
+                for (size_t i = 0; i < SECTOR_COUNT/2; i++)
+                {
+                    if (maxima[i] > max_rear)
+                    {
+                        max_rear     = maxima[i];
+                        loc_max_rear = max_pos[i];
+                    }
+                }
+
+                float max_front = 0.0f;
+                for (size_t i = SECTOR_COUNT/2; i < SECTOR_COUNT; i++)
+                {
+                    if (maxima[i] > max_front)
+                    {
+                        max_front     = maxima[i];
+                        loc_max_front = max_pos[i];
+                    }
+                }
+                psi = (loc_max_front - loc_max_rear) / 2.0f;
+            }
+
 
 			pixel_flow_count++;
 
 			if (counter % (uint32_t)global_data.param[PARAM_BOTTOM_FLOW_SERIAL_THROTTLE_FACTOR] == 0)
 			{
-				mavlink_msg_big_debug_vect_send(MAVLINK_COMM_0, "STATS", get_boot_time_us(), stats);
+                // Send EMD information
+                mavlink_msg_big_debug_vect_send(MAVLINK_COMM_0, "STATS", get_boot_time_us(), stats);
+
+                // Send sonar data
+                mavlink_msg_distance_sensor_send(MAVLINK_COMM_0, get_boot_time_ms(), 20, 500, sonar_distance_raw * 100, 0, 1, 0, 0);
 			}
 
-		}
-		counter++;
+		    counter++;
 
-		if (FLOAT_EQ_INT(global_data.param[PARAM_SENSOR_POSITION], BOTTOM))
-		{
     	    // serial mavlink  + usb mavlink output throttled
 			if (counter % (uint32_t)global_data.param[PARAM_BOTTOM_FLOW_SERIAL_THROTTLE_FACTOR] == 0)
-			{			
-
-				// Send flow on UART
-
-				// mavlink_msg_optical_flow_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-				// 		pixel_flow_x_sum * 10.0f, pixel_flow_y_sum * 10.0f,
-				// 		flow_comp_m_x, flow_comp_m_y, qual,
-				// 		// ground_distance);
-				// 		DT);
-
-				// mavlink_msg_data_transmission_handshake_send(   MAVLINK_COMM_0,
-                //                         						MAVLINK_TYPE_INT16_T,
-                //                         						NB_SAMPLES*2,
-                //                         						NB_SAMPLES,
-                //                         						2,
-                //                         						NB_SAMPLES*2 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
-                //                         						MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
-                //                         						100);
-                //
-				// for (int frame = 0; frame < NB_SAMPLES*2 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1; ++frame)
-				// {
-				// 	mavlink_msg_encapsulated_data_send(MAVLINK_COMM_0, frame, &(flow_lk.data[frame * MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN]));
-				// }
-
-
+			{
 				if (FLOAT_AS_BOOL(global_data.param[PARAM_USB_SEND_FLOW]))
 				{
                     // Send flow on USB
-
-					// mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-                    //         flow_lk.x[40], flow_lk.y[40],
-					// 		bp_flow_lk.x[40], bp_flow_lk.y[40],
-                    //         qual,
-					// 		DT);
-
                     mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
                             emd_smooth[20], emd_smooth[30], emd_smooth[50], emd_smooth[60],
                             qual,
                             DT);
-
-					// mavlink_msg_data_transmission_handshake_send(
-					// 		MAVLINK_COMM_2,
-					// 		// MAVLINK_TYPE_INT16_T,
-					// 		MAVLINK_DATA_STREAM_IMG_RAW8U,
-					// 		500,
-					// 		250,
-					// 		2,
-					// 		500 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
-					// 		MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
-					// 		100);
-					// for (int frame = 0; frame < 500 / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1; ++frame)
-					// {
-					// 	mavlink_msg_encapsulated_data_send(MAVLINK_COMM_2, frame, &((uint8_t *) flow_lk.data)[frame * MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN]);
-					// }
-                    // mavlink_msg_big_debug_vect_send
-                    //mavlink_msg_big_debug_vect_send(MAVLINK_COMM_2, "EMD_RAW", get_boot_time_us(), &emd_output[10]);
-                    //mavlink_msg_big_debug_vect_send(MAVLINK_COMM_2, "EMD_SMOOTH", get_boot_time_us(), &emd_smooth[10]);
+                    // // mavlink_msg_debug_vect_send(MAVLINK_COMM_2, "DT", get_boot_time_us(), DT, 0.0, 0.0);
+                    //
+                    // // Send EMD maxs
+                    mavlink_msg_debug_vect_send(MAVLINK_COMM_2, "MAX02", get_boot_time_us(), max_pos[0], max_pos[1], max_pos[2]);
+                    mavlink_msg_debug_vect_send(MAVLINK_COMM_2, "MAX35", get_boot_time_us(), max_pos[3], max_pos[4], max_pos[5]);
+                    mavlink_msg_debug_vect_send(MAVLINK_COMM_2, "MAX68", get_boot_time_us(), max_pos[6], max_pos[7], max_pos[8]);
+                    mavlink_msg_debug_vect_send(MAVLINK_COMM_2, "MAX9", get_boot_time_us(), max_pos[9], 0.0f, 0.0f);
+    				mavlink_msg_debug_vect_send(MAVLINK_COMM_2, "PSI", get_boot_time_us(), loc_max_front, loc_max_rear, psi);
 				}
 
 

@@ -197,7 +197,8 @@ void mt9v034_context_configuration(void)
 		mt9v034_WriteReg16(MTV_READ_MODE_REG_A, new_readmode_context_a);
 		// mt9v034_WriteReg16(MTV_COLUMN_START_REG_A, (MAX_IMAGE_WIDTH - new_width_context_a) / 2 + MINIMUM_COLUMN_START); // Set column/row start point for lower resolutions (center window)
 		// mt9v034_WriteReg16(MTV_COLUMN_START_REG_A, 9*4 + MINIMUM_COLUMN_START); // Set column/row start point for lower resolutions (center window)
-		mt9v034_WriteReg16(MTV_COLUMN_START_REG_A, 36 + MINIMUM_COLUMN_START); // Set column/row start point for lower resolutions (center window)
+        // mt9v034_WriteReg16(MTV_COLUMN_START_REG_A, 36 + MINIMUM_COLUMN_START); // Set column/row start point for lower resolutions (center window)
+		mt9v034_WriteReg16(MTV_COLUMN_START_REG_A, 66 + MINIMUM_COLUMN_START); // Set column/row start point for lower resolutions (center window)
 		// mt9v034_WriteReg16(MTV_ROW_START_REG_A, (MAX_IMAGE_HEIGHT - new_height_context_a) / 2 + MINIMUM_ROW_START);
 		mt9v034_WriteReg16(MTV_ROW_START_REG_A, 152 + MINIMUM_ROW_START);
 		mt9v034_WriteReg16(MTV_COARSE_SW_1_REG_A, coarse_sw1);
