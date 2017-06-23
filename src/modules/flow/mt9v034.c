@@ -136,7 +136,7 @@ void mt9v034_context_configuration(void)
 		desired_brightness = 58; // VALID RANGE: 8-64
 		resolution_ctrl = 0x0202;//10 bit linear
 		hdr_enabled = 0x0000; // off
-		aec_agc_enabled = 0x0101; // aec on, agc off
+		aec_agc_enabled = 0x0303; // on
 		coarse_sw1 = 0x01BB; // default from context A
 		coarse_sw2 = 0x01D9; // default from context A
 		shutter_width_ctrl = 0x0164; // default from context A
@@ -149,7 +149,7 @@ void mt9v034_context_configuration(void)
 		desired_brightness = 32; // VALID RANGE: 8-64
 		resolution_ctrl = 0x0202;//10bit linear
 		hdr_enabled = 0x0000; // off
-		aec_agc_enabled = 0x0101; // aec on, agc off
+		aec_agc_enabled = 0x0303; // on
 		coarse_sw1 = 0x01BB; // default from context A
 		coarse_sw2 = 0x01D9; // default from context A
 		shutter_width_ctrl = 0x0164; // default from context A
