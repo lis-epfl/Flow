@@ -341,24 +341,24 @@ void handle_mavlink_message(mavlink_channel_t chan,
 			switch (cmd.command) {
 				case MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN:
 				if (((int)(cmd.param1)) == 1) {
-					mavlink_msg_command_ack_send(chan, cmd.command, MAV_RESULT_ACCEPTED);
+					mavlink_msg_command_ack_send(chan, cmd.command, MAV_RESULT_ACCEPTED, 100);
 					/* reboot */
 					systemreset(false);
 
 				} else if (((int)(cmd.param1)) == 3) {
-					mavlink_msg_command_ack_send(chan, cmd.command, MAV_RESULT_ACCEPTED);
+					mavlink_msg_command_ack_send(chan, cmd.command, MAV_RESULT_ACCEPTED, 100);
 					/* reboot to bootloader */
 					systemreset(true);
 
 				} else {
 					/* parameters are wrong */
-					mavlink_msg_command_ack_send(chan, cmd.command, MAV_RESULT_FAILED);
+					mavlink_msg_command_ack_send(chan, cmd.command, MAV_RESULT_FAILED, 0);
 					// XXX add INVALID INPUT to MAV_RESULT
 				}
 				break;
 
 				default:
-					mavlink_msg_command_ack_send(chan, cmd.command, MAV_RESULT_UNSUPPORTED);
+					mavlink_msg_command_ack_send(chan, cmd.command, MAV_RESULT_UNSUPPORTED, 0);
 				break;
 			}
 		}

@@ -29,9 +29,9 @@ else
 fi
 
 
-if [ -d mavlink/include/mavlink/v1.0 ];
+if [ -d mavlink/include/mavlink/v2.0 ];
 	then
-	STATUSRETVAL=$(git submodule summary | grep -A20 -i "mavlink/include/mavlink/v1.0" | grep "<")
+	STATUSRETVAL=$(git submodule summary | grep -A20 -i "mavlink/include/mavlink/v2.0" | grep "<")
 	if [ -z "$STATUSRETVAL" ]; then
 		echo "Checked mavlink submodule, correct version found"
 	else

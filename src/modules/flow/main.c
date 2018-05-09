@@ -336,6 +336,8 @@ int main(void)
 	float pixel_flow_y = 0.0f;
 	float pixel_flow_x_sum = 0.0f;
 	float pixel_flow_y_sum = 0.0f;
+	float flow_compx = 0.0f;
+	float flow_compy = 0.0f;
 	float velocity_x_sum = 0.0f;
 	float velocity_y_sum = 0.0f;
 	float velocity_x_lp = 0.0f;
@@ -486,8 +488,8 @@ int main(void)
 			 * x / f = X / Z
 			 * y / f = Y / Z
 			 */
-			float flow_compx = pixel_flow_x / focal_length_px / (get_time_between_images() / 1000000.0f);
-			float flow_compy = pixel_flow_y / focal_length_px / (get_time_between_images() / 1000000.0f);
+			flow_compx = pixel_flow_x / focal_length_px / (get_time_between_images() / 1000000.0f);
+			flow_compy = pixel_flow_y / focal_length_px / (get_time_between_images() / 1000000.0f);
 
 			if (qual > 0)
 			{
@@ -613,7 +615,9 @@ int main(void)
 				// send flow
 				mavlink_msg_optical_flow_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
 						pixel_flow_x_sum * 10.0f, pixel_flow_y_sum * 10.0f,
-						flow_comp_m_x, flow_comp_m_y, qual, ground_distance);
+						flow_comp_m_x, flow_comp_m_y, qual, ground_distance,
+						flow_compx,
+						flow_compy);
 
 				mavlink_msg_optical_flow_rad_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
 						integration_timespan, accumulated_flow_x, accumulated_flow_y,
@@ -646,7 +650,7 @@ int main(void)
 				{
 					mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
 							pixel_flow_x_sum * 10.0f, pixel_flow_y_sum * 10.0f,
-						flow_comp_m_x, flow_comp_m_y, qual, ground_distance);
+						flow_comp_m_x, flow_comp_m_y, qual, ground_distance, flow_compx, flow_compy);
 
 
 					mavlink_msg_optical_flow_rad_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],

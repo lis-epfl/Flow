@@ -153,8 +153,8 @@ include_directories(
     lib/STM32_USB_Device_Library/Core/inc
     lib/STM32_USB_HOST_Library/Core/inc
     lib/STM32_USB_OTG_Driver/inc
-    mavlink/include/mavlink/v1.0
-    mavlink/include/mavlink/v1.0/common
+    mavlink/include/mavlink/v2.0
+    mavlink/include/mavlink/v2.0/common
     )
 
 # source
