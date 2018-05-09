@@ -111,4 +111,12 @@
 # define STRINGIFY(s) FREEZE_STR(s)
 #endif
 
+#ifndef _PARAMS
+#if defined(__STDC__) || defined(__cplusplus)
+#define _PARAMS(ARGS) ARGS
+#else
+#define _PARAMS(ARGS) ()
+#endif
+#endif /* _PARAMS */
+
 #endif /* _PX4_MACROS_H */

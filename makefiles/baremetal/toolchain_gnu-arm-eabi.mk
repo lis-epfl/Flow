@@ -50,7 +50,7 @@ OBJDUMP			 = $(CROSSDEV)objdump
 
 # Check if the right version of the toolchain is available
 #
-CROSSDEV_VER_SUPPORTED	 = 4.7.4 4.7.5 4.7.6 4.8.2 4.8.4 4.9.3 5.4.1 7.1.0 7.2.0
+CROSSDEV_VER_SUPPORTED	 = 4.7.4 4.7.5 4.7.6 4.8.2 4.8.4 4.9.3 5.4.1 7.1.0 7.2.0 7.2.1 8.1.0
 CROSSDEV_VER_FOUND	 = $(shell $(CC) -dumpversion)
 
 ifeq (,$(findstring $(CROSSDEV_VER_FOUND), $(CROSSDEV_VER_SUPPORTED)))
@@ -132,7 +132,7 @@ ARCHWARNINGS		 = -Wall \
 			    $(WUSEPACKED) \
 			   -Wno-unused-parameter \
 			   -Werror=format-security \
-			   -Werror=array-bounds \
+			   -Wno-error=array-bounds \
 			   -Wfatal-errors \
 			   -Wformat=1 \
 			   -Werror=unused-but-set-variable \
@@ -164,6 +164,10 @@ ARCHWARNINGSXX		 = $(ARCHWARNINGS) \
 # pull in *just* libm from the toolchain ... this is grody
 LIBM			:= $(shell $(CC) $(ARCHCPUFLAGS) -print-file-name=libm.a)
 EXTRA_LIBS		+= $(LIBM)
+
+
+LIBC			:= $(shell $(CC) $(ARCHCPUFLAGS) -print-file-name=libc.a)
+EXTRA_LIBS		+= $(LIBC)
 
 # Flags we pass to the C compiler
 #
