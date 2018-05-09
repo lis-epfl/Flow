@@ -56,7 +56,7 @@
 
 #define sign(x) (( x > 0 ) - ( x < 0 ))
 
-uint8_t compute_flow(uint8_t *image1, uint8_t *image2, float x_rate, float y_rate, float z_rate, float *pixel_flow_x, float *pixel_flow_y);
+uint8_t compute_flow(uint8_t *image1, uint8_t *image2, float x_rate, float y_rate, float z_rate, float *pixel_flow_x, float *pixel_flow_y, float *pixel_flow_z);
 
 // compliments of Adam Williams
 #define ABSDIFF(frame1, frame2) \
@@ -396,7 +396,7 @@ static inline uint32_t compute_sad_8x8(uint8_t *image1, uint8_t *image2, uint16_
  *
  * @return quality of flow calculation
  */
-uint8_t compute_flow(uint8_t *image1, uint8_t *image2, float x_rate, float y_rate, float z_rate, float *pixel_flow_x, float *pixel_flow_y) {
+uint8_t compute_flow(uint8_t *image1, uint8_t *image2, float x_rate, float y_rate, float z_rate, float *pixel_flow_x, float *pixel_flow_y, float *pixel_flow_z) {
 
 	/* constants */
 	const int16_t winmin = -SEARCH_SIZE;
@@ -422,6 +422,21 @@ uint8_t compute_flow(uint8_t *image1, uint8_t *image2, float x_rate, float y_rat
 	float histflowy = 0.0f;
 	float stddev_flowx = 0.0f;
 	float stddev_flowy = 0.0f;
+	float yawrate = 0.0f;
+
+	// Initialize weights for yaw rate estimation 
+	// TODO: make it work for NUM_BLOCKS != 5
+	const float yawrate_weight_y[NUM_BLOCKS*NUM_BLOCKS] = {  -2.0f * pixStep, -1.0f * pixStep,  0.0f  ,  1.0f * pixStep,  2.0f * pixStep,  
+															 -2.0f * pixStep, -1.0f * pixStep,  0.0f  ,  1.0f * pixStep,  2.0f * pixStep,  
+															 -2.0f * pixStep, -1.0f * pixStep,  0.0f  ,  1.0f * pixStep,  2.0f * pixStep,  
+															 -2.0f * pixStep, -1.0f * pixStep,  0.0f  ,  1.0f * pixStep,  2.0f * pixStep,  
+															 -2.0f * pixStep, -1.0f * pixStep,  0.0f  ,  1.0f * pixStep,  2.0f * pixStep };
+	const float yawrate_weight_x[NUM_BLOCKS*NUM_BLOCKS] = {    2.0f * pixStep,  2.0f * pixStep,  2.0f * pixStep,  2.0f * pixStep,  2.0f * pixStep, 
+															   1.0f * pixStep,  1.0f * pixStep,  1.0f * pixStep,  1.0f * pixStep,  1.0f * pixStep,  
+															   0.0f          ,  0.0f          ,  0.0f          ,  0.0f          ,  0.0f          ,  
+															  -1.0f * pixStep, -1.0f * pixStep, -1.0f * pixStep, -1.0f * pixStep, -1.0f * pixStep,
+															  -2.0f * pixStep, -2.0f * pixStep, -2.0f * pixStep, -2.0f * pixStep, -2.0f * pixStep };
+
 
 	/* initialize with 0 */
 	for (j = 0; j < hist_size; j++) { histx[j] = 0; histy[j] = 0; }
@@ -487,9 +502,9 @@ uint8_t compute_flow(uint8_t *image1, uint8_t *image2, float x_rate, float y_rat
 						mindir = k;
 					}
 				}
-				dirsx[meancount] = sumx;
-				dirsy[meancount] = sumy;
-				subdirs[meancount] = mindir;
+				dirsx[block_id] = sumx;
+				dirsy[block_id] = sumy;
+				subdirs[block_id] = mindir;
 				meancount++;
 
 				/* feed histogram filter*/
@@ -517,7 +532,6 @@ uint8_t compute_flow(uint8_t *image1, uint8_t *image2, float x_rate, float y_rat
 	{
 		uint8_t offset = TILE_SIZE / 2 + 1;
 		block_id = 0;
-		uint32_t used_block_id = 0;
 		for (j = pixLo + offset; j < pixHi + offset; j += pixStep)
 		{
 			for (i = pixLo + offset; i < pixHi + offset; i += pixStep)
@@ -527,21 +541,18 @@ uint8_t compute_flow(uint8_t *image1, uint8_t *image2, float x_rate, float y_rat
 					if (FLOAT_AS_BOOL(global_data.param[PARAM_USB_DRAW_FLOW]))
 					{
 						// Draw optic flow vector
-						uint8_t steps = fmax(abs(dirsx[used_block_id]), abs(dirsy[used_block_id]));
+						uint8_t steps = fmax(abs(dirsx[block_id]), abs(dirsy[block_id]));
 						for (int8_t k = 0; k < steps; k++)
 						{
 							// Draw black segment to represent optic flow vector
-							int8_t dx = (k * dirsx[used_block_id]) / steps;
-							int8_t dy = (k * dirsy[used_block_id]) / steps;
+							int8_t dx = (k * dirsx[block_id]) / steps;
+							int8_t dy = (k * dirsy[block_id]) / steps;
 							image1[(j + dy) * ((uint16_t) global_data.param[PARAM_IMAGE_WIDTH]) + i + dx] = 0;
 						}
 					}
 
 					// Draw white dot if block was used
 					image1[j * ((uint16_t) global_data.param[PARAM_IMAGE_WIDTH]) + i] = 255;
-
-					// Next used block
-					used_block_id++;
 				}
 
 				// Next block
@@ -675,23 +686,28 @@ uint8_t compute_flow(uint8_t *image1, uint8_t *image2, float x_rate, float y_rat
 				float histflowx_sum2 = 0.0f;
 				float histflowy_sum2 = 0.0f;
 
-				for (uint8_t h = 0; h < meancount; h++)
+				for (uint32_t h = 0; h < NUM_BLOCKS*NUM_BLOCKS; h++)
 				{
-					float subdirx = 0.0f;
-					if (subdirs[h] == 0 || subdirs[h] == 1 || subdirs[h] == 7) subdirx = 0.5f;
-					if (subdirs[h] == 3 || subdirs[h] == 4 || subdirs[h] == 5) subdirx = -0.5f;
-					float flow_x = (float)dirsx[h] + subdirx;
-					histflowx_sum += flow_x;
-					histflowx_sum2 += flow_x * flow_x;
-					meancount_x++;
+					if (used[h]) {
+						float subdirx = 0.0f;
+						if (subdirs[h] == 0 || subdirs[h] == 1 || subdirs[h] == 7) subdirx = 0.5f;
+						if (subdirs[h] == 3 || subdirs[h] == 4 || subdirs[h] == 5) subdirx = -0.5f;
+						float flow_x = (float)dirsx[h] + subdirx;
+						histflowx_sum += flow_x;
+						histflowx_sum2 += flow_x * flow_x;
+						meancount_x++;
 
-					float subdiry = 0.0f;
-					if (subdirs[h] == 5 || subdirs[h] == 6 || subdirs[h] == 7) subdiry = -0.5f;
-					if (subdirs[h] == 1 || subdirs[h] == 2 || subdirs[h] == 3) subdiry = 0.5f;
-					float flow_y = (float)dirsy[h] + subdiry;
-					histflowy_sum += flow_y;
-					histflowy_sum2 += flow_y * flow_y;
-					meancount_y++;
+						float subdiry = 0.0f;
+						if (subdirs[h] == 5 || subdirs[h] == 6 || subdirs[h] == 7) subdiry = -0.5f;
+						if (subdirs[h] == 1 || subdirs[h] == 2 || subdirs[h] == 3) subdiry = 0.5f;
+						float flow_y = (float)dirsy[h] + subdiry;
+						histflowy_sum += flow_y;
+						histflowy_sum2 += flow_y * flow_y;
+						meancount_y++;
+
+						// compute yaw rate from optic flow
+						yawrate += yawrate_weight_x[h] * flow_x + yawrate_weight_y[h] * flow_y;
+					}
 				}
 
 				// Compute standart deviation of accepted optic flow values
@@ -702,6 +718,8 @@ uint8_t compute_flow(uint8_t *image1, uint8_t *image2, float x_rate, float y_rat
 				histflowx = histflowx_sum / meancount_x;
 				histflowy = histflowy_sum / meancount_y;
 
+
+				yawrate = yawrate / meancount_x;
 			}
 
 			/* compensate rotation */
@@ -785,6 +803,9 @@ uint8_t compute_flow(uint8_t *image1, uint8_t *image2, float x_rate, float y_rat
 		*pixel_flow_y = 0.0f;
 		return 0;
 	}
+
+	/* report yawrate */
+	*pixel_flow_z = yawrate;
 
 	/* calc quality from ratio of used & unused blocks*/
 	uint8_t qual = (uint8_t)(meancount * 255 / (NUM_BLOCKS*NUM_BLOCKS));

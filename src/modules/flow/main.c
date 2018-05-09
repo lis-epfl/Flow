@@ -334,8 +334,10 @@ int main(void)
 	/* bottom flow variables */
 	float pixel_flow_x = 0.0f;
 	float pixel_flow_y = 0.0f;
+	float pixel_flow_z = 0.0f;
 	float pixel_flow_x_sum = 0.0f;
 	float pixel_flow_y_sum = 0.0f;
+	float pixel_flow_z_sum = 0.0f;
 	float flow_compx = 0.0f;
 	float flow_compy = 0.0f;
 	float velocity_x_sum = 0.0f;
@@ -347,6 +349,7 @@ int main(void)
 
 	static float accumulated_flow_x = 0;
 	static float accumulated_flow_y = 0;
+	static float accumulated_flow_z = 0;
 	static float accumulated_gyro_x = 0;
 	static float accumulated_gyro_y = 0;
 	static float accumulated_gyro_z = 0;
@@ -451,7 +454,7 @@ int main(void)
 
 			if (FLOAT_EQ_INT(global_data.param[PARAM_IMAGE_WHITENING], IMAGE_WHITENING_DISABLED)) {
 				/* compute optical flow */
-				qual = compute_flow(previous_image, current_image, x_rate, y_rate, z_rate, &pixel_flow_x, &pixel_flow_y);
+				qual = compute_flow(previous_image, current_image, x_rate, y_rate, z_rate, &pixel_flow_x, &pixel_flow_y, &pixel_flow_z);
 				used_whitened_image = false;
 			} else {
 				/* swap whitened image buffers */
@@ -464,20 +467,22 @@ int main(void)
 				used_whitened_image = true;
 
 				/* compute optical flow on whitened images*/
-				qual = compute_flow(previous_image_whitened, current_image_whitened, x_rate, y_rate, z_rate, &pixel_flow_x, &pixel_flow_y);
+				qual = compute_flow(previous_image_whitened, current_image_whitened, x_rate, y_rate, z_rate, &pixel_flow_x, &pixel_flow_y, &pixel_flow_z);
 
 				if (FLOAT_EQ_INT(global_data.param[PARAM_IMAGE_WHITENING], IMAGE_WHITENING_AUTO) && (qual < global_data.param[PARAM_IMAGE_WHITENING_QUALITY_THRESHOLD])) {
 					float pixel_flow_x_no_whiten = 0.0f;
 					float pixel_flow_y_no_whiten = 0.0f;
+					float pixel_flow_z_no_whiten = 0.0f;
 
 					/* compute optical flow on non-whitened images */
-					uint8_t qual_no_whiten = compute_flow(previous_image, current_image, x_rate, y_rate, z_rate, &pixel_flow_x_no_whiten, &pixel_flow_y_no_whiten);
+					uint8_t qual_no_whiten = compute_flow(previous_image, current_image, x_rate, y_rate, z_rate, &pixel_flow_x_no_whiten, &pixel_flow_y_no_whiten, &pixel_flow_z_no_whiten);
 
 					/* keep best optical flow (from whitened or non-whitened images) */
 					if (qual_no_whiten > qual) {
 						qual = qual_no_whiten;
 						pixel_flow_x = pixel_flow_x_no_whiten;
 						pixel_flow_y = pixel_flow_y_no_whiten;
+						pixel_flow_z = pixel_flow_z_no_whiten;
 						used_whitened_image = false;
 					}
 				}
@@ -499,6 +504,7 @@ int main(void)
 				integration_timespan += deltatime;
 				accumulated_flow_x += pixel_flow_y  / focal_length_px * 1.0f; //rad axis swapped to align x flow around y axis
 				accumulated_flow_y += pixel_flow_x  / focal_length_px * -1.0f;//rad
+				accumulated_flow_z += pixel_flow_z  / focal_length_px * -1.0f;//rad
 				accumulated_gyro_x += x_rate * deltatime / 1000000.0f;	//rad
 				accumulated_gyro_y += y_rate * deltatime / 1000000.0f;	//rad
 				accumulated_gyro_z += z_rate * deltatime / 1000000.0f;	//rad
@@ -545,6 +551,7 @@ int main(void)
 
 			pixel_flow_x_sum += pixel_flow_x;
 			pixel_flow_y_sum += pixel_flow_y;
+			pixel_flow_z_sum += pixel_flow_z;
 			pixel_flow_count++;
 
 		}
@@ -634,7 +641,8 @@ int main(void)
 					lpos.z = -ground_distance;
 					lpos.vx = ground_distance*accumulated_flow_x/integration_timespan;
 					lpos.vy = ground_distance*accumulated_flow_y/integration_timespan;
-					lpos.vz = 0; // no direct measurement, just ignore
+					// lpos.vz = 0; // no direct measurement, just ignore
+					lpos.vz = accumulated_flow_z; // TODO: find a proper way to send it
 
 				} else {
 					/* toggling param allows user reset */
@@ -671,6 +679,7 @@ int main(void)
 				integration_timespan = 0;
 				accumulated_flow_x = 0;
 				accumulated_flow_y = 0;
+				accumulated_flow_z = 0;
 				accumulated_framecount = 0;
 				accumulated_quality = 0;
 				accumulated_gyro_x = 0;
